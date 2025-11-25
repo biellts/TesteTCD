@@ -1,0 +1,35 @@
+<ui:composition template="/templates/layout.xhtml"
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html"
+    xmlns:ui="jakarta.faces.facelets">
+
+<ui:define name="conteudo">
+  <h1>Atendimento</h1>
+
+  <h:panelGroup rendered="#{atendimentoController.atendimentoAtual == null}">
+    <h:form>
+      <h:commandButton value="Chamar Próximo" action="#{atendimentoController.chamar}" rendered="#{atendenteController.status eq 'DISPONIVEL'}"/>
+      <h:outputText value="Você está OFFLINE ou indisponível." rendered="#{atendenteController.status ne 'DISPONIVEL'}"/>
+    </h:form>
+  </h:panelGroup>
+
+  <h:panelGroup rendered="#{atendimentoController.atendimentoAtual != null}">
+    <h2>Atendendo: #{atendimentoController.atendimentoAtual.usuario.nome}</h2>
+
+    <h:form>
+      <h:outputLabel value="Descrição das Ações (mín 20 chars)"/>
+      <h:inputTextarea value="#{atendimentoController.atendimentoAtual.acao}" rows="6" cols="80"/>
+      <h:outputLabel value="Observações (opcional)"/>
+      <h:inputTextarea value="#{atendimentoController.atendimentoAtual.observacao}" rows="3" cols="80"/>
+      <h:selectOneMenu value="#{atendimentoController.atendimentoAtual.status}">
+        <f:selectItem itemValue="CONCLUIDO" itemLabel="Concluído"/>
+        <f:selectItem itemValue="REENCAMINHADO" itemLabel="Reencaminhado"/>
+        <f:selectItem itemValue="NAO_COMPARECEU" itemLabel="Não Compareceu"/>
+        <f:selectItem itemValue="CANCELADO_USUARIO" itemLabel="Cancelado"/>
+      </h:selectOneMenu>
+
+      <h:commandButton value="Finalizar Atendimento" action="#{atendimentoController.finalizar}"/>
+    </h:form>
+  </h:panelGroup>
+</ui:define>
+</ui:composition>

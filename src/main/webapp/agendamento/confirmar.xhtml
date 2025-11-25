@@ -1,0 +1,20 @@
+<ui:composition template="/templates/layout.xhtml"
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html"
+    xmlns:ui="jakarta.faces.facelets">
+
+<ui:define name="conteudo">
+  <h1>Confirmar Agendamento</h1>
+
+  <h:panelGrid columns="2">
+    <h:outputText value="Serviço:"/>
+    <h:outputText value="#{agendamentoController.servicoSelecionado.nome}"/>
+    <h:outputText value="Data/Hora:"/>
+    <h:outputText value="#{agendamentoController.data} #{agendamentoController.hora}"/>
+  </h:panelGrid>
+
+  <h:form>
+    <h:commandButton value="Confirmar" action="#{agendamentoController.confirmar}"/>
+  </h:form>
+</ui:define>
+</ui:composition>

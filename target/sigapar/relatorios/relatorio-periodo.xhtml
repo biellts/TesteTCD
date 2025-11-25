@@ -1,0 +1,37 @@
+<ui:composition template="/templates/layout.xhtml"
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html"
+    xmlns:ui="jakarta.faces.facelets">
+
+<ui:define name="conteudo">
+    <h1>Relatório por Período</h1>
+
+    <h:form>
+        <h:panelGrid columns="2">
+            <h:outputLabel value="Data inicial"/>
+            <h:inputText value="#{relatorioController.inicio}" placeholder="yyyy-MM-dd"/>
+
+            <h:outputLabel value="Data final"/>
+            <h:inputText value="#{relatorioController.fim}" placeholder="yyyy-MM-dd"/>
+        </h:panelGrid>
+
+        <h:commandButton value="Gerar" action="#{relatorioController.gerar}"/>
+    </h:form>
+
+    <h:panelGroup rendered="#{relatorioController.gerado}">
+        <h2>Resumo</h2>
+
+        <p>Total: #{relatorioController.total}</p>
+        <p>Concluídos: #{relatorioController.concluidos}</p>
+        <p>Cancelados: #{relatorioController.cancelados}</p>
+
+        <h2>Por Serviço</h2>
+
+        <h:dataTable value="#{relatorioController.porServico}" var="s">
+            <h:column><f:facet name="header">Serviço</f:facet>#{s.nome}</h:column>
+            <h:column><f:facet name="header">Qtd</f:facet>#{s.total}</h:column>
+        </h:dataTable>
+    </h:panelGroup>
+</ui:define>
+
+</ui:composition>

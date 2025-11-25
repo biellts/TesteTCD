@@ -1,0 +1,42 @@
+<ui:composition template="/templates/layout.xhtml"
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html"
+    xmlns:ui="jakarta.faces.facelets"
+    xmlns:f="jakarta.faces.core">
+
+<ui:define name="conteudo">
+  <h1>Fila de Espera</h1>
+
+  <h:form id="filtro">
+    <h:panelGrid columns="4">
+      <h:outputLabel value="Serviço"/>
+      <h:selectOneMenu value="#{recepcaoController.filtroServicoId}">
+        <f:selectItem itemValue="" itemLabel="Todos"/>
+        <f:selectItems value="#{servicoController.listar()}" var="s" itemValue="#{s.id}" itemLabel="#{s.nome}"/>
+      </h:selectOneMenu>
+
+      <h:outputLabel value="Prioridade"/>
+      <h:selectOneMenu value="#{recepcaoController.filtroPrioridade}">
+        <f:selectItem itemValue="" itemLabel="Todos"/>
+        <f:selectItems value="#{recepcaoController.prioridades}" var="p" itemValue="#{p}" itemLabel="#{p}"/>
+      </h:selectOneMenu>
+
+      <h:commandButton value="Filtrar" action="#{recepcaoController.aplicarFiltro}"/>
+    </h:panelGrid>
+  </h:form>
+
+  <h:dataTable value="#{recepcaoController.filaAtual}" var="f" rows="20" styleClass="table">
+    <h:column><f:facet name="header">Senha</f:facet>#{f.protocolo}</h:column>
+    <h:column><f:facet name="header">Nome</f:facet>#{f.usuario.nome}</h:column>
+    <h:column><f:facet name="header">Serviço</f:facet>#{f.servico.nome}</h:column>
+    <h:column><f:facet name="header">Prioridade</f:facet>#{f.prioridade}</h:column>
+    <h:column><f:facet name="header">Entrada</f:facet>#{f.dataHora}</h:column>
+    <h:column>
+      <h:form>
+        <h:commandButton value="Confirmar check-in" action="#{recepcaoController.confirmarFila(f)}"/>
+        <h:commandButton value="Remover" action="#{recepcaoController.removerFila(f)}"/>
+      </h:form>
+    </h:column>
+  </h:dataTable>
+</ui:define>
+</ui:composition>

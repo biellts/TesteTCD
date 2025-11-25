@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:ui="jakarta.faces.facelets">
+
+<h:head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SIGAPAR - Sistema de Gestão de Atendimentos</title>
+    
+    <!-- Google Fonts – & corrigido para &amp; -->
+    <h:outputStylesheet name="css/app.css" />
+    <link rel="stylesheet" 
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" />
+</h:head>
+
+<h:body>
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <a href="#{facesContext.externalContext.requestContextPath}/index.xhtml" class="brand">
+            SIGAPAR
+        </a>
+
+        <div class="menu">
+            <h:link outcome="/index.xhtml" value="Início" />
+
+            <ui:fragment rendered="#{not empty autenticacaoController.usuarioLogado}">
+                <h:link outcome="/agendamento/servicos.xhtml" value="Agendar" />
+                <h:link outcome="/agendamento/meus.xhtml" value="Meus Agendamentos" />
+                <h:link outcome="/publico/painel.xhtml" value="Painel de Chamadas" />
+
+                <!-- Recepção -->
+                <ui:fragment rendered="#{autenticacaoController.temRole('RECEPTIONIST') or autenticacaoController.temRole('ADMIN')}">
+                    <h:link outcome="/recepcao/index.xhtml" value="Recepção" />
+                </ui:fragment>
+
+                <!-- Atendente -->
+                <ui:fragment rendered="#{autenticacaoController.temRole('ATTENDANT') or autenticacaoController.temRole('ADMIN')}">
+                    <h:link outcome="/atendente/index.xhtml" value="Atendente" />
+                </ui:fragment>
+
+                <!-- Admin -->
+                <ui:fragment rendered="#{autenticacaoController.temRole('ADMIN')}">
+                    <h:link outcome="/admin/index.xhtml" value="Administração" />
+                </ui:fragment>
+
+                <span style="margin-left: 20px; color: #eee;">
+                    Olá, #{autenticacaoController.usuarioLogado.nome.split(' ')[0]}!
+                </span>
+                <h:link outcome="/logout" value="Sair" style="margin-left: 15px; color: #ff6b6b;" />
+            </ui:fragment>
+
+            <ui:fragment rendered="#{empty autenticacaoController.usuarioLogado}">
+                <h:link outcome="/login.xhtml" value="Entrar" />
+                <h:link outcome="/cadastro.xhtml" value="Cadastrar" />
+            </ui:fragment>
+        </div>
+    </div>
+
+    <!-- Conteúdo principal -->
+    <div class="content container">
+        <ui:insert name="conteudo" />
+    </div>
+
+    <!-- Rodapé 100% XHTML válido -->
+    <div class="footer">
+        <p>
+            SIGAPAR — Sistema de Gestão de Atendimentos Presenciais com Agendamento Remoto<br/>
+            Trabalho de Conclusão de Disciplina — Desenvolvimento Web<br/>
+            Bacharelado em Ciência da Computação — 2025
+        </p>
+    </div>
+</h:body>
+</html>

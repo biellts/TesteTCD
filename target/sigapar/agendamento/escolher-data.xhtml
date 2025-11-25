@@ -1,0 +1,17 @@
+<ui:composition template="/templates/layout.xhtml"
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html"
+    xmlns:ui="jakarta.faces.facelets">
+
+<ui:define name="conteudo">
+  <h1>Escolha a data e hora</h1>
+
+  <h:form>
+    <h:outputLabel value="Data"/>
+    <h:inputText value="#{agendamentoController.data}" placeholder="yyyy-MM-dd"/>
+    <h:outputLabel value="Hora (HH:mm)"/>
+    <h:inputText value="#{agendamentoController.hora}" placeholder="HH:mm"/>
+    <h:commandButton value="Confirmar" action="#{agendamentoController.confirmar}"/>
+  </h:form>
+</ui:define>
+</ui:composition>

@@ -1,0 +1,41 @@
+<!-- /atendente/home.xhtml -->
+<ui:composition template="/templates/layout.xhtml"
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+  <ui:define name="conteudo">
+    <h1>Área do Atendente</h1>
+
+    <div class="card-wrapper">
+      <div class="card">
+        <h3>Status</h3>
+        <p>#{atendenteController.status}</p>
+        <h:form>
+          <h:selectOneMenu value="#{atendenteController.status}">
+            <f:selectItem itemValue="DISPONIVEL" itemLabel="Disponível"/>
+            <f:selectItem itemValue="OCUPADO" itemLabel="Ocupado"/>
+            <f:selectItem itemValue="INDISPONIVEL" itemLabel="Indisponível"/>
+            <f:selectItem itemValue="PAUSA" itemLabel="Pausa"/>
+          </h:selectOneMenu>
+          <h:inputText value="#{atendenteController.motivo}" placeholder="Motivo (opcional)"/>
+          <h:commandButton value="Atualizar" action="#{atendenteController.alterarStatus}"/>
+        </h:form>
+      </div>
+
+      <div class="card">
+        <h3>Fila</h3>
+        <p>#{atendimentoController.tamanhoFila} na fila</p>
+        <h:link outcome="/recepcao/fila.xhtml" value="Ver fila"/>
+      </div>
+
+      <div class="card">
+        <h3>Atendimentos Hoje</h3>
+        <p>#{atendenteController.atendimentosHoje.size()} atendimentos</p>
+        <h:link outcome="/atendente/historico.xhtml" value="Ver histórico"/>
+      </div>
+    </div>
+
+  </ui:define>
+</ui:composition>

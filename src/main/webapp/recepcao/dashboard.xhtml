@@ -1,0 +1,23 @@
+<ui:composition template="/templates/layout.xhtml"
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html"
+    xmlns:ui="jakarta.faces.facelets">
+
+<ui:define name="conteudo">
+  <h1>Dashboard da Recepção</h1>
+
+  <div class="card-wrapper">
+    <div class="card">
+      <h3>Fila hoje</h3>
+      <p>#{recepcaoController.totalFila} pessoas aguardando</p>
+      <h:link outcome="/recepcao/fila.xhtml">Ver fila completa</h:link>
+    </div>
+
+    <div class="card">
+      <h3>Agendamentos do dia</h3>
+      <p>#{recepcaoController.agendamentosDoDia.size()}</p>
+      <h:link outcome="/recepcao/buscar.xhtml">Buscar agendamento</h:link>
+    </div>
+  </div>
+</ui:define>
+</ui:composition>

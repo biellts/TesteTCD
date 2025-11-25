@@ -1,0 +1,25 @@
+<ui:composition template="/templates/layout.xhtml"
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html"
+    xmlns:ui="jakarta.faces.facelets">
+
+<ui:define name="conteudo">
+    <h1>Meu Perfil</h1>
+
+    <h:form>
+        <h:panelGrid columns="2">
+            <h:outputLabel value="Nome"/>
+            <h:inputText value="#{perfilController.usuario.nome}"/>
+
+            <h:outputLabel value="Email"/>
+            <h:inputText value="#{perfilController.usuario.email}"/>
+
+            <h:outputLabel value="Senha (opcional)"/>
+            <h:inputSecret value="#{perfilController.senhaNova}"/>
+        </h:panelGrid>
+
+        <h:commandButton value="Salvar alterações" action="#{perfilController.salvar}"/>
+    </h:form>
+</ui:define>
+
+</ui:composition>

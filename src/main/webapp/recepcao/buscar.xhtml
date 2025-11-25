@@ -1,0 +1,31 @@
+<ui:composition template="/templates/layout.xhtml"
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html"
+    xmlns:ui="jakarta.faces.facelets">
+
+<ui:define name="conteudo">
+    <h1>Buscar Agendamento</h1>
+
+    <h:form>
+        <h:panelGrid columns="2">
+            <h:outputLabel value="CPF ou Protocolo"/>
+            <h:inputText value="#{recepcaoController.cpfOuProtocolo}" />
+        </h:panelGrid>
+        <h:commandButton value="Buscar" action="#{recepcaoController.buscar}"/>
+    </h:form>
+
+    <h:panelGroup rendered="#{recepcaoController.agendamento != null}">
+        <h2>Resultado</h2>
+
+        <p><strong>Cliente:</strong> #{recepcaoController.agendamento.usuario.nome}</p>
+        <p><strong>Serviço:</strong> #{recepcaoController.agendamento.servico.nome}</p>
+        <p><strong>Data:</strong> #{recepcaoController.agendamento.dataHora}</p>
+
+        <h:form>
+            <h:commandButton value="Check-in" action="#{recepcaoController.checkIn}"/>
+        </h:form>
+    </h:panelGroup>
+
+</ui:define>
+
+</ui:composition>

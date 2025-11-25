@@ -1,0 +1,18 @@
+<ui:composition template="/templates/layout.xhtml"
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html"
+    xmlns:ui="jakarta.faces.facelets">
+
+<ui:define name="conteudo">
+  <h1>Escolha um serviço</h1>
+
+  <h:form>
+    <h:dataTable value="#{agendamentoController.listarServicos()}" var="s">
+      <h:column>#{s.nome}</h:column>
+      <h:column>
+        <h:commandButton value="Agendar" action="#{agendamentoController.iniciarAgendamento(s.id)}"/>
+      </h:column>
+    </h:dataTable>
+  </h:form>
+</ui:define>
+</ui:composition>

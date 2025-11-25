@@ -1,0 +1,23 @@
+<!-- /error/error.xhtml -->
+<ui:composition template="/templates/layout.xhtml"
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+  <ui:define name="conteudo">
+    <h1 style="color:#c0392b">Erro no sistema</h1>
+
+    <h:panelGroup rendered="#{not empty param['javax.servlet.error.exception']}">
+      <h3>Detalhes (apenas DEV)</h3>
+      <h:outputText value="#{requestScope['javax.servlet.error.message']}" escape="false"/><br/>
+      <h:outputText value="Exceção: #{requestScope['javax.servlet.error.exception']}" escape="false"/>
+    </h:panelGroup>
+
+    <h:panelGroup rendered="#{empty param['javax.servlet.error.exception']}">
+      <p>Ocorreu um erro inesperado. Entre em contato com o administrador.</p>
+    </h:panelGroup>
+
+    <h:link value="Voltar à página inicial" outcome="/index.xhtml"/>
+  </ui:define>
+</ui:composition>

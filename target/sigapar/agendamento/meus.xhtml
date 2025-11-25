@@ -1,0 +1,19 @@
+<ui:composition template="/templates/layout.xhtml"
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html"
+    xmlns:ui="jakarta.faces.facelets">
+
+<ui:define name="conteudo">
+  <h1>Meus Agendamentos</h1>
+
+  <h:dataTable value="#{agendamentoController.listarMeusAgendamentos()}" var="a">
+    <h:column><f:facet name="header">Serviço</f:facet>#{a.servico.nome}</h:column>
+    <h:column><f:facet name="header">Data/Hora</f:facet>#{a.dataHora}</h:column>
+    <h:column>
+      <h:form>
+        <h:commandButton value="Cancelar" action="#{agendamentoController.cancelar(a)}" rendered="#{agendamentoController.podeCancelar(a)}"/>
+      </h:form>
+    </h:column>
+  </h:dataTable>
+</ui:define>
+</ui:composition>

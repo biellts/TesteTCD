@@ -1,0 +1,29 @@
+<ui:composition template="/templates/layout.xhtml"
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html"
+    xmlns:ui="jakarta.faces.facelets">
+
+<ui:define name="conteudo">
+  <h1>Serviços</h1>
+
+  <h:form>
+    <h:panelGrid columns="2">
+      <h:outputLabel value="Nome"/>
+      <h:inputText value="#{servicoController.servico.nome}" required="true"/>
+      <h:outputLabel value="Descrição"/>
+      <h:inputTextarea value="#{servicoController.servico.descricao}"/>
+    </h:panelGrid>
+    <h:commandButton value="Salvar" action="#{servicoController.salvar}"/>
+  </h:form>
+
+  <h2>Lista</h2>
+  <h:dataTable value="#{servicoController.lista}" var="s">
+    <h:column><f:facet name="header">ID</f:facet>#{s.id}</h:column>
+    <h:column><f:facet name="header">Nome</f:facet>#{s.nome}</h:column>
+    <h:column>
+      <h:commandLink value="Editar" action="#{servicoController.editar(s)}"/>
+      <h:commandLink value="Excluir" action="#{servicoController.excluir(s.id)}"/>
+    </h:column>
+  </h:dataTable>
+</ui:define>
+</ui:composition>

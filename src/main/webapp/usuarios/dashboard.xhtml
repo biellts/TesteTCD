@@ -1,0 +1,61 @@
+<!-- /usuario/dashboard.xhtml -->
+<ui:composition template="/templates/layout.xhtml"
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+  <ui:define name="conteudo">
+    <h1>Meu Painel</h1>
+
+    <div class="card-wrapper">
+      <div class="card">
+        <h3>Próximo agendamento</h3>
+        <h:panelGroup rendered="#{agendamentoController.proximoAgendamento != null}">
+          <strong>Serviço:</strong> #{agendamentoController.proximoAgendamento.servico.nome}<br/>
+          <strong>Data:</strong> #{agendamentoController.proximoAgendamento.dataHora}<br/>
+          <strong>Protocolo:</strong> #{agendamentoController.proximoAgendamento.protocolo}<br/>
+          <h:link outcome="/agendamento/meus.xhtml" value="Ver / Gerenciar"/>
+        </h:panelGroup>
+        <h:panelGroup rendered="#{agendamentoController.proximoAgendamento == null}">
+          <p>Sem agendamentos futuros.</p>
+          <h:link outcome="/agendamento/servicos.xhtml" value="Agendar serviço"/>
+        </h:panelGroup>
+      </div>
+
+      <div class="card">
+        <h3>Histórico</h3>
+        <p>Últimos atendimentos</p>
+        <h:link outcome="/usuario/historico.xhtml" value="Ver histórico"/>
+      </div>
+
+      <div class="card">
+        <h3>Perfil</h3>
+        <p>#{loginController.usuarioLogado.nome}</p>
+        <h:link outcome="/usuario/perfil.xhtml" value="Editar perfil"/>
+      </div>
+    </div>
+
+    <h2>Meus agendamentos</h2>
+    <h:dataTable value="#{agendamentoController.listarMeusAgendamentos()}" var="a" styleClass="table">
+      <h:column>
+        <f:facet name="header">Serviço</f:facet>
+        #{a.servico.nome}
+      </h:column>
+      <h:column>
+        <f:facet name="header">Data / Hora</f:facet>
+        #{a.dataHora}
+      </h:column>
+      <h:column>
+        <f:facet name="header">Status</f:facet>
+        #{a.status}
+      </h:column>
+      <h:column>
+        <h:form>
+          <h:commandButton value="Cancelar" action="#{agendamentoController.cancelar(a)}"
+                           rendered="#{agendamentoController.podeCancelar(a)}"/>
+        </h:form>
+      </h:column>
+    </h:dataTable>
+
+  </ui:define>
+</ui:composition>
