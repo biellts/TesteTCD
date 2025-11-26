@@ -1,18 +1,27 @@
 package br.com.sigapar1.dao;
 
+import jakarta.enterprise.context.Dependent;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import java.io.Serializable;
 import java.util.List;
 
-public abstract class GenericDAO<T> {
+@Dependent
+public abstract class GenericDAO<T> implements Serializable {
 
-    @PersistenceContext
-    protected EntityManager em;
+    private static final long serialVersionUID = 1L;
 
-    private Class<T> entityClass;
+    @PersistenceContext(unitName = "sigaparPU")
+    private EntityManager em;
+
+    private final Class<T> entityClass;
 
     public GenericDAO(Class<T> entityClass) {
         this.entityClass = entityClass;
+    }
+
+    protected EntityManager getEntityManager() {
+        return em;
     }
 
     public void salvar(T entity) {
@@ -33,7 +42,6 @@ public abstract class GenericDAO<T> {
 
     public List<T> listarTodos() {
         String jpql = "SELECT e FROM " + entityClass.getSimpleName() + " e";
-        return em.createQuery(jpql, entityClass)
-                 .getResultList();
+        return em.createQuery(jpql, entityClass).getResultList();
     }
 }

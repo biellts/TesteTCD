@@ -5,53 +5,56 @@
                              https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
          version="6.0">
 
-    <display-name>SIGAPAR - Sistema de Gestão de Atendimentos Presenciais com Agendamento Remoto</display-name>
+    <display-name>SIGAPAR</display-name>
 
-    <!-- ==================== TEMA PRIMEFACES VELA (AZUL LINDO) ==================== -->
+    <!-- Tema PrimeFaces gratuito e oficial -->
     <context-param>
         <param-name>primefaces.THEME</param-name>
-        <param-value>vela</param-value>
+        <param-value>saga</param-value>
     </context-param>
 
-    <!-- ==================== MODO DESENVOLVIMENTO (MENSAGENS DE ERRO BONITAS) ==================== -->
+    <!-- Faces em modo desenvolvimento -->
     <context-param>
         <param-name>jakarta.faces.PROJECT_STAGE</param-name>
         <param-value>Development</param-value>
     </context-param>
 
-    <!-- ==================== FACES SERVLET ==================== -->
+    <!-- Faces Servlet -->
     <servlet>
         <servlet-name>FacesServlet</servlet-name>
         <servlet-class>jakarta.faces.webapp.FacesServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
+
     <servlet-mapping>
         <servlet-name>FacesServlet</servlet-name>
         <url-pattern>*.xhtml</url-pattern>
     </servlet-mapping>
 
-    <!-- ==================== PÁGINA INICIAL ==================== -->
+    <!-- Página inicial -->
     <welcome-file-list>
         <welcome-file>index.xhtml</welcome-file>
     </welcome-file-list>
 
-    <!-- ==================== PÁGINAS DE ERRO (404, 403, 500) ==================== -->
+    <!-- Erros -->
     <error-page>
         <error-code>404</error-code>
         <location>/error/404.xhtml</location>
     </error-page>
+
     <error-page>
         <error-code>403</error-code>
         <location>/error/403.xhtml</location>
     </error-page>
+
     <error-page>
         <exception-type>java.lang.Throwable</exception-type>
         <location>/error/500.xhtml</location>
     </error-page>
 
-    <!-- ==================== TEMPO DE SESSÃO ==================== -->
+    <!-- Sessão -->
     <session-config>
-        <session-timeout>30</session-timeout> <!-- 30 minutos -->
+        <session-timeout>30</session-timeout>
     </session-config>
 
 </web-app>

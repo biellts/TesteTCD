@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:ui="jakarta.faces.facelets">
+
+<ui:composition template="/templates/layout.xhtml">
+
+    <ui:define name="conteudo">
+
+        <div style="text-align:center; margin-top:40px;">
+            <h1 style="color:#7b1fa2; font-size:2.4em; margin-bottom:10px;">Login - Atendente</h1>
+            <p style="color:#666;">Área de Atendimento</p>
+        </div>
+
+        <div style="max-width:380px; margin:40px auto;">
+            <div class="card">
+
+                <h:form>
+                    <h:messages style="color:#d32f2f; margin-bottom:15px;" />
+
+                    <label>Email</label>
+                    <h:inputText value="#{loginController.email}" style="width:100%; margin-bottom:15px;" />
+
+                    <label>Senha</label>
+                    <h:inputSecret value="#{loginController.senha}" style="width:100%; margin-bottom:20px;" />
+
+                    <h:commandButton value="Entrar como Atendente"
+                                     action="#{loginController.login}"
+                                     style="width:100%; padding:12px; background:#7b1fa2; font-weight:600;" />
+                </h:form>
+
+            </div>
+        </div>
+
+    </ui:define>
+
+</ui:composition>
+</html>

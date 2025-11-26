@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core">
+
+<ui:composition template="/templates/layout.xhtml">
+
+    <ui:define name="conteudo">
+        
+        <div style="text-align:center; margin-top: 80px; padding: 40px;">
+            
+            <h1 style="color: #28a745; font-size: 42px; margin-bottom: 20px;">
+                Conta criada com sucesso!
+            </h1>
+            
+            <p style="font-size: 18px; color: #555; margin-bottom: 40px;">
+                Parabéns! Sua conta foi registrada com sucesso no sistema SIGAPAR.
+                <br/>
+                Agora você já pode acessar todas as funcionalidades.
+            </p>
+
+            <div style="margin-top: 50px;">
+                <h:button value="Ir para Página Inicial"
+                          outcome="/index.xhtml"
+                          styleClass="btn btn-primary btn-lg"
+                          style="padding: 12px 30px; font-size: 16px; margin: 0 10px;" />
+
+                <h:button value="Fazer Login Agora"
+                          outcome="/usuarios/login_usuario.xhtml"
+                          styleClass="btn btn-success btn-lg"
+                          style="padding: 12px 30px; font-size: 16px; margin: 0 10px;" />
+            </div>
+
+            <div style="margin-top: 60px;">
+                <h:graphicImage library="img" name="check-success.png" 
+                                width="120" 
+                                alt="Sucesso" />
+            </div>
+
+        </div>
+    </ui:define>
+
+</ui:composition>
+</html>
