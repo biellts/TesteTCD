@@ -32,10 +32,9 @@
 
         <!-- PrimeFaces 14 -->
         <dependency>
-            <groupId>org.primefaces</groupId>
-            <artifactId>primefaces</artifactId>
-            <version>${primefaces.version}</version>
-        </dependency>
+    <groupId>org.primefaces</groupId>
+    <artifactId>primefaces</artifactId>
+    <version>12.0.0</version> <classifier>jakarta</classifier> </dependency>
 
         <!-- NÃO USAR THEMES VIA MAVEN! (tema Vela já está dentro do PrimeFaces) -->
 
