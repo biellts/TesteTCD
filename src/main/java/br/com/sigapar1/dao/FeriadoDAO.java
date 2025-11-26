@@ -5,5 +5,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class FeriadoDAO extends GenericDAO<Feriado> {
-    public FeriadoDAO() { super(Feriado.class); }
+
+    public FeriadoDAO() {
+        super(Feriado.class);
+    }
 }

@@ -5,5 +5,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class ConfiguracaoSistemaDAO extends GenericDAO<ConfiguracaoSistema> {
-    public ConfiguracaoSistemaDAO() { super(ConfiguracaoSistema.class); }
+
+    public ConfiguracaoSistemaDAO() {
+        super(ConfiguracaoSistema.class);
+    }
 }

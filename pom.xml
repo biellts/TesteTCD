@@ -22,7 +22,7 @@
 
     <dependencies>
 
-        <!-- Jakarta EE 10 (WildFly fornece tudo) -->
+        <!-- Jakarta EE 10 API (WildFly 37 fornece implementações) -->
         <dependency>
             <groupId>jakarta.platform</groupId>
             <artifactId>jakarta.jakartaee-api</artifactId>
@@ -30,14 +30,13 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- PrimeFaces 14 -->
+        <!-- PrimeFaces Jakarta -->
         <dependency>
             <groupId>org.primefaces</groupId>
             <artifactId>primefaces</artifactId>
             <version>${primefaces.version}</version>
+            <classifier>jakarta</classifier>
         </dependency>
-
-        <!-- NÃO USAR THEMES VIA MAVEN! (tema Vela já está dentro do PrimeFaces) -->
 
         <!-- BCrypt -->
         <dependency>
@@ -46,7 +45,7 @@
             <version>0.4</version>
         </dependency>
 
-        <!-- Driver PostgreSQL (servidor fornece módulo próprio) -->
+        <!-- PostgreSQL (WildFly já tem módulo, por isso provided) -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
@@ -57,9 +56,18 @@
     </dependencies>
 
     <build>
+
         <finalName>sigapar</finalName>
 
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+        </resources>
+
         <plugins>
+
+            <!-- Java 21 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -69,14 +77,22 @@
                 </configuration>
             </plugin>
 
+            <!-- Empacotamento WAR limpo, sem JSF duplicado -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
                 <version>3.4.0</version>
                 <configuration>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
+                    <packagingExcludes>
+                        WEB-INF/lib/javax.faces-*.jar,
+                        WEB-INF/lib/jakarta.faces-*.jar,
+                        WEB-INF/lib/mojarra-*.jar,
+                        WEB-INF/lib/myfaces-*.jar
+                    </packagingExcludes>
                 </configuration>
             </plugin>
+
         </plugins>
     </build>
 

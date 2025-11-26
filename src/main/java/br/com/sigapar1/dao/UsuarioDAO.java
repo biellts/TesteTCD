@@ -1,10 +1,10 @@
 package br.com.sigapar1.dao;
 
 import br.com.sigapar1.entity.Usuario;
-import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.Dependent;
 import jakarta.persistence.NoResultException;
 
-@ApplicationScoped
+@Dependent
 public class UsuarioDAO extends GenericDAO<Usuario> {
 
     public UsuarioDAO() {
@@ -13,8 +13,8 @@ public class UsuarioDAO extends GenericDAO<Usuario> {
 
     public Usuario buscarPorEmail(String email) {
         try {
-            return em.createQuery(
-                "SELECT u FROM Usuario u WHERE u.email = :email", Usuario.class)
+            return getEntityManager()
+                .createQuery("SELECT u FROM Usuario u WHERE u.email = :email", Usuario.class)
                 .setParameter("email", email)
                 .getSingleResult();
         } catch (NoResultException e) {
@@ -24,8 +24,8 @@ public class UsuarioDAO extends GenericDAO<Usuario> {
 
     public Usuario buscarPorCpf(String cpf) {
         try {
-            return em.createQuery(
-                "SELECT u FROM Usuario u WHERE u.cpf = :cpf", Usuario.class)
+            return getEntityManager()
+                .createQuery("SELECT u FROM Usuario u WHERE u.cpf = :cpf", Usuario.class)
                 .setParameter("cpf", cpf)
                 .getSingleResult();
         } catch (NoResultException e) {
@@ -33,13 +33,21 @@ public class UsuarioDAO extends GenericDAO<Usuario> {
         }
     }
 
-    public void create(Usuario u) { salvar(u); }
+    public void create(Usuario u) {
+        salvar(u);
+    }
 
-    public void update(Usuario u) { atualizar(u); }
+    public void update(Usuario u) {
+        atualizar(u);
+    }
 
-    public Usuario findById(Long id) { return buscarPorId(id); }
+    public Usuario findById(Long id) {
+        return buscarPorId(id);
+    }
 
-    public void delete(Usuario u) { remover(u); }
+    public void delete(Usuario u) {
+        remover(u);
+    }
 
     public java.util.List<Usuario> findAll() {
         return listarTodos();

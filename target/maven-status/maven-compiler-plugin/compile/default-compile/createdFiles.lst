@@ -11,6 +11,7 @@ br\com\sigapar1\entity\StatusAgendamento.class
 br\com\sigapar1\service\DisponibilidadeAtendenteService.class
 br\com\sigapar1\controller\AgendamentoController.class
 br\com\sigapar1\dao\AtendimentoDAO.class
+br\com\sigapar1\config\JPAConfig.class
 br\com\sigapar1\service\FilaAtendimentoService.class
 br\com\sigapar1\entity\Agendamento.class
 br\com\sigapar1\entity\StatusAtendimento.class

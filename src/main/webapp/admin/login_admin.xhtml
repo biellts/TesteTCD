@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:ui="jakarta.faces.facelets">
+
+<ui:composition template="/templates/layout.xhtml">
+
+    <ui:define name="conteudo">
+
+        <div style="text-align:center; margin-top:40px;">
+            <h1 style="color:#d32f2f; font-size:2.4em; margin-bottom:10px;">
+                Login do Administrador
+            </h1>
+            <p style="color:#666;">Acesse para gerenciar o sistema</p>
+        </div>
+
+        <div style="max-width:380px; margin:40px auto;">
+            <div class="card">
+
+                <h:form>
+
+                    <!-- MENSAGENS DE ERRO -->
+                    <h:messages style="color:#d32f2f; margin-bottom:15px;" />
+
+                    <!-- CAMPO EMAIL -->
+                    <label>Email</label>
+                    <h:inputText value="#{loginController.email}"
+                                 style="width:100%; margin-bottom:15px;" />
+
+                    <!-- CAMPO SENHA -->
+                    <label>Senha</label>
+                    <h:inputSecret value="#{loginController.senha}"
+                                   style="width:100%; margin-bottom:20px;" />
+
+                    <!-- BOTÃO CORRIGIDO -->
+                    <h:commandLink action="#{loginController.login}">
+                        <div style="width:100%; 
+                                    padding:14px; 
+                                    text-align:center; 
+                                    background:#d32f2f;
+                                    color:white; 
+                                    font-weight:600; 
+                                    border-radius:8px; 
+                                    cursor:pointer;">
+                            Entrar como Administrador
+                        </div>
+                    </h:commandLink>
+
+                </h:form>
+
+            </div>
+        </div>
+
+    </ui:define>
+
+</ui:composition>
+</html>
