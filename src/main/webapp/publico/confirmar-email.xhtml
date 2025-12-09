@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                template="/templates/layout.xhtml">
+
+    <ui:define name="conteudo">
+
+        <!-- TÍTULO -->
+        <div style="text-align:center; padding:30px 20px 10px;">
+            <h1 style="font-size:2.6em; color:var(--primary); margin:0;">
+                📧 E-mail enviado!
+            </h1>
+
+            <p style="font-size:1.2em; color:#555; margin-top:10px;">
+                Seu cadastro foi realizado com sucesso.
+            </p>
+        </div>
+
+        <!-- ESTILO DO CARD -->
+        <style>
+            .card-confirmacao {
+                max-width: 480px;
+                margin: 0 auto;
+                background: white;
+                padding: 30px;
+                border-radius: 12px;
+                text-align: center;
+                box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+            }
+
+            .botao-login {
+                display: inline-block;
+                margin-top: 25px;
+                padding: 14px 26px;
+                background: #004AAD;
+                color: white !important;
+                font-size: 1.1em;
+                border-radius: 6px;
+                text-decoration: none;
+                transition: background .2s ease;
+            }
+
+            .botao-login:hover {
+                background: #003680;
+            }
+        </style>
+
+        <!-- CARD CENTRAL -->
+        <div class="card-confirmacao">
+
+            <p style="font-size:1.15em; color:#444; margin-bottom:18px;">
+                Agora você pode acessar o sistema usando o botão abaixo:
+            </p>
+
+            <h:link outcome="/usuarios/login_usuario.xhtml" styleClass="botao-login">
+                Ir para o Login
+            </h:link>
+
+        </div>
+
+    </ui:define>
+
+</ui:composition>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+<ui:composition template="/templates/layout.xhtml">
+
+    <ui:define name="conteudo">
+
+        <div style="max-width:420px; margin:auto; padding:25px;" class="card">
+
+            <h2 style="text-align:center; color:var(--primary); margin-bottom:25px;">
+                Recuperar Senha
+            </h2>
+
+            <h:form>
+
+                <h:messages style="color:red; margin-bottom:10px;" />
+
+                <label>Email cadastrado</label>
+                <h:inputText value="#{recuperacaoSenhaController.email}"
+                             required="true"
+                             style="width:100%; margin-bottom:15px;" />
+
+                <h:commandButton value="Enviar link de recuperação"
+                                 action="#{recuperacaoSenhaController.enviarEmail}"
+                                 style="width:100%; padding:12px;"
+                                 styleClass="btn-primary" />
+
+            </h:form>
+
+            <div style="text-align:center; margin-top:20px;">
+                <h:link outcome="/publico/escolher-acesso.xhtml" value="Voltar" />
+            </div>
+
+        </div>
+
+    </ui:define>
+</ui:composition>
+</html>

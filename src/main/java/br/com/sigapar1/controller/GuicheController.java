@@ -3,7 +3,6 @@ package br.com.sigapar1.controller;
 import br.com.sigapar1.entity.Guiche;
 import br.com.sigapar1.service.GuicheService;
 import br.com.sigapar1.util.JsfUtil;
-
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
@@ -35,14 +34,16 @@ public class GuicheController implements Serializable {
     }
 
     public void editar(Guiche g) {
-        guiche = g;
+        this.guiche = g;
     }
 
     public void excluir(Long id) {
         service.excluir(id);
-        JsfUtil.addInfo("Guichê removido!");
+        JsfUtil.addInfo("Guichê inativado!");
         lista = service.listarTodos();
     }
 
-    // Getters/Setters
+    public Guiche getGuiche() { return guiche; }
+    public void setGuiche(Guiche g) { this.guiche = g; }
+    public List<Guiche> getLista() { return lista; }
 }

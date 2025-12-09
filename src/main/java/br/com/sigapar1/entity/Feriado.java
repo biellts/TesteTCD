@@ -1,27 +1,42 @@
 package br.com.sigapar1.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @Entity
-public class Feriado {
-
+@Table(name = "feriado")
+public class Feriado implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private LocalDate data;
 
-    private String descricao;
+    public Feriado() {
+    }
 
-    public Feriado() {}
+    public Long getId() {
+        return id;
+    }
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public LocalDate getData() { return data; }
-    public void setData(LocalDate data) { this.data = data; }
+    public LocalDate getData() {
+        return data;
+    }
 
-    public String getDescricao() { return descricao; }
-    public void setDescricao(String descricao) { this.descricao = descricao; }
+    public void setData(LocalDate data) {
+        this.data = data;
+    }
+
+    public String getDataFormatada() {
+        return data != null ? data.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) : "";
+    }
 }

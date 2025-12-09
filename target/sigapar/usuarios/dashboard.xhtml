@@ -1,61 +1,135 @@
-<!-- /usuario/dashboard.xhtml -->
-<ui:composition template="/templates/layout.xhtml"
-    xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                template="/templates/layout.xhtml">
 
-  <ui:define name="conteudo">
-    <h1>Meu Painel</h1>
+<ui:define name="conteudo">
 
-    <div class="card-wrapper">
-      <div class="card">
-        <h3>Próximo agendamento</h3>
-        <h:panelGroup rendered="#{agendamentoController.proximoAgendamento != null}">
-          <strong>Serviço:</strong> #{agendamentoController.proximoAgendamento.servico.nome}<br/>
-          <strong>Data:</strong> #{agendamentoController.proximoAgendamento.dataHora}<br/>
-          <strong>Protocolo:</strong> #{agendamentoController.proximoAgendamento.protocolo}<br/>
-          <h:link outcome="/agendamento/meus.xhtml" value="Ver / Gerenciar"/>
-        </h:panelGroup>
-        <h:panelGroup rendered="#{agendamentoController.proximoAgendamento == null}">
-          <p>Sem agendamentos futuros.</p>
-          <h:link outcome="/agendamento/servicos.xhtml" value="Agendar serviço"/>
-        </h:panelGroup>
-      </div>
-
-      <div class="card">
-        <h3>Histórico</h3>
-        <p>Últimos atendimentos</p>
-        <h:link outcome="/usuario/historico.xhtml" value="Ver histórico"/>
-      </div>
-
-      <div class="card">
-        <h3>Perfil</h3>
-        <p>#{loginController.usuarioLogado.nome}</p>
-        <h:link outcome="/usuario/perfil.xhtml" value="Editar perfil"/>
-      </div>
+    <div style="text-align:center; padding:40px 20px;">
+        <h1 style="font-size:2.6em; color:#036fab; margin:0; font-weight:700;">
+            👤 Meu Painel
+        </h1>
+        <p style="font-size:1.2em; color:#555; margin-top:10px;">
+            Bem-vindo(a), <strong>#{loginController.usuarioLogado.nome}</strong>!
+        </p>
     </div>
 
-    <h2>Meus agendamentos</h2>
-    <h:dataTable value="#{agendamentoController.listarMeusAgendamentos()}" var="a" styleClass="table">
-      <h:column>
-        <f:facet name="header">Serviço</f:facet>
-        #{a.servico.nome}
-      </h:column>
-      <h:column>
-        <f:facet name="header">Data / Hora</f:facet>
-        #{a.dataHora}
-      </h:column>
-      <h:column>
-        <f:facet name="header">Status</f:facet>
-        #{a.status}
-      </h:column>
-      <h:column>
-        <h:form>
-          <h:commandButton value="Cancelar" action="#{agendamentoController.cancelar(a)}"
-                           rendered="#{agendamentoController.podeCancelar(a)}"/>
-        </h:form>
-      </h:column>
-    </h:dataTable>
+    <style>
+        .card-grid {
+            max-width:1100px;
+            margin:0 auto;
+            display:grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap:30px;
+            padding:20px;
+        }
+        .card-link, .card-box {
+            padding:26px;
+            border-radius:14px;
+            background:white;
+            text-decoration:none;
+            color:inherit;
+            display:block;
+            border-left:6px solid #036fab;
+            box-shadow:0 6px 18px rgba(0,0,0,0.08);
+            transition:transform .15s ease, box-shadow .15s ease;
+        }
+        .card-link:hover, .card-box:hover {
+            transform:translateY(-6px);
+            box-shadow:0 12px 25px rgba(0,0,0,0.16);
+        }
+        .card-title {
+            margin:0 0 10px 0;
+            font-size:1.8em;
+            font-weight:700;
+        }
+    </style>
 
-  </ui:define>
+    <div class="card-grid">
+
+        <!-- PRÓXIMO AGENDAMENTO (SEGURO) -->
+        <div class="card-box" style="background:#e3f2fd; border-left-color:#1976d2;">
+            <h2 class="card-title" style="color:#1565c0;">📅 Próximo</h2>
+
+            <h:panelGroup rendered="#{not empty agendamentoController.proximoAgendamento}">
+                <p>
+                    <strong>
+                        <!-- NÃO ACESSA servico.nome DIRETAMENTE -->
+                        #{agendamentoController.proximoAgendamento.servico != null 
+                           ? agendamentoController.proximoAgendamento.servico.nome 
+                           : 'Serviço'}
+                    </strong>
+                </p>
+
+                <p>#{agendamentoController.dataHoraFormatada(agendamentoController.proximoAgendamento)}</p>
+
+                <p style="font-size:0.9em; margin-top:8px;">
+                    Protocolo: <strong>#{agendamentoController.proximoAgendamento.protocolo}</strong>
+                </p>
+            </h:panelGroup>
+
+            <h:panelGroup rendered="#{empty agendamentoController.proximoAgendamento}">
+                <p style="color:#666;">Nenhum agendamento futuro</p>
+            </h:panelGroup>
+        </div>
+
+        <!-- ÚLTIMOS AGENDAMENTOS (SEGURO) -->
+        <div class="card-box" style="background:#f3e5f5; border-left-color:#8e24aa;">
+            <h2 class="card-title" style="color:#6a1b9a;">🕒 Últimos</h2>
+
+            <ui:repeat value="#{agendamentoController.ultimos3Agendamentos}" var="a">
+                <p style="margin:6px 0;">
+                    <strong>
+                        #{a.servico != null ? a.servico.nome : 'Serviço'}
+                    </strong><br/>
+                    <small>#{agendamentoController.dataHoraFormatada(a)}</small>
+                </p>
+            </ui:repeat>
+
+            <h:panelGroup rendered="#{empty agendamentoController.ultimos3Agendamentos}">
+                <p style="color:#666;">Nenhum histórico encontrado</p>
+            </h:panelGroup>
+        </div>
+
+        <!-- AGENDAR NOVO -->
+        <h:link outcome="/agendamento/agendar"
+                styleClass="card-link"
+                style="background:#e8f5e9; border-left-color:#2e7d32;">
+            <h2 class="card-title" style="color:#2e7d32;">➕ Agendar</h2>
+            <p>Novo atendimento</p>
+        </h:link>
+
+        <!-- MEUS AGENDAMENTOS -->
+        <h:link outcome="/agendamento/meus"
+                styleClass="card-link"
+                style="background:#fff3e0; border-left-color:#fb8c00;">
+            <h2 class="card-title" style="color:#ef6c00;">📂 Meus Agendamentos</h2>
+            <p>Ver todos • Cancelar</p>
+        </h:link>
+
+        <!-- BUSCAR -->
+        <h:link outcome="/agendamento/consultar"
+                styleClass="card-link"
+                style="background:#e1f5fe; border-left-color:#0288d1;">
+            <h2 class="card-title" style="color:#0277bd;">🔍 Buscar</h2>
+            <p>Por CPF ou Protocolo</p>
+        </h:link>
+
+        <!-- EDITAR PERFIL -->
+        <h:link outcome="/usuarios/perfil"
+                styleClass="card-link"
+                style="background:#f5f5f5; border-left-color:#607d8b;">
+            <h2 class="card-title" style="color:#455a64;">⚙ Editar Perfil</h2>
+            <p>Atualizar dados pessoais</p>
+        </h:link>
+
+    </div>
+
+    <div style="text-align:center; margin-top:70px; color:#888; font-size:1em; padding:20px;">
+        <p><strong>SIGAPAR</strong> • Sistema de Atendimento • © 2025</p>
+    </div>
+
+</ui:define>
 </ui:composition>

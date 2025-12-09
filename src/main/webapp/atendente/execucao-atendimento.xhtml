@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/templates/layout.xhtml">
+
+    <ui:define name="conteudo">
+
+        <h:form id="formAtendimento">
+
+            <h2 style="text-align:center;">Atendimento</h2>
+            <br/>
+
+            <!-- BOTÃO CHAMAR PRÓXIMO -->
+            <p:commandButton value="Chamar Próximo"
+                             icon="pi pi-bell"
+                             actionListener="#{atendimentoController.chamar}"
+                             update="formAtendimento"
+                             styleClass="ui-button-success"/>
+
+            <br/><br/>
+
+            <!-- PAINEL DO ATENDIMENTO ATUAL -->
+            <p:panel header="Atendimento Atual" rendered="#{not empty atendimentoController.atual}">
+
+                <h:panelGrid columns="2" cellpadding="5">
+
+                    <h:outputLabel value="Cliente:"/>
+                    <h:outputText value="#{atendimentoController.atual.usuario.nome}" />
+
+                    <h:outputLabel value="Serviço:"/>
+                    <h:outputText value="#{atendimentoController.atual.servico.nome}" />
+
+                    <h:outputLabel value="Horário:"/>
+                    <h:outputText value="#{atendimentoController.atual.dataAgendamento}">
+                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                    </h:outputText>
+
+                </h:panelGrid>
+
+            </p:panel>
+
+            <br/>
+
+            <!-- CAMPOS DE FINALIZAÇÃO (UC12) -->
+            <p:panel header="Finalização do Atendimento" rendered="#{not empty atendimentoController.atual}">
+
+                <h:panelGrid columns="2" cellpadding="5">
+
+                    <h:outputLabel value="Resultado:"/>
+                    <p:selectOneMenu value="#{atendimentoController.statusConclusao}">
+                        <f:selectItem itemLabel="Selecione" itemValue="" />
+                        <f:selectItem itemLabel="Concluído" itemValue="CONCLUIDO"/>
+                        <f:selectItem itemLabel="Reencaminhado" itemValue="REENCAMINHADO"/>
+                        <f:selectItem itemLabel="Cancelado pelo Usuário" itemValue="CANCELADO_USUARIO"/>
+                        <f:selectItem itemLabel="Não Compareceu" itemValue="NAO_COMPARECEU"/>
+                    </p:selectOneMenu>
+
+                    <!-- DESCRIÇÃO -->
+                    <h:outputLabel value="Ações realizadas:"/>
+                    <p:inputTextarea value="#{atendimentoController.acoesRealizadas}"
+                                     rows="3" cols="30"
+                                     autoResize="true"/>
+
+                    <h:outputLabel value="Observações:"/>
+                    <p:inputTextarea value="#{atendimentoController.observacoes}"
+                                     rows="3" cols="30"
+                                     autoResize="true"/>
+
+                    <!-- REENCAMINHAMENTO -->
+                    <h:outputLabel value="Reencaminhar para:" 
+                                   rendered="#{atendimentoController.statusConclusao eq 'REENCAMINHADO'}"/>
+                    <p:selectOneMenu value="#{atendimentoController.idServicoReencaminhar}"
+                                     rendered="#{atendimentoController.statusConclusao eq 'REENCAMINHADO'}">
+                        <f:selectItem itemLabel="Selecione" itemValue="" />
+                        <f:selectItems value="#{atendimentoController.servicos}"
+                                       var="s"
+                                       itemLabel="#{s.nome}"
+                                       itemValue="#{s.id}" />
+                    </p:selectOneMenu>
+
+                </h:panelGrid>
+
+                <br/>
+
+                <p:commandButton value="Finalizar Atendimento"
+                                 icon="pi pi-check"
+                                 actionListener="#{atendimentoController.finalizarComDetalhes}"
+                                 update="formAtendimento"
+                                 styleClass="ui-button-success"/>
+
+            </p:panel>
+
+        </h:form>
+
+    </ui:define>
+
+</ui:composition>
+
+</html>

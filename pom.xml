@@ -22,7 +22,7 @@
 
     <dependencies>
 
-        <!-- Jakarta EE 10 API (WildFly 37 fornece implementações) -->
+        <!-- Jakarta EE 10 API -->
         <dependency>
             <groupId>jakarta.platform</groupId>
             <artifactId>jakarta.jakartaee-api</artifactId>
@@ -32,17 +32,11 @@
 
         <!-- PrimeFaces Jakarta -->
         <dependency>
-<<<<<<< HEAD
-    <groupId>org.primefaces</groupId>
-    <artifactId>primefaces</artifactId>
-    <version>12.0.0</version> <classifier>jakarta</classifier> </dependency>
-=======
             <groupId>org.primefaces</groupId>
             <artifactId>primefaces</artifactId>
             <version>${primefaces.version}</version>
             <classifier>jakarta</classifier>
         </dependency>
->>>>>>> e7387e74caabfde046aff928296dae17a7d4d8be
 
         <!-- BCrypt -->
         <dependency>
@@ -51,12 +45,36 @@
             <version>0.4</version>
         </dependency>
 
-        <!-- PostgreSQL (WildFly já tem módulo, por isso provided) -->
+        <!-- PostgreSQL (driver) -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>42.7.4</version>
             <scope>provided</scope>
+        </dependency>
+
+        <!-- ======================================================= -->
+        <!-- 📘 PDF: iText 2.1.7 (VERSÃO LIVRE COMPATÍVEL COM WILDFLY) -->
+        <!-- ======================================================= -->
+        <dependency>
+            <groupId>com.github.librepdf</groupId>
+            <artifactId>openpdf</artifactId>
+            <version>1.3.30</version>
+        </dependency>
+
+        <!-- ====================================== -->
+        <!-- 📦 ZXing – Gerar QR Code direto no PDF -->
+        <!-- ====================================== -->
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>core</artifactId>
+            <version>3.5.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>javase</artifactId>
+            <version>3.5.3</version>
         </dependency>
 
     </dependencies>
@@ -83,7 +101,7 @@
                 </configuration>
             </plugin>
 
-            <!-- Empacotamento WAR limpo, sem JSF duplicado -->
+            <!-- WAR plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>

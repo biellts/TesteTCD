@@ -4,54 +4,69 @@
       xmlns:ui="jakarta.faces.facelets">
 
 <ui:composition template="/templates/layout.xhtml">
+<ui:define name="conteudo">
 
-    <ui:define name="conteudo">
+<style>
+    .login-card {
+        max-width:420px; 
+        margin:40px auto;
+        padding:30px;
+        background:white;
+        border-radius:14px;
+        box-shadow:0 8px 25px rgba(0,0,0,0.12);
+    }
+    .login-btn {
+        width:100%; 
+        padding:14px;
+        color:white;
+        font-weight:700;
+        border-radius:10px;
+        cursor:pointer;
+        border:none;
+    }
+    .login-input {
+        width:100%;
+        padding:10px;
+        border-radius:8px;
+        border:1px solid #ccc;
+        margin-bottom:18px;
+    }
+</style>
 
-        <div style="text-align:center; margin-top:40px;">
-            <h1 style="color:#d32f2f; font-size:2.4em; margin-bottom:10px;">
-                Login do Administrador
-            </h1>
-            <p style="color:#666;">Acesse para gerenciar o sistema</p>
-        </div>
+<div style="text-align:center; margin-top:40px;">
+    <h1 style="color:#d32f2f; font-size:2.4em; margin-bottom:10px;">
+        🛡️ Login do Administrador
+    </h1>
+    <p style="color:#666;">Acesse para gerenciar o sistema</p>
+</div>
 
-        <div style="max-width:380px; margin:40px auto;">
-            <div class="card">
+<div class="login-card">
+<h:form>
 
-                <h:form>
+    <h:messages style="color:#d32f2f; margin-bottom:15px;" />
 
-                    <!-- MENSAGENS DE ERRO -->
-                    <h:messages style="color:#d32f2f; margin-bottom:15px;" />
+    <label>Email</label>
+    <h:inputText value="#{loginController.email}" styleClass="login-input" />
 
-                    <!-- CAMPO EMAIL -->
-                    <label>Email</label>
-                    <h:inputText value="#{loginController.email}"
-                                 style="width:100%; margin-bottom:15px;" />
+    <label>Senha</label>
+    <h:inputSecret value="#{loginController.senha}" styleClass="login-input" />
 
-                    <!-- CAMPO SENHA -->
-                    <label>Senha</label>
-                    <h:inputSecret value="#{loginController.senha}"
-                                   style="width:100%; margin-bottom:20px;" />
+    <h:commandButton value="Entrar como Administrador"
+                     action="#{loginController.login}"
+                     style="background:#d32f2f;"
+                     styleClass="login-btn" />
 
-                    <!-- BOTÃO CORRIGIDO -->
-                    <h:commandLink action="#{loginController.login}">
-                        <div style="width:100%; 
-                                    padding:14px; 
-                                    text-align:center; 
-                                    background:#d32f2f;
-                                    color:white; 
-                                    font-weight:600; 
-                                    border-radius:8px; 
-                                    cursor:pointer;">
-                            Entrar como Administrador
-                        </div>
-                    </h:commandLink>
+    <div style="text-align:center; margin-top:20px;">
+        <h:link value="Esqueci minha senha" outcome="/publico/esqueci-senha.xhtml" />
+    </div>
 
-                </h:form>
+    <div style="text-align:center; margin-top:10px;">
+        <h:link value="Voltar" outcome="/publico/escolher-acesso.xhtml" />
+    </div>
 
-            </div>
-        </div>
+</h:form>
+</div>
 
-    </ui:define>
-
+</ui:define>
 </ui:composition>
 </html>

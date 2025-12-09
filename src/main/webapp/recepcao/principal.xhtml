@@ -1,0 +1,39 @@
+<ui:composition template="/templates/layout.xhtml" ...>
+    <ui:define name="conteudo">
+        <h1 class="page-title">Recepção - Triagem</h1>
+
+        <div style="display:flex; gap:30px; flex-wrap:wrap;">
+            <!-- Check-in -->
+            <div class="card" style="width:380px;">
+                <h2>Check-in (agendado)</h2>
+                <h:form>
+                    <h:inputText placeholder="CPF ou protocolo" value="#{recepcaoController.busca}"/>
+                    <h:commandButton value="Buscar e Confirmar Presença" action="#{recepcaoController.checkin()}"/>
+                </h:form>
+            </div>
+
+            <!-- Walk-in -->
+            <div class="card" style="width:500px;">
+                <h2>Atendimento Presencial (sem agendamento)</h2>
+                <h:form>
+                    <h:panelGrid columns="2">
+                        <h:outputLabel value="Nome"/> <h:inputText value="#{recepcaoController.walkin.nome}"/>
+                        <h:outputLabel value="CPF"/> <h:inputText value="#{recepcaoController.walkin.cpf}"/>
+                        <h:outputLabel value="Serviço"/> 
+                        <h:selectOneMenu value="#{recepcaoController.walkin.servico}">
+                            <f:selectItems value="#{servicoController.lista}" var="s" itemLabel="#{s.nome}"/>
+                        </h:selectOneMenu>
+                        <h:outputLabel value="Prioridade"/>
+                        <h:selectOneMenu value="#{recepcaoController.walkin.prioridade}">
+                            <f:selectItem itemLabel="Normal"/>
+                            <f:selectItem itemLabel="Idoso"/>
+                            <f:selectItem itemLabel="Gestante"/>
+                            <f:selectItem itemLabel="PcD"/>
+                        </h:selectOneMenu>
+                    </h:panelGrid>
+                    <h:commandButton value="Adicionar à Fila" action="#{recepcaoController.walkin()}"/>
+                </h:form>
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>

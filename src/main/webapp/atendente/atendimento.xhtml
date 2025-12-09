@@ -1,35 +1,139 @@
-<ui:composition template="/templates/layout.xhtml"
-    xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:h="jakarta.faces.html"
-    xmlns:ui="jakarta.faces.facelets">
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
 
+<ui:composition template="/templates/layout.xhtml">
 <ui:define name="conteudo">
-  <h1>Atendimento</h1>
 
-  <h:panelGroup rendered="#{atendimentoController.atendimentoAtual == null}">
-    <h:form>
-      <h:commandButton value="Chamar Próximo" action="#{atendimentoController.chamar}" rendered="#{atendenteController.status eq 'DISPONIVEL'}"/>
-      <h:outputText value="Você está OFFLINE ou indisponível." rendered="#{atendenteController.status ne 'DISPONIVEL'}"/>
-    </h:form>
-  </h:panelGroup>
+    <div style="max-width: 900px; margin: 40px auto; padding: 20px;">
+        
+        <!-- ======================= CABEÇALHO ======================= -->
+        <div style="text-align:center; margin-bottom: 40px;">
+            <h1 style="color:#1976d2; font-size:3em; margin:0; font-weight:700;">
+                Chamar Próximo Cliente
+            </h1>
 
-  <h:panelGroup rendered="#{atendimentoController.atendimentoAtual != null}">
-    <h2>Atendendo: #{atendimentoController.atendimentoAtual.usuario.nome}</h2>
+            <p style="color:#555; font-size:1.4em; margin-top:15px;">
+                <!-- Nome -->
+                #{loginController.usuarioLogado.nome}
 
-    <h:form>
-      <h:outputLabel value="Descrição das Ações (mín 20 chars)"/>
-      <h:inputTextarea value="#{atendimentoController.atendimentoAtual.acao}" rows="6" cols="80"/>
-      <h:outputLabel value="Observações (opcional)"/>
-      <h:inputTextarea value="#{atendimentoController.atendimentoAtual.observacao}" rows="3" cols="80"/>
-      <h:selectOneMenu value="#{atendimentoController.atendimentoAtual.status}">
-        <f:selectItem itemValue="CONCLUIDO" itemLabel="Concluído"/>
-        <f:selectItem itemValue="REENCAMINHADO" itemLabel="Reencaminhado"/>
-        <f:selectItem itemValue="NAO_COMPARECEU" itemLabel="Não Compareceu"/>
-        <f:selectItem itemValue="CANCELADO_USUARIO" itemLabel="Cancelado"/>
-      </h:selectOneMenu>
+                <!-- Guichê -->
+                <h:panelGroup rendered="#{not empty loginController.usuarioLogado.guiche}">
+                    • Guichê #{loginController.usuarioLogado.guiche.identificador}
+                </h:panelGroup>
 
-      <h:commandButton value="Finalizar Atendimento" action="#{atendimentoController.finalizar}"/>
-    </h:form>
-  </h:panelGroup>
+                <h:panelGroup rendered="#{empty loginController.usuarioLogado.guiche}">
+                    • Nenhum guichê vinculado
+                </h:panelGroup>
+
+                <br/>
+
+                <!-- Espaço -->
+                <h:panelGroup rendered="#{not empty loginController.espacoAtendimentoDoUsuario}">
+                    • Espaço: #{loginController.espacoAtendimentoDoUsuario.descricao}
+                </h:panelGroup>
+
+                <h:panelGroup rendered="#{empty loginController.espacoAtendimentoDoUsuario}">
+                    • Nenhum espaço de atendimento vinculado
+                </h:panelGroup>
+            </p>
+        </div>
+
+        <!-- ======================= FORM ======================= -->
+        <h:form id="formAtendimento">
+            <div class="card shadow-lg text-center" style="padding:50px; border-radius:16px;">
+
+                <!-- ===================== STATUS ===================== -->
+                <div style="margin-bottom:40px;">
+                    <h2 style="font-size:1.8em; margin:0;">Seu Status:</h2>
+
+                    <span class="badge px-5 py-3"
+                        style="font-size:2em; border-radius:12px;
+                        background: #{loginController.usuarioLogado.status eq 'DISPONIVEL' ? '#d4edda' : '#f8d7da'};
+                        color: #{loginController.usuarioLogado.status eq 'DISPONIVEL' ? '#155724' : '#721c24'};">
+                        #{loginController.usuarioLogado.status}
+                    </span>
+                </div>
+
+                <!-- ===================== ALERTAS DE VÍNCULO ===================== -->
+                <h:panelGroup rendered="#{
+                    empty loginController.usuarioLogado.guiche or 
+                    empty loginController.espacoAtendimentoDoUsuario
+                }">
+                    <div class="alert alert-danger fs-4" style="margin-bottom:25px;">                        
+
+                        <h:panelGroup rendered="#{empty loginController.espacoAtendimentoDoUsuario}">
+                            Você não está vinculado a um espaço de atendimento.<br/>
+                        </h:panelGroup>
+                    </div>
+                </h:panelGroup>
+
+                <!-- ========================================================= -->
+                <!--   SEM ATENDIMENTO ATUAL                                  -->
+                <!-- ========================================================= -->
+                <h:panelGroup rendered="#{empty atendimentoController.atual}">
+
+                    <p:commandButton value="CHAMAR PRÓXIMO"
+                                     action="#{atendimentoController.chamar}"
+                                     update="formAtendimento mensagens"
+                                     styleClass="btn btn-success btn-lg px-5 py-4"
+                                     style="font-size:2.2em; font-weight:700;"
+                                     icon="pi pi-volume-up"
+                                     disabled="#{
+                                        loginController.usuarioLogado.status ne 'DISPONIVEL'
+                                        or empty loginController.usuarioLogado.guiche
+                                        or empty loginController.espacoAtendimentoDoUsuario
+                                     }"/>
+
+                    <div class="mt-4">
+                        <h:panelGroup rendered="#{loginController.usuarioLogado.status ne 'DISPONIVEL'}">
+                            <span class="text-danger fs-4">
+                                Você precisa estar DISPONÍVEL para chamar.
+                            </span>
+                        </h:panelGroup>
+                    </div>
+
+                </h:panelGroup>
+
+                <!-- ========================================================= -->
+                <!--   COM ATENDIMENTO ATUAL                                   -->
+                <!-- ========================================================= -->
+                <h:panelGroup rendered="#{not empty atendimentoController.atual}">
+                    <div class="card border-primary shadow-sm"
+                         style="padding:40px; border-radius:16px; background:#e3f2fd;">
+
+                        <h2 style="font-size:2.5em; color:#1976d2; margin:0;">
+                            ATENDIMENTO EM ANDAMENTO
+                        </h2>
+
+                        <div style="margin-top:30px; font-size:1.8em; line-height:1.8;">
+                            <p><strong>Cliente:</strong> #{atendimentoController.atual.usuario.nome}</p>
+                            <p><strong>CPF:</strong> #{atendimentoController.atual.usuario.cpf}</p>
+                            <p><strong>Serviço:</strong> #{atendimentoController.atual.servico.nome}</p>
+                            <p><strong>Protocolo:</strong> <code>#{atendimentoController.atual.protocolo}</code></p>
+                        </div>
+
+                        <div class="mt-5">
+                            <p:commandButton value="Finalizar Atendimento"
+                                             action="#{atendimentoController.finalizar}"
+                                             update="formAtendimento mensagens"
+                                             styleClass="btn btn-danger btn-lg px-5 py-3"
+                                             style="font-size:1.5em;"
+                                             icon="pi pi-check-circle"/>
+                        </div>
+                    </div>
+                </h:panelGroup>
+            </div>
+
+            <!-- ===================== MENSAGENS ===================== -->
+            <p:messages id="mensagens" showDetail="true" showSummary="true" redisplay="false" />
+
+        </h:form>
+    </div>
+
 </ui:define>
 </ui:composition>
+</html>

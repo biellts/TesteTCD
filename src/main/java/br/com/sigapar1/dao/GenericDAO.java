@@ -1,22 +1,21 @@
 package br.com.sigapar1.dao;
 
-import jakarta.enterprise.context.Dependent;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
 import java.io.Serializable;
 import java.util.List;
 
-@Dependent
 public abstract class GenericDAO<T> implements Serializable {
-
     private static final long serialVersionUID = 1L;
 
+    // Agora o EM é injetado na classe concreta (que é @Stateless)
     @PersistenceContext(unitName = "sigaparPU")
-    private EntityManager em;
+    protected EntityManager em;
 
     private final Class<T> entityClass;
 
-    public GenericDAO(Class<T> entityClass) {
+    protected GenericDAO(Class<T> entityClass) {
         this.entityClass = entityClass;
     }
 
@@ -42,6 +41,12 @@ public abstract class GenericDAO<T> implements Serializable {
 
     public List<T> listarTodos() {
         String jpql = "SELECT e FROM " + entityClass.getSimpleName() + " e";
-        return em.createQuery(jpql, entityClass).getResultList();
+        TypedQuery<T> query = em.createQuery(jpql, entityClass);
+        return query.getResultList();
+    }
+
+    // Método opcional pra facilitar queries com WHERE
+    protected TypedQuery<T> createQuery(String jpql) {
+        return em.createQuery(jpql, entityClass);
     }
 }

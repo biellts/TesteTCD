@@ -2,27 +2,40 @@ package br.com.sigapar1.service;
 
 import br.com.sigapar1.dao.FeriadoDAO;
 import br.com.sigapar1.entity.Feriado;
-import jakarta.enterprise.context.ApplicationScoped;
+import br.com.sigapar1.util.BusinessException;
+import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
+
+import java.time.LocalDate;
 import java.util.List;
 
-@ApplicationScoped
+@Stateless
 public class FeriadoService {
 
     @Inject
     private FeriadoDAO dao;
 
-    public void salvar(Feriado f) {
-        if (f.getId() == null) dao.salvar(f);
-        else dao.atualizar(f);
+    public List<Feriado> listarTodos() {
+        return dao.listarTodos();
+    }
+
+    public void adicionar(LocalDate data) {
+
+        if (data == null)
+            throw new BusinessException("Data do feriado obrigatória.");
+
+        if (dao.isFeriado(data))
+            throw new BusinessException("Esse feriado já está cadastrado.");
+
+        Feriado f = new Feriado();
+        f.setData(data);
+        dao.salvar(f);
     }
 
     public void remover(Long id) {
-        Feriado f = dao.buscarPorId(id);
-        if (f != null) dao.remover(f);
-    }
+        if (id == null)
+            throw new BusinessException("ID inválido para remoção.");
 
-    public List<Feriado> listar() {
-        return dao.listarTodos();
+        dao.excluir(id);
     }
 }

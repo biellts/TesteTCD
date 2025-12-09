@@ -1,12 +1,20 @@
 package br.com.sigapar1.controller;
 
-import br.com.sigapar1.entity.Role;
 import br.com.sigapar1.entity.Usuario;
+import br.com.sigapar1.entity.EspacoAtendimento;
+import br.com.sigapar1.entity.Guiche;
+import br.com.sigapar1.entity.Role;
+
 import br.com.sigapar1.service.UsuarioService;
+import br.com.sigapar1.service.EmailService;
+import br.com.sigapar1.service.EspacoAtendimentoService;
+import br.com.sigapar1.service.GuicheService;
+
 import br.com.sigapar1.util.JsfUtil;
 
 import jakarta.annotation.PostConstruct;
-import jakarta.faces.view.ViewScoped;   // ← CORRETO!
+import jakarta.faces.context.FacesContext;
+import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
@@ -17,97 +25,211 @@ import java.util.List;
 @ViewScoped
 public class UsuarioController implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-
-    @Inject
-    private UsuarioService service;
+    @Inject private UsuarioService service;
+    @Inject private EmailService emailService; // Mantido caso você use no admin
+    @Inject private EspacoAtendimentoService espacoService;
+    @Inject private GuicheService guicheService;
 
     private Usuario usuario;
     private List<Usuario> lista;
 
+    private String confirmaSenha;
+    private boolean aceitouTermos;
+    private boolean gerarSenhaTemporaria = false;
+
+    public UsuarioController() {}
+
     @PostConstruct
     public void init() {
-        usuario = new Usuario(); // garante que não é null
+        usuario = new Usuario();
         lista = service.listarTodos();
-        System.out.println("CDI OK → UsuarioController iniciado");
     }
 
-    // SALVAR (ADMIN)
+    // ============================================================
+    // CRUD INTERNO (ADMIN)
+    // ============================================================
     public void salvar() {
-        limparMascaras();
-        service.salvar(usuario);
-        JsfUtil.addInfo("Usuário salvo com sucesso!");
-
-        resetarUsuario();
-        lista = service.listarTodos();
-    }
-
-    // SALVAR PÚBLICO (CRIAÇÃO DE CONTA)
-    public String salvarPublico() {
         try {
             limparMascaras();
-            usuario.setRole(Role.ROLE_USER);
+
+            if (usuario.getRole() == Role.ROLE_ATTENDANT && usuario.getGuiche() == null) {
+                JsfUtil.addError("Atendentes precisam estar vinculados a um Guichê.");
+                return;
+            }
+
+            boolean novo = (usuario.getId() == null);
+
+            if (novo || gerarSenhaTemporaria) {
+                String senhaTemp = service.gerarSenhaTemporaria();
+                usuario.setSenha(senhaTemp);
+                emailService.enviarSenhaTemporaria(usuario.getEmail(), usuario.getNome(), senhaTemp);
+            }
 
             service.salvar(usuario);
 
-            JsfUtil.addInfo("Conta criada com sucesso!");
+            JsfUtil.addSuccess("Usuário salvo com sucesso!");
+            resetarUsuario();
+            lista = service.listarTodos();
+
+        } catch (Exception e) {
+            JsfUtil.addError("Erro ao salvar: " + e.getMessage());
+        }
+    }
+
+
+    // ============================================================
+    // CADASTRO PÚBLICO (SEM CONFIRMAÇÃO DE E-MAIL)
+    // ============================================================
+    public String salvarPublico() {
+        try {
+            // validação senha
+            if (!usuario.getSenha().equals(confirmaSenha)) {
+                JsfUtil.addError("As senhas não coincidem.");
+                return null;
+            }
+
+            // valida termos
+            if (!aceitouTermos) {
+                JsfUtil.addError("Você deve aceitar os Termos de Uso.");
+                return null;
+            }
+
+            limparMascaras();
+            usuario.setRole(Role.ROLE_USER);
+
+            // ================================================
+            // ❌ CONFIRMAÇÃO DE EMAIL DESATIVADA
+            // usuario.setAtivo(false);
+            // usuario.setEmailConfirmationToken(UUID.randomUUID().toString());
+            // emailService.enviarEmailConfirmacao(...);
+            // return "/publico/verifique-email.xhtml";
+
+            // ================================================
+            // ✅ USUÁRIO NASCE ATIVO POR PADRÃO NA ENTIDADE
+            // NÃO precisa setAtivo(true)
+            // ================================================
+            usuario.setEmailConfirmationToken(null);
+            usuario.setEmailConfirmationExpires(null);
+            usuario.setEmailConfirmed(true); // já salvo como confirmado
+
+            // criptografar senha
+            usuario.setSenha(service.criptografarSenha(usuario.getSenha()));
+
+            // salva no banco
+            service.salvar(usuario);
 
             resetarUsuario();
 
-            return "/publico/sucesso-cadastro.xhtml?faces-redirect=true";
+            // ================================================
+            // 🔵 REDIRECIONA PARA CONFIRMAR-EMAIL.XHTML
+            // ================================================
+            return "/publico/confirmar-email.xhtml?faces-redirect=true";
 
         } catch (Exception e) {
-            JsfUtil.addError("Erro ao criar conta: " + e.getMessage());
-            e.printStackTrace();
+            JsfUtil.addError("Erro ao cadastrar: " + e.getMessage());
             return null;
         }
     }
 
-    // RESETAR
-    private void resetarUsuario() {
-        usuario = new Usuario();
-    }
 
-    // BUSCAR
-    public Usuario buscarPorEmail(String email) {
-        return service.buscarPorEmail(email);
-    }
-
-    // EDITAR
+    // ============================================================
+    // EDIÇÃO
+    // ============================================================
     public void editar(Usuario u) {
-        usuario = u;
+        if (u != null && u.getId() != null) {
+            this.usuario = service.buscarPorId(u.getId());
+        } else {
+            this.usuario = new Usuario();
+        }
+        gerarSenhaTemporaria = false;
     }
 
-    // EXCLUIR
+    public void atualizar(Usuario u) {
+        try {
+            if (u.getSenha() != null && !u.getSenha().startsWith("$2a$")) {
+                u.setSenha(service.criptografarSenha(u.getSenha()));
+            }
+
+            service.atualizar(u);
+            JsfUtil.addSuccess("Dados atualizados!");
+
+        } catch (Exception e) {
+            JsfUtil.addError("Erro ao atualizar: " + e.getMessage());
+        }
+    }
+
+    // ============================================================
+    // AÇÕES ADMIN
+    // ============================================================
+    public void alterarStatus(Long id) {
+        try {
+            Usuario u = service.buscarPorId(id);
+
+            if (u == null) return;
+
+            u.setAtivo(!u.isAtivo());
+            service.atualizar(u);
+
+            JsfUtil.addSuccess("Status alterado: " + (u.isAtivo() ? "ATIVO" : "INATIVO"));
+            lista = service.listarTodos();
+
+        } catch (Exception e) {
+            JsfUtil.addError("Erro ao alterar status: " + e.getMessage());
+        }
+    }
+
     public void excluir(Long id) {
-        service.excluir(id);
-        JsfUtil.addInfo("Usuário removido!");
-        lista = service.listarTodos();
+        try {
+            service.excluir(id);
+            JsfUtil.addInfo("Usuário removido!");
+            lista = service.listarTodos();
+        } catch (Exception e) {
+            JsfUtil.addError("Erro ao excluir: " + e.getMessage());
+        }
     }
 
-    // REMOVER MÁSCARAS
+    // ============================================================
+    // UTILITÁRIOS
+    // ============================================================
+    public void resetarUsuario() {
+        usuario = new Usuario();
+        gerarSenhaTemporaria = false;
+        confirmaSenha = null;
+        aceitouTermos = false;
+    }
+
     private void limparMascaras() {
         if (usuario.getCpf() != null)
             usuario.setCpf(usuario.getCpf().replaceAll("\\D", ""));
-
         if (usuario.getTelefone() != null)
             usuario.setTelefone(usuario.getTelefone().replaceAll("\\D", ""));
     }
 
-    // GETTERS
-    public Usuario getUsuario() {
-        return usuario;
+    public Usuario getUsuarioLogado() {
+        return (Usuario) FacesContext.getCurrentInstance()
+                .getExternalContext()
+                .getSessionMap()
+                .get("usuarioLogado");
     }
 
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
-    }
 
-    public List<Usuario> getLista() {
-        return lista;
-    }
+    // ============================================================
+    // GETTERS / SETTERS
+    // ============================================================
+    public Usuario getUsuario() { return usuario; }
+    public void setUsuario(Usuario usuario) { this.usuario = usuario; }
 
-    public void setLista(List<Usuario> lista) {
-        this.lista = lista;
-    }
+    public List<Usuario> getLista() { return lista; }
+
+    public String getConfirmaSenha() { return confirmaSenha; }
+    public void setConfirmaSenha(String confirmaSenha) { this.confirmaSenha = confirmaSenha; }
+
+    public boolean isAceitouTermos() { return aceitouTermos; }
+    public void setAceitouTermos(boolean aceitouTermos) { this.aceitouTermos = aceitouTermos; }
+
+    public boolean isGerarSenhaTemporaria() { return gerarSenhaTemporaria; }
+    public void setGerarSenhaTemporaria(boolean gerarSenhaTemporaria) { this.gerarSenhaTemporaria = gerarSenhaTemporaria; }
+
+    public List<EspacoAtendimento> getEspacos() { return espacoService.listarTodos(); }
+    public List<Guiche> getGuiches() { return guicheService.listarTodos(); }
 }

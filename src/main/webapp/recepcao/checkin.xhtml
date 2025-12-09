@@ -1,26 +1,87 @@
-<?xml version='1.0' encoding='UTF-8' ?> 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="jakarta.faces.facelets"
-      xmlns:h="jakarta.faces.html">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                template="/templates/layout.xhtml">
 
-    <h:head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <h:outputStylesheet name="./css/default.css"/>
-        <h:outputStylesheet name="./css/cssLayout.css"/>
-        <title>Facelets Template</title>
-    </h:head>
+<ui:define name="conteudo">
 
-    <h:body>
+<h1>Recepção - Check-in</h1>
 
-        <div id="top" class="top">
-            <ui:insert name="top">Top</ui:insert>
-        </div>
+<h:form id="form">
 
-        <div id="content" class="center_content">
-            <ui:insert name="content">Content</ui:insert>
-        </div>
+    <!-- CAMPO DE BUSCA -->
+    <h:panelGroup style="margin-bottom:20px;">
+        <h:inputText value="#{checkinController.termoBusca}" 
+                     placeholder="Buscar por CPF, nome ou protocolo" 
+                     style="width:300px; padding:6px;" />
+        <h:commandButton value="Buscar"
+                         action="#{checkinController.buscar}"
+                         update="form:tabela form:painelDados form:msgs"
+                         style="margin-left:10px;" />
+    </h:panelGroup>
 
-    </h:body>
+    <!-- LISTA DE AGENDAMENTOS DO DIA -->
+    <h:dataTable value="#{checkinController.lista}"
+                 var="ag"
+                 id="tabela"
+                 border="1"
+                 rows="10"
+                 style="width:100%;">
 
-</html>
+        <h:column>
+            <f:facet name="header">Nome</f:facet>
+            #{ag.usuario.nome}
+        </h:column>
+
+        <h:column>
+            <f:facet name="header">Serviço</f:facet>
+            #{ag.servico.nome}
+        </h:column>
+
+        <h:column>
+            <f:facet name="header">Horário</f:facet>
+            #{ag.horario.hora}
+        </h:column>
+
+        <h:column>
+            <f:facet name="header">Status</f:facet>
+            #{ag.status}
+        </h:column>
+
+        <h:column>
+            <f:facet name="header">Ações</f:facet>
+
+            <h:commandButton value="Selecionar"
+                             action="#{checkinController.selecionar(ag)}"
+                             update="form:painelDados form:msgs" />
+        </h:column>
+
+    </h:dataTable>
+
+    <!-- PAINEL DO AGENDAMENTO SELECIONADO -->
+    <h:panelGroup id="painelDados"
+                  rendered="#{checkinController.selecionado != null}"
+                  style="margin-top:30px; padding:20px; border:1px solid #ccc;">
+
+        <h2>Dados do Agendamento</h2>
+
+        <p><b>Nome:</b> #{checkinController.selecionado.usuario.nome}</p>
+        <p><b>Serviço:</b> #{checkinController.selecionado.servico.nome}</p>
+        <p><b>Horário:</b> #{checkinController.selecionado.horario.hora}</p>
+        <p><b>Protocolo:</b> #{checkinController.selecionado.protocolo}</p>
+
+        <h:commandButton value="Confirmar Check-in"
+                         action="#{checkinController.confirmarCheckin}"
+                         update="form form:tabela form:msgs"
+                         style="margin-top:10px; padding:10px 30px;" />
+    </h:panelGroup>
+
+    <!-- MENSAGENS DO SISTEMA -->
+    <h:messages id="msgs"
+                style="margin-top:20px; color:red;" />
+
+</h:form>
+
+</ui:define>
+</ui:composition>

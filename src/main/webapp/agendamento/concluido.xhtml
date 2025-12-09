@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/templates/layout.xhtml">
+    <ui:define name="conteudo">
+
+        <div style="max-width: 800px; margin: 40px auto; padding: 20px;">
+            <h1 style="color: var(--primary); text-align: center; margin-bottom: 30px; font-size: 2.2em;">
+                Agendar Atendimento
+            </h1>
+
+            <h:messages globalOnly="true" styleClass="msg-erro" style="margin-bottom: 20px;" />
+
+            <h:form id="formAgendamento">
+
+                <!-- 1. SERVIÇO -->
+                <div class="card" style="padding: 25px; margin-bottom: 25px; border-radius: 12px;">
+                    <h3>1. Escolha o serviço *</h3>
+                    <h:selectOneMenu value="#{agendamentoController.idServicoBusca}"
+                                     style="width: 100%; padding: 12px; font-size: 1em;"
+                                     required="true" requiredMessage="Selecione um serviço">
+                        <!-- placeholder COMO null -->
+                        <f:selectItem itemLabel="Selecione o serviço..." itemValue="#{null}" />
+                        <f:selectItems value="#{agendamentoController.servicos}" var="s"
+                                       itemValue="#{s.id}" itemLabel="#{s.nome}" />
+                        <!-- quando escolher serviço limpa data/horario e re-renderiza painéis -->
+                        <f:ajax listener="#{agendamentoController.limparDataEHorario}"
+                                render="dataPanel horariosPanel btnConfirmar" />
+                    </h:selectOneMenu>
+                </div>
+
+                <!-- 2. DATA -->
+                <h:panelGroup id="dataPanel"
+                              style="#{agendamentoController.idServicoBusca == null ? 'display:none;' : ''}">
+                    <div class="card" style="padding: 25px; margin-bottom: 25px; border-radius: 12px;">
+                        <h3>2. Escolha a data *</h3>
+                        <p:calendar id="dataPicker"
+                                    value="#{agendamentoController.revisao.data}"
+                                    pattern="yyyy-MM-dd"
+                                    mindate="#{agendamentoController.hoje}"
+                                    showButtonPanel="true"
+                                    navigator="true"
+                                    required="true"
+                                    requiredMessage="Selecione uma data">
+                            <!-- ao selecionar data, chama o controller para carregar horários -->
+                            <p:ajax event="dateSelect"
+                                    listener="#{agendamentoController.buscarHorariosDisponiveis}"
+                                    update="horariosPanel btnConfirmar" />
+                        </p:calendar>
+                    </div>
+                </h:panelGroup>
+
+                <!-- 3. HORÁRIOS -->
+                <h:panelGroup id="horariosPanel"
+                              style="#{agendamentoController.revisao.data == null ? 'display:none;' : ''}">
+                    <div class="card" style="padding: 25px; margin-bottom: 25px; border-radius: 12px;">
+                        <h3>3. Selecione o horário *</h3>
+                        <h:selectOneMenu value="#{agendamentoController.revisao.horario}"
+                                         style="width: 100%; padding: 12px;"
+                                         required="true" requiredMessage="Selecione um horário">
+                            <!-- placeholder COMO null (muito importante) -->
+                            <f:selectItem itemLabel="Selecione um horário..." itemValue="#{null}" />
+                            <!-- usa h.hora como label (EL simples) -->
+                            <f:selectItems value="#{agendamentoController.horariosDisponiveis}" var="h"
+                                           itemValue="#{h}"
+                                           itemLabel="#{h.hora}" />
+                        </h:selectOneMenu>
+
+                        <h:outputText value="Nenhum horário disponível para esta data."
+                                      rendered="#{empty agendamentoController.horariosDisponiveis}"
+                                      style="color: red; font-weight: bold; margin-top: 12px;" />
+                    </div>
+                </h:panelGroup>
+
+                <!-- BOTÃO CONFIRMAR -->
+                <h:panelGroup id="btnConfirmar">
+                    <h:commandButton value="Confirmar Agendamento"
+                                     action="#{agendamentoController.confirmar}"
+                                     styleClass="btn-primary"
+                                     style="width: 100%; padding: 16px; font-size: 1.3em; font-weight: bold;"
+                                     rendered="#{agendamentoController.revisao.horario != null}" />
+                </h:panelGroup>
+
+            </h:form>
+        </div>
+
+    </ui:define>
+</ui:composition>
+</html>

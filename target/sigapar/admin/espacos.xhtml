@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+<ui:composition template="/templates/layout.xhtml">
+
+    <ui:define name="conteudo">
+
+        <!-- CABEÇALHO -->
+        <div style="text-align:center; padding:40px 20px;">
+            <h1 style="color:#036fab; font-size:2.5em; margin:0;">
+                Gerenciar Espaços de Atendimento
+            </h1>
+            <p style="color:#555; font-size:1.2em; margin-top:10px;">
+                Cadastro, edição e controle de status de espaços
+            </p>
+        </div>
+
+        <!-- FORMULÁRIO DE CADASTRO -->
+        <div class="card-wrapper" style="max-width:900px; margin:0 auto 40px;">
+            <div class="card" style="padding:30px; border-radius:12px; box-shadow:0 8px 25px rgba(0,0,0,0.1);">
+
+                <h2 style="color:#036fab; margin-bottom:25px;">
+                    #{espacoAtendimentoController.espaco.id == null ? 'Novo Espaço' : 'Editar Espaço'}
+                </h2>
+
+                <h:form id="formCadastro" prependId="false">
+
+                    <h:messages globalOnly="true" style="margin-bottom:20px; color:red;" />
+
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:25px;">
+
+                        <!-- Código -->
+                        <div>
+                            <strong>Código *</strong><br/>
+                            <h:inputText value="#{espacoAtendimentoController.espaco.codigo}"
+                                         required="true"
+                                         style="width:100%; padding:12px; margin-top:8px; 
+                                                border-radius:6px; border:1px solid #ccc;" />
+                        </div>
+
+                        <!-- Ativo -->
+                        <div style="align-self:end;">
+                            <h:selectBooleanCheckbox value="#{espacoAtendimentoController.espaco.ativo}" />
+                            <strong style="margin-left:10px;">Ativo</strong>
+                        </div>
+
+                        <!-- Descrição (ocupa 2 colunas) -->
+                        <div style="grid-column: span 2;">
+                            <strong>Descrição *</strong><br/>
+                            <h:inputTextarea value="#{espacoAtendimentoController.espaco.descricao}"
+                                             required="true"
+                                             rows="4"
+                                             style="width:100%; padding:12px; margin-top:8px;
+                                                    border-radius:6px; border:1px solid #ccc;" />
+                        </div>
+                    </div>
+
+                    <!-- BOTÕES -->
+                    <div style="margin-top:35px; text-align:right;">
+                        <h:commandButton value="#{espacoAtendimentoController.espaco.id == null ? 'Cadastrar Espaço' : 'Salvar Alterações'}"
+                                         action="#{espacoAtendimentoController.salvar}"
+                                         style="padding:14px 40px; background:#036fab; color:white;
+                                                border:none; border-radius:8px; font-weight:600; font-size:1.1em; cursor:pointer;">
+                            <f:ajax execute="@form" render="@form formLista" />
+                        </h:commandButton>
+
+                        <h:commandButton value="Limpar" 
+                                         immediate="true"
+                                         action="#{espacoAtendimentoController.novo}"
+                                         style="margin-left:15px; padding:14px 30px; background:#6c757d; color:white;
+                                                border:none; border-radius:8px; font-weight:600;">
+                            <f:ajax render="formCadastro" />
+                        </h:commandButton>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+
+        <!-- LISTA DE ESPAÇOS -->
+        <div class="card-wrapper" style="max-width:1200px; margin:0 auto;">
+            <div class="card" style="padding:30px; border-radius:12px; box-shadow:0 5px 18px rgba(0,0,0,0.08);">
+
+                <h2 style="color:#036fab; margin-bottom:25px;">Espaços cadastrados</h2>
+
+                <h:form id="formLista" prependId="false">
+
+                    <h:dataTable value="#{espacoAtendimentoController.lista}" var="e"
+                                 style="width:100%; border-collapse:separate; border-spacing:0 15px; font-size:0.95em;">
+
+                        <!-- Código -->
+                        <h:column>
+                            <f:facet name="header"><strong>Código</strong></f:facet>
+                            #{e.codigo}
+                        </h:column>
+
+                        <!-- Descrição -->
+                        <h:column>
+                            <f:facet name="header"><strong>Descrição</strong></f:facet>
+                            #{e.descricao}
+                        </h:column>
+
+                        <!-- Status -->
+                        <h:column>
+                            <f:facet name="header"><strong>Status</strong></f:facet>
+                            <span style="font-weight:bold; color:#{e.ativo ? '#28a745' : '#dc3545'};">
+                                #{e.ativo ? 'Ativo' : 'Inativo'}
+                            </span>
+                        </h:column>
+
+                        <!-- Ações -->
+                        <h:column>
+                            <f:facet name="header"><strong>Ações</strong></f:facet>
+                            <h:panelGroup style="white-space:nowrap; text-align:right;">
+
+                                <h:commandLink value="Editar"
+                                               action="#{espacoAtendimentoController.editar(e)}"
+                                               style="color:#007bff; font-weight:600; text-decoration:none; margin-right:10px;">
+                                    <f:ajax render="formCadastro" />
+                                </h:commandLink>
+
+                                <span style="margin:0 8px; color:#aaa;">•</span>
+
+                                <h:commandLink value="#{e.ativo ? 'Inativar' : 'Ativar'}"
+                                               action="#{espacoAtendimentoController.toggleAtivo(e)}"
+                                               onclick="return confirm('Confirmar alteração de status?');"
+                                               style="color:#dc3545; font-weight:600; text-decoration:none; margin-right:10px;">
+                                    <f:ajax render="formLista" />
+                                </h:commandLink>
+
+                                <span style="margin:0 8px; color:#aaa;">•</span>
+
+                                <h:commandLink value="Excluir"
+                                               action="#{espacoAtendimentoController.excluirFisico(e)}"
+                                               onclick="return confirm('Excluir DEFINITIVAMENTE este espaço?');"
+                                               style="color:red; font-weight:600; text-decoration:none;">
+                                    <f:ajax render="formLista formCadastro"/>
+                                </h:commandLink>
+                            </h:panelGroup>
+                        </h:column>
+
+                    </h:dataTable>
+
+                    <!-- Mensagem caso vazio -->
+                    <h:outputText value="Nenhum espaço cadastrado."
+                                  rendered="#{empty espacoAtendimentoController.lista}"
+                                  style="display:block; text-align:center; padding:40px 0; font-size:1.2em; color:#888;" />
+
+                </h:form>
+            </div>
+        </div>
+
+    </ui:define>
+</ui:composition>
+</html>

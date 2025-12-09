@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+<ui:composition template="/templates/layout.xhtml">
+
+    <ui:define name="conteudo">
+
+        <div style="max-width:420px; margin:auto; padding:25px; text-align:center;" class="card">
+
+            <h2 style="color:var(--primary); margin-bottom:20px;">
+                Verifique seu Email
+            </h2>
+
+            <p style="color:#555;">
+                Se o email informado existir no sistema, enviaremos um link para redefinir sua senha.
+            </p>
+
+            <div style="margin-top:25px;">
+                <h:link outcome="/publico/escolher-acesso.xhtml"
+                        value="Voltar ao login" />
+            </div>
+
+        </div>
+
+    </ui:define>
+</ui:composition>
+</html>

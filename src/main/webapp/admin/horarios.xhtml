@@ -1,48 +1,279 @@
-<ui:composition template="/templates/layout.xhtml"
-    xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
-<ui:define name="conteudo">
+<ui:composition template="/templates/layout.xhtml">
 
-<h1>Horários</h1>
+    <ui:define name="conteudo">
 
-<h:form>
-    <h:panelGrid columns="2">
+        <style>
+            table.horarios-table { width: 100%; border-collapse: collapse; margin-top: 20px; text-align: center; }
+            table.horarios-table th { background: #036fab; color: white; padding: 12px; font-weight: 600; border: 1px solid #ddd; }
+            table.horarios-table td { padding: 10px; border: 1px solid #ddd; font-size: 15px; }
+            table.horarios-table tr:nth-child(even) { background: #f7f7f7; }
 
-        <h:outputLabel value="Hora (ex: 08:30)"/>
-        <h:inputText value="#{horarioController.horario.hora}" required="true"/>
+            table.feriados-table { width:100%; border-collapse:collapse; margin-top:12px; }
+            table.feriados-table th { background:#036fab; color:white; padding:10px; border:1px solid #ddd; }
+            table.feriados-table td { padding:8px; border:1px solid #ddd; text-align:left; }
 
-    </h:panelGrid>
+            table.intervalos-table { width:100%; border-collapse:collapse; margin-top:12px; }
+            table.intervalos-table th { background:#036fab; color:white; padding:10px; border:1px solid #ddd; }
+            table.intervalos-table td { padding:8px; border:1px solid #ddd; text-align:center; }
 
-    <h:commandButton value="Salvar" action="#{horarioController.salvar}" styleClass="btn"/>
-</h:form>
+            .acao-btn { padding:7px 14px; border-radius:6px; color:white; font-weight:600; border:none; cursor:pointer; font-size:14px; }
+            .btn-ativar { background:#28a745; }
+            .btn-inativar { background:#dc3545; }
+            .btn-excluir { background:#6c757d; }
+            .btn-add { background:#28a745; padding:10px 18px; border-radius:8px; color:white; font-weight:600; }
+            .card { padding:30px; background:white; border-radius:14px; box-shadow:0 10px 30px rgba(0,0,0,0.08); }
 
-<h2>Lista</h2>
+            .input-padrao { width:100%; padding:12px; margin-top:6px; border-radius:6px; border:1px solid #ccc; font-size:1em; }
 
-<h:form>
+            @media (max-width:720px) {
+                table.horarios-table th, table.horarios-table td { font-size:13px; padding:8px; }
+                .acao-btn { padding:6px 10px; font-size:13px; }
+            }
+        </style>
 
-<table>
-    <tr>
-        <th>ID</th>
-        <th>Hora</th>
-        <th></th>
-    </tr>
+        <div style="text-align:center; padding:40px 20px;">
+            <h1 style="color:#036fab; font-size:2.5em; font-weight:700;">Gestão de Horários, Intervalos e Feriados</h1>
+            <p style="color:#666; font-size:1.2em; margin-top:10px;">Configure horários de atendimento, intervalos bloqueados e dias sem funcionamento</p>
+        </div>
 
-    <ui:repeat value="#{horarioController.lista}" var="h">
-        <tr>
-            <td>#{h.id}</td>
-            <td>#{h.hora}</td>
-            <td>
-                <h:commandLink value="Editar" action="#{horarioController.editar(h)}"/>
-                |
-                <h:commandLink value="Excluir" action="#{horarioController.excluir(h.id)}"/>
-            </td>
-        </tr>
-    </ui:repeat>
-</table>
+        <!-- GERAR HORÁRIOS -->
+        <div style="max-width:1100px; margin:0 auto 28px;">
+            <div class="card">
+                <h2 style="color:#036fab; margin-bottom:18px; font-weight:600;">Gerar Horários Semanais</h2>
 
-</h:form>
+                <h:form id="formGerarHorarios">
+                    <h:messages globalOnly="true" style="color:#d9534f; font-weight:bold; margin-bottom:10px;" />
 
-</ui:define>
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:16px;">
+
+                        <div>
+                            <strong>Dia da Semana *</strong><br/>
+                            <h:selectOneMenu value="#{horarioController.diaSemana}" required="true" styleClass="input-padrao">
+                                <f:selectItem itemValue="" itemLabel="Selecione..." />
+                                <f:selectItem itemValue="MONDAY" itemLabel="Segunda-feira"/>
+                                <f:selectItem itemValue="TUESDAY" itemLabel="Terça-feira"/>
+                                <f:selectItem itemValue="WEDNESDAY" itemLabel="Quarta-feira"/>
+                                <f:selectItem itemValue="THURSDAY" itemLabel="Quinta-feira"/>
+                                <f:selectItem itemValue="FRIDAY" itemLabel="Sexta-feira"/>
+                                <f:selectItem itemValue="SATURDAY" itemLabel="Sábado"/>
+                                <f:selectItem itemValue="SUNDAY" itemLabel="Domingo"/>
+                            </h:selectOneMenu>
+                        </div>
+
+                        <div>
+                            <strong>Hora Inicial *</strong>
+                            <h:inputText value="#{horarioController.inicioTimeStr}" required="true" styleClass="input-padrao">
+                                <f:passThroughAttribute name="placeholder" value="HH:mm"/>
+                            </h:inputText>
+                        </div>
+
+                        <div>
+                            <strong>Hora Final *</strong>
+                            <h:inputText value="#{horarioController.fimTimeStr}" required="true" styleClass="input-padrao">
+                                <f:passThroughAttribute name="placeholder" value="HH:mm"/>
+                            </h:inputText>
+                        </div>
+
+                        <div>
+                            <strong>Intervalo (minutos) *</strong>
+                            <h:inputText value="#{horarioController.intervaloMinutos}" required="true" styleClass="input-padrao"/>
+                        </div>
+
+                        <div>
+                            <strong>Capacidade Máxima *</strong>
+                            <h:inputText value="#{horarioController.capacidadeMax}" required="true" styleClass="input-padrao"/>
+                        </div>
+                    </div>
+
+                    <div style="margin-top:18px;">
+                        <h:commandButton value="Gerar Horários" action="#{horarioController.gerarHorarios}"
+                                         style="padding:12px 28px; background:#036fab; color:white; border:none; border-radius:8px; font-weight:600;">
+                            <f:ajax execute="@form" render=":formHorarios"/>
+                        </h:commandButton>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+
+        <!-- INTERVALOS BLOQUEADOS -->
+        <div style="max-width:900px; margin:0 auto 28px;">
+            <div class="card">
+                <h2 style="color:#036fab; margin-bottom:16px; font-weight:600;">Intervalos Bloqueados</h2>
+
+                <h:form id="formIntervalos">
+
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:16px;">
+
+                        <div>
+                            <strong>Dia *</strong><br/>
+                            <h:selectOneMenu value="#{horarioController.intervaloDia}" styleClass="input-padrao">
+                                <f:selectItem itemValue="MONDAY" itemLabel="Segunda-feira"/>
+                                <f:selectItem itemValue="TUESDAY" itemLabel="Terça-feira"/>
+                                <f:selectItem itemValue="WEDNESDAY" itemLabel="Quarta-feira"/>
+                                <f:selectItem itemValue="THURSDAY" itemLabel="Quinta-feira"/>
+                                <f:selectItem itemValue="FRIDAY" itemLabel="Sexta-feira"/>
+                                <f:selectItem itemValue="SATURDAY" itemLabel="Sábado"/>
+                                <f:selectItem itemValue="SUNDAY" itemLabel="Domingo"/>
+                            </h:selectOneMenu>
+                        </div>
+
+                        <div>
+                            <strong>Início *</strong>
+                            <h:inputText value="#{horarioController.intervaloInicioStr}" styleClass="input-padrao">
+                                <f:passThroughAttribute name="placeholder" value="HH:mm"/>
+                            </h:inputText>
+                        </div>
+
+                        <div>
+                            <strong>Fim *</strong>
+                            <h:inputText value="#{horarioController.intervaloFimStr}" styleClass="input-padrao">
+                                <f:passThroughAttribute name="placeholder" value="HH:mm"/>
+                            </h:inputText>
+                        </div>
+
+                        <div style="display:flex; align-items:end;">
+                            <h:commandButton value="Adicionar Intervalo" action="#{horarioController.adicionarIntervalo}" styleClass="btn-add">
+                                <f:ajax execute="@form" render="@form"/>
+                            </h:commandButton>
+                        </div>
+                    </div>
+
+                    <h:dataTable value="#{horarioController.intervalos}" var="i" styleClass="intervalos-table" style="margin-top:20px;">
+                        <h:column>
+                            <f:facet name="header">Dia</f:facet>
+                            #{horarioController.getDiaSemanaFormatado(i.diaSemana)}
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">Início</f:facet>
+                            #{i.inicio}
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">Fim</f:facet>
+                            #{i.fim}
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">Ações</f:facet>
+                            <div style="display:flex; justify-content:center;">
+                                <h:commandButton value="Excluir" action="#{horarioController.removerIntervalo(i.id)}"
+                                                 onclick="return confirm('Excluir intervalo?');" styleClass="acao-btn btn-excluir">
+                                    <f:ajax execute="@this" render="@form"/>
+                                </h:commandButton>
+                            </div>
+                        </h:column>
+                    </h:dataTable>
+
+                </h:form>
+            </div>
+        </div>
+
+        <!-- HORÁRIOS -->
+        <div style="max-width:1200px; margin:0 auto 28px;">
+            <div class="card">
+                <h2 style="color:#036fab; margin-bottom:18px; font-weight:600;">Horários Cadastrados</h2>
+
+                <h:form id="formHorarios">
+                    <h:dataTable value="#{horarioController.listaHorarios}" var="h" styleClass="horarios-table">
+
+                        <h:column>
+                            <f:facet name="header">Dia</f:facet>
+                            #{horarioController.getDiaSemanaFormatado(h.diaSemana)}
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">Horário</f:facet>
+                            #{horarioController.formatarHora(h)}
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">Capacidade</f:facet>
+                            #{h.capacidadeAtual} / #{h.capacidadeMax}
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">Status</f:facet>
+                            <span style="display:inline-block; padding:6px 14px; border-radius:20px; font-weight:600;
+                                          background:#{h.disponivel ? '#d4edda' : '#f8d7da'};
+                                          color:#{h.disponivel ? '#155724' : '#721c24'};">
+                                #{h.disponivel ? 'ATIVO' : 'INATIVO'}
+                            </span>
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">Ações</f:facet>
+                            <div style="display:flex; gap:8px; justify-content:center;">
+                                <h:commandButton value="#{h.disponivel ? 'Inativar' : 'Ativar'}"
+                                                 action="#{horarioController.alterarStatus(h.id)}"
+                                                 styleClass="acao-btn #{h.disponivel ? 'btn-inativar' : 'btn-ativar'}">
+                                    <f:ajax execute="@this" render="@form"/>
+                                </h:commandButton>
+
+                                <h:commandButton value="Excluir"
+                                                 onclick="return confirm('Excluir este horário?');"
+                                                 action="#{horarioController.removerHorario(h.id)}"
+                                                 styleClass="acao-btn btn-excluir">
+                                    <f:ajax execute="@this" render="@form"/>
+                                </h:commandButton>
+                            </div>
+                        </h:column>
+
+                    </h:dataTable>
+                </h:form>
+            </div>
+        </div>
+
+        <!-- FERIADOS -->
+        <div style="max-width:900px; margin:0 auto 28px;">
+            <div class="card">
+                <h2 style="color:#036fab; margin-bottom:16px; font-weight:600;">Feriados (Sem Atendimento)</h2>
+
+                <h:form id="formFeriados">
+                    <div style="display:flex; gap:12px; align-items:end;">
+                        <div style="flex:1;">
+                            <strong>Nova Data de Feriado</strong><br/>
+                            <h:inputText id="novaData" value="#{horarioController.novaDataFeriado}" required="true" styleClass="input-padrao">
+                                <f:convertDateTime pattern="dd/MM/yyyy" type="localDate"/>
+                                <f:passThroughAttribute name="placeholder" value="dd/MM/yyyy"/>
+                            </h:inputText>
+                        </div>
+
+                        <div>
+                            <h:commandButton value="Adicionar" action="#{horarioController.adicionarFeriado}" styleClass="btn-add">
+                                <f:ajax execute="@form" render="@form :formHorarios"/>
+                            </h:commandButton>
+                        </div>
+                    </div>
+
+                    <h:dataTable value="#{horarioController.feriados}" var="f" styleClass="feriados-table" style="margin-top:16px;">
+                        <h:column>
+                            <f:facet name="header">Data</f:facet>
+                            #{horarioController.formatarData(f)}
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">Ações</f:facet>
+                            <div style="width:130px; display:flex; gap:8px; justify-content:flex-end;">
+                                <h:commandButton value="Remover" action="#{horarioController.removerFeriado(f.id)}"
+                                                 onclick="return confirm('Remover feriado?');" styleClass="acao-btn btn-inativar">
+                                    <f:ajax execute="@this" render="@form :formHorarios"/>
+                                </h:commandButton>
+                            </div>
+                        </h:column>
+
+                    </h:dataTable>
+                </h:form>
+
+            </div>
+        </div>
+
+    </ui:define>
 </ui:composition>
-s
+</html>

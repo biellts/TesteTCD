@@ -1,108 +1,91 @@
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="jakarta.faces.html"
-      xmlns:ui="jakarta.faces.facelets">
-
-<ui:composition template="/templates/layout.xhtml">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                template="/templates/layout.xhtml">
 
     <ui:define name="conteudo">
 
-        <!-- Título central -->
-        <div style="text-align: center; padding: 50px 20px 40px;">
-            <h1 style="color: var(--primary); margin: 0; font-size: 2.8em; font-weight: 700;">
-                Escolher Tipo de Acesso
+        <!-- TÍTULO -->
+        <div style="text-align:center; padding:30px 20px 40px;">
+            <h1 style="font-size:2.6em; color:var(--primary); margin:0;">
+                🔐 Escolha o tipo de acesso
             </h1>
-            <p style="color: #555; margin: 16px 0 0; font-size: 1.2em;">
-                Como deseja entrar no SIGAPAR?
+            <p style="font-size:1.2em; color:#555; margin-top:10px;">
+                Selecione a área do sistema que deseja acessar
             </p>
         </div>
 
-        <!-- Cards principais -->
-        <div class="card-wrapper" 
-             style="max-width: 1000px; margin: 0 auto; padding: 20px; 
-                    display: flex; flex-wrap: wrap; justify-content: center; gap: 30px;">
+        <!-- ESTILO DOS CARDS -->
+        <style>
+            .card-acesso {
+                width: 280px;
+                padding: 25px;
+                background: white;
+                border-radius: 12px;
+                text-align: center;
+                text-decoration: none;
+                color: inherit;
+                display: block;
+                box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+                transition: transform .15s ease, box-shadow .15s ease;
+            }
 
-            <!-- Acesso como Usuário -->
-            <div class="card" style="width: 260px;">
-                <div style="font-size: 1.1em; color: var(--primary); margin-bottom: 16px; text-align: center;">
-                    Usuário
-                </div>
-                <h2 style="margin: 12px 0; color: #333; font-size: 1.4em; text-align: center;">
-                    Agendamentos
-                </h2>
-                <p style="color: #666; margin: 10px 0 20px; text-align: center;">
-                    Acessar área para agendar atendimentos.
-                </p>
-                <h:link outcome="/usuarios/login_usuario.xhtml" value="Usuário" 
-                        style="display: block; background: var(--primary); color: white; padding: 14px; 
-                               border-radius: 8px; text-align: center; font-weight: 600; text-decoration: none;">
-                    Entrar como Usuário
-                </h:link>
-            </div>
+            .card-acesso:hover {
+                transform: translateY(-6px);
+                box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+            }
 
-            <!-- Acesso como Recepcionista -->
-            <div class="card" style="width: 260px;">
-                <div style="font-size: 1.1em; color: #0288d1; margin-bottom: 16px; text-align: center;">
-                    Recepção
-                </div>
-                <h2 style="margin: 12px 0; color: #333; font-size: 1.4em; text-align: center;">
-                    Recepcionista
-                </h2>
-                <p style="color: #666; margin: 10px 0 20px; text-align: center;">
-                    Gerenciar check-ins, filas e verificações.
-                </p>
-                <h:link outcome="/recepcao/login_recepcao.xhtml" value="Recepção" 
-                        style="display: block; background: #0288d1; color: white; padding: 14px; 
-                               border-radius: 8px; text-align: center; font-weight: 600; text-decoration: none;">
-                    Entrar como Recepcionista
-                </h:link>
-            </div>
+            .area-cards {
+                max-width:1100px;
+                margin:0 auto;
+                display:flex;
+                flex-wrap:wrap;
+                justify-content:center;
+                gap:35px;
+                padding:20px;
+            }
 
-            <!-- Acesso como Atendente -->
-            <div class="card" style="width: 260px;">
-                <div style="font-size: 1.1em; color: #7b1fa2; margin-bottom: 16px; text-align: center;">
-                    Atendente
-                </div>
-                <h2 style="margin: 12px 0; color: #333; font-size: 1.4em; text-align: center;">
-                    Atendimento
-                </h2>
-                <p style="color: #666; margin: 10px 0 20px; text-align: center;">
-                    Atualizar status e chamar próximo cliente.
-                </p>
-                <h:link outcome="/atendente/login_atendente.xhtml" value="Atendente" 
-                        style="display: block; background: #7b1fa2; color: white; padding: 14px; 
-                               border-radius: 8px; text-align: center; font-weight: 600; text-decoration: none;">
-                    Entrar como Atendente
-                </h:link>
-            </div>
+            .card-acesso h2 {
+                margin:0 0 10px 0;
+                font-size:1.6em;
+            }
 
-            <!-- Acesso como Administrador -->
-            <div class="card" style="width: 260px;">
-                <div style="font-size: 1.1em; color: #d32f2f; margin-bottom: 16px; text-align: center;">
-                    Administração
-                </div>
-                <h2 style="margin: 12px 0; color: #333; font-size: 1.4em; text-align: center;">
-                    Admin
-                </h2>
-                <p style="color: #666; margin: 10px 0 20px; text-align: center;">
-                    Gestão de serviços, usuários e configurações.
-                </p>
-                <h:link outcome="/admin/login_admin.xhtml" value="Administrador" 
+            .card-acesso p {
+                margin:0;
+                color:#666;
+                font-size:1.05em;
+            }
+        </style>
 
-                        style="display: block; background: #d32f2f; color: white; padding: 14px; 
-                               border-radius: 8px; text-align: center; font-weight: 600; text-decoration: none;">
-                    Entrar como Administrador
-                </h:link>
-            </div>
+        <!-- GRID DE ACESSOS -->
+        <div class="area-cards">
 
-        </div>
+            <!-- ATENDENTE -->
+            <h:link outcome="/atendente/login_atendente.xhtml" styleClass="card-acesso">
+                <h2 style="color:#7b1fa2;">👥 Atendente</h2>
+                <p>Área de atendimento ao público</p>
+            </h:link>
 
-        <!-- Rodapé -->
-        <div style="text-align: center; margin-top: 90px; color: #888; font-size: 0.95em; line-height: 1.8;">
-            SIGAPAR — Trabalho de Conclusão de Disciplina<br/>
-            Desenvolvimento Web • Bacharelado em Ciência da Computação • 2025
+            <!-- USUÁRIO -->
+            <h:link outcome="/usuarios/login_usuario.xhtml" styleClass="card-acesso">
+                <h2 style="color:#2196F3;">🙋 Usuário</h2>
+                <p>Realizar novos agendamentos</p>
+            </h:link>
+
+            <!-- RECEPÇÃO -->
+            <h:link outcome="/recepcao/login_recepcao.xhtml" styleClass="card-acesso">
+                <h2 style="color:#0288d1;">🏥 Recepção</h2>
+                <p>Gerenciar filas e check-in</p>
+            </h:link>
+
+            <!-- ADMIN -->
+            <h:link outcome="/admin/login_admin.xhtml" styleClass="card-acesso">
+                <h2 style="color:#d32f2f;">🛡️ Administrador</h2>
+                <p>Configurações e gestão geral</p>
+            </h:link>
+
         </div>
 
     </ui:define>
 </ui:composition>
-</html>

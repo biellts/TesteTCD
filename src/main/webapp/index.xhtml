@@ -1,81 +1,115 @@
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="jakarta.faces.html"
-      xmlns:ui="jakarta.faces.facelets">
-<ui:composition template="/templates/layout.xhtml">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="/templates/layout.xhtml">
 
     <ui:define name="conteudo">
 
+        <!-- CABEÇALHO -->
         <div style="text-align: center; padding: 50px 20px 40px;">
-            <h1 style="color: var(--primary); margin: 0; font-size: 2.8em; font-weight: 700;">SIGAPAR</h1>
+            <h1 style="color: var(--primary); margin: 0; font-size: 2.8em; font-weight: 700;">
+                SIGAPAR
+            </h1>
+
             <p style="color: #555; margin: 16px 0 0; font-size: 1.25em;">
-                Sistema de Gestão de Atendimentos Presenciais com Agendamento Remoto
+                Sistema Integrado de Gestão de Atendimentos Presenciais
             </p>
         </div>
 
-        <div class="card-wrapper" style="max-width: 1200px; margin: 0 auto; padding: 20px; display: flex; flex-wrap: wrap; justify-content: center; gap: 30px;">
+        <!-- CARDS PRINCIPAIS (somente recursos públicos) -->
+        <div class="card-wrapper"
+             style="max-width: 1200px; margin: 0 auto; padding: 20px;
+                    display: flex; flex-wrap: wrap; justify-content: center; gap: 30px;">
 
-            <!-- Novo Agendamento -->
+            <!-- ACESSAR CONTA -->
             <div class="card" style="width: 280px;">
-                <div style="font-size: 1.1em; color: var(--primary); margin-bottom: 16px; text-align: center;">Calendario</div>
-                <h2 style="margin: 12px 0; color: #333; font-size: 1.35em; text-align: center;">Novo Agendamento</h2>
-                <p style="color: #666; margin: 10px 0 20px; text-align: center; font-size: 0.95em;">
-                    Escolha o serviço e o horário disponível
+
+                <div style="font-size: 1.1em; color: var(--primary);
+                            margin-bottom: 16px; text-align: center;">
+                    Entrar
+                </div>
+
+                <h2 style="margin: 12px 0; color: #333;
+                           font-size: 1.35em; text-align: center;">
+                    Acessar Conta
+                </h2>
+
+                <p style="color: #666; margin: 10px 0 20px;
+                          text-align: center; font-size: 0.95em;">
+                    Escolha como deseja acessar o sistema
                 </p>
-                <h:link outcome="/agendamento/servicos.xhtml"
-                        style="display: block; background: var(--primary); color: white; padding: 14px; border-radius: 8px; text-align: center; font-weight: 600; text-decoration: none; font-size: 1.05em;">
-                    Agendar Agora
+
+                <h:link outcome="/publico/escolher-acesso"
+                        style="display: block; background: var(--primary); color: white;
+                               padding: 14px; border-radius: 8px; text-align: center;
+                               font-weight: 600; text-decoration: none; font-size: 1.05em;">
+                    Acessar Conta
                 </h:link>
             </div>
 
-            <!-- Meus Agendamentos -->
+            <!-- CRIAR CONTA (Usuário Comum) -->
             <div class="card" style="width: 280px;">
-                <div style="font-size: 1.1em; color: #1976d2; margin-bottom: 16px; text-align: center;">Lista</div>
-                <h2 style="margin: 12px 0; color: #333; font-size: 1.35em; text-align: center;">Meus Agendamentos</h2>
-                <p style="color: #666; margin: 10px 0 20px; text-align: center; font-size: 0.95em;">
-                    Consulte, cancele ou reagende seus horários
+
+                <div style="font-size: 1.1em; color: #2e7d32;
+                            margin-bottom: 16px; text-align: center;">
+                    Cadastro
+                </div>
+
+                <h2 style="margin: 12px 0; color: #333;
+                           font-size: 1.35em; text-align: center;">
+                    Criar Conta
+                </h2>
+
+                <p style="color: #666; margin: 10px 0 20px;
+                          text-align: center; font-size: 0.95em;">
+                    Registre-se para realizar agendamentos online
                 </p>
-                <h:link outcome="/agendamento/meus.xhtml"
-                        style="display: block; background: #1976d2; color: white; padding: 14px; border-radius: 8px; text-align: center; font-weight: 600; text-decoration: none; font-size: 1.05em;">
-                    Ver Meus Agendamentos
+
+                <h:link outcome="/publico/cadastro"
+                        style="display: block; background: #2e7d32; color: white;
+                               padding: 14px; border-radius: 8px; text-align: center;
+                               font-weight: 600; text-decoration: none; font-size: 1.05em;">
+                    Criar Conta
                 </h:link>
             </div>
 
-            <!-- Painel de Chamadas - DESTAQUE MÁXIMO -->
-            <div class="card" style="width: 300px; border: 4px solid #e91e63; box-shadow: 0 10px 30px rgba(233,30,99,0.25); transform: translateY(-10px);">
-                <div style="font-size: 1.1em; color: #e91e63; margin-bottom: 16px; text-align: center;">TV</div>
-                <h2 style="margin: 12px 0; color: #e91e63; font-size: 1.5em; font-weight: 700; text-align: center;">
+            <!-- PAINEL DE CHAMADAS (PÚBLICO) -->
+            <div class="card"
+                 style="width: 300px; border: 4px solid #e91e63;
+                        box-shadow: 0 10px 30px rgba(233,30,99,0.25);
+                        transform: translateY(-10px);">
+
+                <div style="font-size: 1.1em; color: #e91e63;
+                            margin-bottom: 16px; text-align: center;">
+                    Painel ao Vivo
+                </div>
+
+                <h2 style="margin: 12px 0; color: #e91e63;
+                           font-size: 1.5em; font-weight: 700; text-align: center;">
                     Painel de Chamadas
                 </h2>
-                <p style="color: #555; margin: 10px 0 20px; text-align: center; font-weight: 500; font-size: 0.98em;">
-                    Acompanhe em tempo real quem está sendo chamado
+
+                <p style="color: #555; margin: 10px 0 20px;
+                          text-align: center; font-weight: 500; font-size: 0.98em;">
+                    Consulte chamadas e senhas em tempo real
                 </p>
-                <h:link outcome="/publico/painel.xhtml"
-                        style="display: block; background: #e91e63; color: white; padding: 16px; border-radius: 8px; text-align: center; font-weight: 700; text-decoration: none; font-size: 1.15em;">
+
+                <h:link outcome="/publico/painel"
+                        style="display: block; background: #e91e63; color: white;
+                               padding: 16px; border-radius: 8px; text-align: center;
+                               font-weight: 700; text-decoration: none; font-size: 1.15em;">
                     Ver Painel ao Vivo
                 </h:link>
             </div>
 
-            <!-- Meu Perfil -->
-            <div class="card" style="width: 280px;">
-                <div style="font-size: 1.1em; color: #424242; margin-bottom: 16px; text-align: center;">Pessoa</div>
-                <h2 style="margin: 12px 0; color: #333; font-size: 1.35em; text-align: center;">Meu Perfil</h2>
-                <p style="color: #666; margin: 10px 0 20px; text-align: center; font-size: 0.95em;">
-                    Dados pessoais e histórico de acesso
-                </p>
-                <h:link outcome="/usuario/perfil.xhtml"
-                        style="display: block; background: #424242; color: white; padding: 14px; border-radius: 8px; text-align: center; font-weight: 600; text-decoration: none; font-size: 1.05em;">
-                    Acessar Perfil
-                </h:link>
-            </div>
-
         </div>
 
-        <div style="text-align: center; margin-top: 90px; color: #888; font-size: 0.95em; line-height: 1.8;">
-            SIGAPAR — Trabalho de Conclusão de Disciplina<br/>
+        <!-- RODAPÉ -->
+        <div style="text-align: center; margin-top: 90px; color: #888;
+                    font-size: 0.95em; line-height: 1.8;">
+            SIGAPAR — Acesso Público<br/>
             Desenvolvimento Web • Bacharelado em Ciência da Computação • 2025
         </div>
 
     </ui:define>
 </ui:composition>
-us</html>

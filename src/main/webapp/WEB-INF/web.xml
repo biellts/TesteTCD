@@ -7,7 +7,7 @@
 
     <display-name>SIGAPAR</display-name>
 
-    <!-- Tema PrimeFaces gratuito e oficial -->
+    <!-- Tema PrimeFaces -->
     <context-param>
         <param-name>primefaces.THEME</param-name>
         <param-value>saga</param-value>
@@ -52,7 +52,7 @@
         <location>/error/500.xhtml</location>
     </error-page>
 
-    <!-- Sessão -->
+    <!-- Tempo de sessão (RF001 – 30 min) -->
     <session-config>
         <session-timeout>30</session-timeout>
     </session-config>

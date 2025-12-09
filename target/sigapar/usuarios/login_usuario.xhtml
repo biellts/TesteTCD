@@ -1,39 +1,67 @@
-<ui:composition template="/templates/layout.xhtml"
-    xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:h="jakarta.faces.html"
-    xmlns:ui="jakarta.faces.facelets">
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:ui="jakarta.faces.facelets">
 
-    <ui:define name="conteudo">
+<ui:composition template="/templates/layout.xhtml">
+<ui:define name="conteudo">
 
-        <div style="text-align:center; margin-top:40px;">
-            <h1 style="color:var(--primary); font-size:2.4em; margin-bottom:10px;">
-                Acesso do Usuário
-            </h1>
-            <p style="color:#666;">Gerencie seus agendamentos</p>
-        </div>
+<style>
+    .login-card {
+        max-width:420px; margin:40px auto;
+        padding:30px; background:white;
+        border-radius:14px; box-shadow:0 8px 25px rgba(0,0,0,0.12);
+    }
+    .login-btn {
+        width:100%; padding:14px;
+        color:white; font-weight:700;
+        border-radius:10px; border:none;
+        background:var(--primary);
+    }
+    .login-input {
+        width:100%; padding:10px;
+        border:1px solid #ccc; border-radius:8px;
+        margin-bottom:18px;
+    }
+</style>
 
-        <div style="max-width:380px; margin:40px auto;">
-            <div class="card">
+<div style="text-align:center; margin-top:40px;">
+    <h1 style="color:var(--primary); font-size:2.4em;">
+        🙋‍♂️ Login do Usuário
+    </h1>
+    <p style="color:#666;">Acesse sua conta</p>
+</div>
 
-                <h:form>
-                    <h:messages style="color:#d32f2f; margin-bottom:15px;" />
+<div class="login-card">
+<h:form>
 
-                    <label>Email</label>
-                    <h:inputText value="#{loginController.email}"
-                                 style="width:100%; margin-bottom:15px;" />
+    <h:messages style="color:red; margin-bottom:15px;" />
 
-                    <label>Senha</label>
-                    <h:inputSecret value="#{loginController.senha}"
-                                   style="width:100%; margin-bottom:20px;" />
+    <label>Email</label>
+    <h:inputText value="#{loginController.email}" styleClass="login-input" />
 
-                    <h:commandButton value="Entrar"
-                                     action="#{loginController.login}"
-                                     style="width:100%; padding:12px; font-weight:600;" />
-                </h:form>
+    <label>Senha</label>
+    <h:inputSecret value="#{loginController.senha}" styleClass="login-input" />
 
-            </div>
-        </div>
+    <h:commandButton value="Entrar"
+                     action="#{loginController.login}"
+                     styleClass="login-btn" />
 
-    </ui:define>
+    <div style="text-align:center; margin-top:20px;">
+        <h:link value="Criar conta" outcome="/publico/cadastro.xhtml" />
+    </div>
 
+    <div style="text-align:center; margin-top:10px;">
+       <h:link value="Esqueci minha senha" outcome="/publico/esqueci-senha.xhtml" />
+    </div>
+
+    <div style="text-align:center; margin-top:10px;">
+        <h:link value="Voltar" outcome="/publico/escolher-acesso.xhtml" />
+    </div>
+
+</h:form>
+</div>
+
+</ui:define>
 </ui:composition>
+</html>

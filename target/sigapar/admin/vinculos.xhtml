@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<ui:composition template="/templates/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:define name="conteudo">
+
+        <div style="text-align:center; padding:50px 20px;">
+            <h1 style="color:#036fab; font-size:2.8em;">Vinculação de Atendimento</h1>
+            <p style="color:#555; font-size:1.3em;">Quem atende o quê, onde e quando</p>
+        </div>
+
+        <h:form id="formTudo">
+
+            <!-- MENSAGENS -->
+            <h:messages globalOnly="true" styleClass="msg" layout="table" />
+
+            <!-- FORMULÁRIO DE CRIAÇÃO -->
+            <div style="max-width:1000px; margin:0 auto 40px; padding:30px; background:#f9f9f9; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.1);">
+                <h2 style="color:#036fab; margin-bottom:20px;">Criar Novo Vínculo</h2>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+
+                    <div>
+                        <strong>Atendente *</strong><br/>
+                        <h:selectOneMenu value="#{vinculoController.atendenteId}" required="true" style="width:100%; padding:10px; margin-top:5px;">
+                            <f:selectItem itemLabel="Selecione..." itemValue="" />
+                            <f:selectItems value="#{vinculoController.atendentes}" var="a" itemValue="#{a.id}" itemLabel="#{a.nome} (#{a.cpf})" />
+                        </h:selectOneMenu>
+                    </div>
+
+                    <div>
+                        <strong>Serviço *</strong><br/>
+                        <h:selectOneMenu value="#{vinculoController.servicoId}" required="true" style="width:100%; padding:10px; margin-top:5px;">
+                            <f:selectItem itemLabel="Selecione..." itemValue="" />
+                            <f:selectItems value="#{vinculoController.servicosAtivos}" var="s" itemValue="#{s.id}" itemLabel="#{s.nome}" />
+                        </h:selectOneMenu>
+                    </div>
+
+                    <div>
+                        <strong>Guichê/Sala *</strong><br/>
+                        <h:selectOneMenu value="#{vinculoController.espacoId}" required="true" style="width:100%; padding:10px; margin-top:5px;">
+                            <f:selectItem itemLabel="Selecione..." itemValue="" />
+                            <f:selectItems value="#{vinculoController.espacosAtivos}" var="e" itemValue="#{e.id}" itemLabel="#{e.codigo} - #{e.descricao}" />
+                        </h:selectOneMenu>
+                    </div>
+
+                    <div>
+                        <strong>Horário *</strong><br/>
+                        <h:selectOneMenu value="#{vinculoController.horarioId}" required="true" style="width:100%; padding:10px; margin-top:5px;">
+                            <f:selectItem itemLabel="Selecione..." itemValue="" />
+                            <f:selectItems value="#{vinculoController.horariosAtivos}" var="h" 
+                                           itemValue="#{h.id}" 
+                                           itemLabel="#{vinculoController.getDiaSemanaFormatado(h.diaSemana)} - #{h.horaFormatada}" />
+                        </h:selectOneMenu>
+                    </div>
+
+                </div>
+
+                <div style="text-align:center; margin-top:30px;">
+                    <h:commandButton value="CRIAR VÍNCULO"
+                                     action="#{vinculoController.salvar}"
+                                     style="padding:14px 50px; background:#036fab; color:white; border:none; border-radius:8px; font-size:1.2em; font-weight:bold;">
+                        <f:ajax execute="@form" render="listaVinculos" />
+                    </h:commandButton>
+                </div>
+            </div>
+
+            <!-- LISTA DE VÍNCULOS -->
+            <h:panelGroup id="listaVinculos">
+                <div style="max-width:1200px; margin:0 auto; padding:30px; background:white; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.1);">
+                    <h2 style="color:#036fab; margin-bottom:20px;">Vínculos Cadastrados</h2>
+
+                    <h:dataTable value="#{vinculoController.lista}" var="v"
+                                 style="width:100%; border-collapse:collapse;">
+                        <h:column>
+                            <f:facet name="header"><strong>Atendente</strong></f:facet>
+                            #{v.atendente.nome} (#{v.atendente.cpf})
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header"><strong>Serviço</strong></f:facet>
+                            #{v.servico.nome}
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header"><strong>Local</strong></f:facet>
+                            #{v.espaco.codigo} - #{v.espaco.descricao}
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header"><strong>Horário</strong></f:facet>
+                            #{vinculoController.getDiaSemanaFormatado(v.horario.diaSemana)} - #{v.horario.horaFormatada}
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header"><strong>Ação</strong></f:facet>
+                            <h:commandLink value="Excluir"
+                                           action="#{vinculoController.excluir(v.id)}"
+                                           onclick="return confirm('Excluir este vínculo?');"
+                                           style="color:red; font-weight:bold;">
+                                <f:ajax execute="@this" render="listaVinculos" />
+                            </h:commandLink>
+                        </h:column>
+                    </h:dataTable>
+
+                    <h:outputText value="Nenhum vínculo cadastrado ainda." 
+                                  rendered="#{empty vinculoController.lista}"
+                                  style="text-align:center; display:block; padding:30px; color:#999; font-style:italic;" />
+                </div>
+            </h:panelGroup>
+
+        </h:form>
+
+    </ui:define>
+</ui:composition>

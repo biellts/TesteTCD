@@ -1,19 +1,123 @@
+<!DOCTYPE html>
 <ui:composition template="/templates/layout.xhtml"
     xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:h="jakarta.faces.html"
-    xmlns:ui="jakarta.faces.facelets">
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui">
 
-<ui:define name="conteudo">
-  <h1>Meus Agendamentos</h1>
+    <ui:define name="conteudo">
+        <div style="max-width: 900px; margin: 0 auto; padding: 30px 20px;">
 
-  <h:dataTable value="#{agendamentoController.listarMeusAgendamentos()}" var="a">
-    <h:column><f:facet name="header">Serviço</f:facet>#{a.servico.nome}</h:column>
-    <h:column><f:facet name="header">Data/Hora</f:facet>#{a.dataHora}</h:column>
-    <h:column>
-      <h:form>
-        <h:commandButton value="Cancelar" action="#{agendamentoController.cancelar(a)}" rendered="#{agendamentoController.podeCancelar(a)}"/>
-      </h:form>
-    </h:column>
-  </h:dataTable>
-</ui:define>
+            <!-- CABEÇALHO -->
+            <div style="text-align:center; margin-bottom: 40px;">
+                <h1 style="color:#036fab; font-size:2.5em; margin:0; font-weight:700;">
+                    🗓 Meus Agendamentos
+                </h1>
+                <p style="color:#555; font-size:1.1em; margin-top:12px;">
+                    Confira todos os seus agendamentos, cancele ou reagende quando necessário.
+                </p>
+            </div>
+
+            <!-- MENSAGENS -->
+            <h:messages globalOnly="true" style="margin-bottom:20px; font-size:1.1em;" />
+
+            <!-- TABELA DE AGENDAMENTOS -->
+            <h:form id="formAgendamentos">
+                <h:panelGroup id="agendamentoTable">
+                    <h:panelGroup rendered="#{not empty agendamentoSimplificadoController.meusAgendamentos}">
+                        <table class="table_default"
+                               style="width:100%; background:white; box-shadow:0 8px 25px rgba(0,0,0,0.08);
+                               border-radius:14px; overflow:hidden; font-size:1.05em; margin-top:20px;">
+                            <thead style="background:#036fab; color:white;">
+                                <tr>
+                                    <th style="padding:15px;">Protocolo</th>
+                                    <th style="padding:15px;">Serviço</th>
+                                    <th style="padding:15px;">Data</th>
+                                    <th style="padding:15px;">Horário</th>
+                                    <th style="padding:15px;">Status</th>
+                                    <th style="padding:15px; width:250px;">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <ui:repeat value="#{agendamentoSimplificadoController.meusAgendamentos}" var="a">
+                                    <ui:fragment rendered="#{a.status != 'CANCELADO'}">
+                                        <tr style="border-bottom:1px solid #eee;">
+                                            <td style="padding:15px; text-align:center;">
+                                                <strong style="font-family:monospace; font-size:1.1em; color:#036fab;">
+                                                    #{a.protocolo}
+                                                </strong>
+                                            </td>
+                                            <td style="padding:15px;">#{a.servico.nome}</td>
+                                            <td style="padding:15px; text-align:center;">
+                                                #{agendamentoSimplificadoController.formatarData(a.data)}
+                                            </td>
+                                            <td style="padding:15px; text-align:center;">
+                                                #{agendamentoSimplificadoController.formatarHora(a.horario)}
+                                            </td>
+                                            <td style="padding:15px; text-align:center;">
+                                                <span style="padding:6px 12px; border-radius:18px; font-weight:600; font-size:0.9em;
+                                                    #{a.status == 'AGENDADO' ? 'background:#d4edda; color:#155724;' :
+                                                      a.status == 'EM_FILA' ? 'background:#fff3cd; color:#856404;' :
+                                                      a.status == 'CONCLUIDO' ? 'background:#d1ecf1; color:#0c5460;' :
+                                                      'background:#e2e3e5; color:#383d41;'}">
+                                                    #{a.status}
+                                                </span>
+                                            </td>
+                                            <td style="padding:15px; text-align:center;">
+                                                <!-- Detalhes -->
+                                                <h:commandButton value="🔍 Detalhes"
+                                                                 action="#{agendamentoSimplificadoController.verDetalhes(a)}"
+                                                                 onclick="PF('detalhesDialog').show(); return false;"
+                                                                 style="padding:6px 12px; background:#17a2b8; color:white; border-radius:5px; margin:2px; font-weight:600;">
+                                                    <f:ajax render=":formDetalhes"/>
+                                                </h:commandButton>
+
+                                                <!-- Cancelar -->
+                                                <h:commandButton value="❌ Cancelar"
+                                                                 action="#{agendamentoSimplificadoController.cancelarAgendamento(a)}"
+                                                                 onclick="return confirm('Tem certeza que deseja cancelar o agendamento #{a.protocolo}?');"
+                                                                 style="padding:6px 12px; background:#dc3545; color:white; border-radius:5px; margin:2px; font-weight:600;">
+                                                    <f:ajax render="@form" />
+                                                </h:commandButton>
+
+                                                <!-- Reagendar -->
+                                                <h:commandButton value="📝 Reagendar"
+                                                                 action="#{agendamentoSimplificadoController.reagendar(a)}"
+                                                                 style="padding:6px 12px; background:#ffc107; color:white; border-radius:5px; margin:2px; font-weight:600;">
+                                                </h:commandButton>
+                                            </td>
+                                        </tr>
+                                    </ui:fragment>
+                                </ui:repeat>
+                            </tbody>
+                        </table>
+                    </h:panelGroup>
+                    <h:panelGroup rendered="#{empty agendamentoSimplificadoController.meusAgendamentos}" 
+                                  style="margin-top:30px; text-align:center; color:#666; font-size:1.1em;">
+                        😕 Você ainda não possui agendamentos.
+                    </h:panelGroup>
+                </h:panelGroup>
+            </h:form>
+
+            <!-- MODAL DETALHES -->
+            <h:form id="formDetalhes">
+                <p:dialog header="Detalhes do Agendamento" widgetVar="detalhesDialog" modal="true" resizable="false">
+                    <h:panelGrid columns="2" cellpadding="5">
+                        <h:outputText value="Protocolo:"/>
+                        <h:outputText value="#{agendamentoSimplificadoController.agendamentoSelecionado.protocolo}"/>
+                        <h:outputText value="Serviço:"/>
+                        <h:outputText value="#{agendamentoSimplificadoController.agendamentoSelecionado.servico.nome}"/>
+                        <h:outputText value="Data:"/>
+                        <h:outputText value="#{agendamentoSimplificadoController.formatarData(agendamentoSimplificadoController.agendamentoSelecionado.data)}"/>
+                        <h:outputText value="Horário:"/>
+                        <h:outputText value="#{agendamentoSimplificadoController.formatarHora(agendamentoSimplificadoController.agendamentoSelecionado.horario)}"/>
+                        <h:outputText value="Status:"/>
+                        <h:outputText value="#{agendamentoSimplificadoController.agendamentoSelecionado.status}"/>
+                    </h:panelGrid>
+                </p:dialog>
+            </h:form>
+
+        </div>
+    </ui:define>
 </ui:composition>

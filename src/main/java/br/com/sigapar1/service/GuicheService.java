@@ -4,6 +4,7 @@ import br.com.sigapar1.dao.GuicheDAO;
 import br.com.sigapar1.entity.Guiche;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+
 import java.util.List;
 
 @ApplicationScoped
@@ -13,15 +14,26 @@ public class GuicheService {
     private GuicheDAO dao;
 
     public void salvar(Guiche g) {
-        if (g.getId() == null) dao.salvar(g);
-        else dao.atualizar(g);
+        if (g.getId() == null) {
+            dao.salvar(g);
+        } else {
+            dao.atualizar(g);
+        }
     }
 
     public List<Guiche> listarTodos() {
         return dao.listarTodos();
     }
 
+    public List<Guiche> listarAtivos() {
+        return dao.listarAtivos();
+    }
+
     public void excluir(Long id) {
-        dao.remover(dao.buscarPorId(id));
+        Guiche g = dao.buscarPorId(id);
+        if (g != null) {
+            g.setAtivo(false);
+            dao.atualizar(g);
+        }
     }
 }

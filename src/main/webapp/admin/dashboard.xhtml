@@ -1,39 +1,105 @@
-<ui:composition template="/templates/layout.xhtml"
-    xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+<ui:composition template="/templates/layout.xhtml">
 
 <ui:define name="conteudo">
 
-<h1>Painel Administrativo</h1>
-
-<div class="card-wrapper">
-
-    <div class="card">
-        <h2>🧑‍💼</h2>
-        <p>Usuários</p>
-        <h:link outcome="usuarios.xhtml" value="Gerenciar"/>
+    <!-- CABEÇALHO -->
+    <div style="text-align:center; padding:30px 20px 40px;">
+        <h1 style="font-size:2.8em; color:var(--primary); margin:0;">
+            Painel do Administrador
+        </h1>
+        <p style="font-size:1.3em; color:#555; margin-top:10px;">
+            SIGAPAR – Sistema de Gestão de Atendimento Presencial com Agendamento
+        </p>
     </div>
 
-    <div class="card">
-        <h2>🛎</h2>
-        <p>Guichês</p>
-        <h:link outcome="guiches.xhtml" value="Gerenciar"/>
+    <!-- GRID DE CARDS -->
+    <div style="
+        max-width:1100px;
+        margin:0 auto;
+        display:flex;
+        flex-wrap:wrap;
+        justify-content:center;
+        gap:35px;
+        padding:20px;
+    ">
+
+        <!-- CARD MODELO -->
+        <style>
+            .card-link {
+                width:300px;
+                padding:25px;
+                text-align:center;
+                border-radius:12px;
+                background:white;
+                text-decoration:none;
+                color:inherit;
+                display:block;
+                box-shadow:0 6px 20px rgba(0,0,0,0.08);
+                transition:transform .15s ease, box-shadow .15s ease;
+            }
+            .card-link:hover {
+                transform:translateY(-6px);
+                box-shadow:0 12px 25px rgba(0,0,0,0.15);
+            }
+            .card-link h2 {
+                margin:0 0 10px 0;
+            }
+            .card-link p {
+                margin:0;
+                color:#666;
+            }
+        </style>
+
+        <!-- Usuários -->
+        <h:link outcome="/admin/usuarios.xhtml" styleClass="card-link">
+            <h2 style="color:#2196F3;">👤 Usuários</h2>
+            <p>Gerenciamento de funcionários e administradores</p>
+        </h:link>
+
+        <!-- Serviços -->
+        <h:link outcome="/admin/servicos.xhtml" styleClass="card-link">
+            <h2 style="color:#4CAF50;">🛠️ Serviços</h2>
+            <p>Cadastrar e editar serviços</p>
+        </h:link>
+
+        <!-- Espaços -->
+        <h:link outcome="/admin/espacos.xhtml" styleClass="card-link">
+            <h2 style="color:#FF9800;">🏢 Espaços</h2>
+            <p>Gerenciar guichês e ambientes</p>
+        </h:link>
+
+        <!-- Horários -->
+        <h:link outcome="/admin/horarios.xhtml" styleClass="card-link">
+            <h2 style="color:#9C27B0;">⏰ Horários</h2>
+            <p>Controle de horários e feriados</p>
+        </h:link>
+
+        <!-- Vínculos -->
+        <h:link outcome="/admin/vinculos.xhtml" styleClass="card-link">
+            <h2 style="color:#795548;">🔗 Vínculos</h2>
+            <p>Atendente × Serviço × Espaço × Horário</p>
+        </h:link>
+
     </div>
 
-    <div class="card">
-        <h2>🗓</h2>
-        <p>Horários</p>
-        <h:link outcome="horarios.xhtml" value="Gerenciar"/>
+    <!-- RODAPÉ -->
+    <div style="text-align:center; margin-top:70px; color:#888; font-size:1em;">
+        <p>
+            <strong>Atualização automática a cada 6 segundos</strong> • SIGAPAR © 2025
+        </p>
     </div>
 
-    <div class="card">
-        <h2>🛠</h2>
-        <p>Serviços</p>
-        <h:link outcome="servicos.xhtml" value="Gerenciar"/>
-    </div>
-
-</div>
+    <h:outputScript>
+        setTimeout(() => location.reload(), 6000);
+    </h:outputScript>
 
 </ui:define>
 </ui:composition>
+
+</html>

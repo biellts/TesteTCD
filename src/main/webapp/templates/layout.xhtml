@@ -1,74 +1,102 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="jakarta.faces.html"
-      xmlns:ui="jakarta.faces.facelets">
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:f="jakarta.faces.core">
 
 <h:head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SIGAPAR - Sistema de Gestão de Atendimentos</title>
-    
-    <!-- Google Fonts – & corrigido para &amp; -->
-    <h:outputStylesheet name="css/app.css" />
-    <link rel="stylesheet" 
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" />
+    <title>SIGAPAR - Sistema</title>
+
+    <!-- CSS principal -->
+    <h:outputStylesheet name="css/app.css"/>
+
+    <!-- Evita cache após logout -->
+    <meta http-equiv="Cache-Control" content="no-store" />
 </h:head>
 
 <h:body>
+
     <!-- Top Bar -->
     <div class="top-bar">
-        <a href="#{facesContext.externalContext.requestContextPath}/index.xhtml" class="brand">
+
+        <!-- Logo -->
+        <a href="#{facesContext.externalContext.requestContextPath}/index.xhtml"
+           class="brand">
             SIGAPAR
         </a>
 
-        <div class="menu">
-            <h:link outcome="/index.xhtml" value="Início" />
+        <!-- FORM para os botões funcionarem -->
+        <h:form>
 
-            <ui:fragment rendered="#{not empty autenticacaoController.usuarioLogado}">
-                <h:link outcome="/agendamento/servicos.xhtml" value="Agendar" />
-                <h:link outcome="/agendamento/meus.xhtml" value="Meus Agendamentos" />
-                <h:link outcome="/publico/painel.xhtml" value="Painel de Chamadas" />
+            <div class="menu">
 
-                <!-- Recepção -->
-                <ui:fragment rendered="#{autenticacaoController.temRole('RECEPTIONIST') or autenticacaoController.temRole('ADMIN')}">
-                    <h:link outcome="/recepcao/index.xhtml" value="Recepção" />
+                <h:link outcome="/index.xhtml" value="Início" />
+
+                <!-- SE ESTIVER LOGADO -->
+                <ui:fragment rendered="#{not empty loginController.usuarioLogado}">
+
+                    <!-- Usuário comum -->
+                    <ui:fragment rendered="#{loginController.temRole('ROLE_USER')}">
+                        <h:link outcome="/agendamento/agendar.xhtml" value="Agendar" />
+                        <h:link outcome="/agendamento/meus.xhtml" value="Meus Agendamentos" />
+                    </ui:fragment>
+
+                    <!-- Painel sempre pode ser visto por qualquer usuário logado -->
+                    <h:link outcome="/publico/painel.xhtml" value="Painel de Chamadas" />
+
+                    <!-- Recepção -->
+                    <ui:fragment rendered="#{loginController.temRole('ROLE_RECEPTIONIST') 
+                                              or loginController.temRole('ROLE_ADMIN')}">
+                        <h:link outcome="/recepcao/dashboard.xhtml" value="Recepção" />
+                    </ui:fragment>
+
+                    <!-- Atendente -->
+                    <ui:fragment rendered="#{loginController.temRole('ROLE_ATTENDANT') 
+                                              or loginController.temRole('ROLE_ADMIN')}">
+                        <h:link outcome="/atendente/home.xhtml" value="Atendente" />
+                    </ui:fragment>
+
+                    <!-- Admin -->
+                    <ui:fragment rendered="#{loginController.temRole('ROLE_ADMIN')}">
+                        <h:link outcome="/admin/dashboard.xhtml" value="Administração" />
+                    </ui:fragment>
+
+                    <!-- Nome do usuário sem risco de nullpointer -->
+                    <span style="margin-left: 20px; color: #eee;">
+                        Olá,
+                        #{(loginController.usuarioLogado.nome ne null and
+                           loginController.usuarioLogado.nome ne '')
+                           ? loginController.usuarioLogado.nome.split(' ')[0]
+                           : 'Usuário'}!
+                    </span>
+
+                    <!-- LOGOUT FUNCIONANDO -->
+                    <h:commandLink value="Sair"
+                                   action="#{loginController.logout}"
+                                   style="margin-left: 15px; color: #ff6b6b;" />
                 </ui:fragment>
 
-                <!-- Atendente -->
-                <ui:fragment rendered="#{autenticacaoController.temRole('ATTENDANT') or autenticacaoController.temRole('ADMIN')}">
-                    <h:link outcome="/atendente/index.xhtml" value="Atendente" />
+
+                <!-- SE NÃO ESTIVER LOGADO -->
+                <ui:fragment rendered="#{empty loginController.usuarioLogado}">
+                    <h:link outcome="/publico/escolher-acesso.xhtml" value="Entrar" />
+                    <h:link outcome="/publico/cadastro.xhtml" value="Cadastrar" />
                 </ui:fragment>
 
-                <!-- Admin -->
-                <ui:fragment rendered="#{autenticacaoController.temRole('ADMIN')}">
-                    <h:link outcome="/admin/index.xhtml" value="Administração" />
-                </ui:fragment>
-
-                <span style="margin-left: 20px; color: #eee;">
-                    Olá, #{autenticacaoController.usuarioLogado.nome.split(' ')[0]}!
-                </span>
-                <h:link outcome="/logout" value="Sair" style="margin-left: 15px; color: #ff6b6b;" />
-            </ui:fragment>
-
-            <ui:fragment rendered="#{empty autenticacaoController.usuarioLogado}">
-                <h:link outcome="/publico/escolher-acesso.xhtml" value="Entrar" />
-                <h:link outcome="/publico/cadastro.xhtml" value="Cadastrar" />
-            </ui:fragment>
-        </div>
+            </div>
+        </h:form>
     </div>
 
-    <!-- Conteúdo principal -->
+    <!-- Conteúdo -->
     <div class="content container">
         <ui:insert name="conteudo" />
     </div>
 
-    <!-- Rodapé 100% XHTML válido -->
+    <!-- Rodapé -->
     <div class="footer">
-        <p>
-            SIGAPAR — Sistema de Gestão de Atendimentos Presenciais com Agendamento Remoto<br/>
-            Trabalho de Conclusão de Disciplina — Desenvolvimento Web<br/>
-            Bacharelado em Ciência da Computação — 2025
-        </p>
+        <p>SIGAPAR - Sistema de Gestão</p>
     </div>
+
 </h:body>
 </html>

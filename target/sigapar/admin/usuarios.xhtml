@@ -1,39 +1,211 @@
-<ui:composition template="/templates/layout.xhtml"
-    xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:h="jakarta.faces.html"
-    xmlns:ui="jakarta.faces.facelets">
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
-<ui:define name="conteudo">
-  <h1>Usuários</h1>
+<ui:composition template="/templates/layout.xhtml">
 
-  <h:form>
-    <h:panelGrid columns="2">
-      <h:outputLabel value="Nome"/>
-      <h:inputText value="#{usuarioController.usuario.nome}" required="true"/>
-      <h:outputLabel value="Email"/>
-      <h:inputText value="#{usuarioController.usuario.email}" required="true"/>
-      <h:outputLabel value="Senha"/>
-      <h:inputSecret value="#{usuarioController.usuario.senha}" required="true"/>
-      <h:outputLabel value="Role"/>
-      <h:selectOneMenu value="#{usuarioController.usuario.role}">
-        <f:selectItem itemValue="ROLE_ADMIN" itemLabel="Administrador"/>
-        <f:selectItem itemValue="ROLE_ATTENDANT" itemLabel="Atendente"/>
-        <f:selectItem itemValue="ROLE_USER" itemLabel="Usuário"/>
-      </h:selectOneMenu>
-    </h:panelGrid>
-    <h:commandButton value="Salvar" action="#{usuarioController.salvar}"/>
-  </h:form>
+    <ui:define name="conteudo">
 
-  <h2>Lista</h2>
-  <h:dataTable value="#{usuarioController.lista}" var="u">
-    <h:column><f:facet name="header">ID</f:facet>#{u.id}</h:column>
-    <h:column><f:facet name="header">Nome</f:facet>#{u.nome}</h:column>
-    <h:column><f:facet name="header">Email</f:facet>#{u.email}</h:column>
-    <h:column><f:facet name="header">Role</f:facet>#{u.role}</h:column>
-    <h:column>
-      <h:commandLink value="Editar" action="#{usuarioController.editar(u)}"/>
-      <h:commandLink value="Excluir" action="#{usuarioController.excluir(u.id)}"/>
-    </h:column>
-  </h:dataTable>
-</ui:define>
+        <!-- CABEÇALHO -->
+        <div style="text-align:center; padding:40px 20px;">
+            <h1 style="color:#036fab; font-size:2.5em; margin:0;">
+                Gerenciar Usuários
+            </h1>
+            <p style="color:#555; font-size:1.2em; margin-top:10px;">
+                Cadastro e edição de funcionários
+            </p>
+        </div>
+
+        <!-- FORMULÁRIO DE CADASTRO/EDIÇÃO -->
+        <div class="card-wrapper" style="max-width:1000px; margin:0 auto 40px;">
+            <div class="card" style="padding:30px; border-radius:12px; box-shadow:0 8px 25px rgba(0,0,0,0.1);">
+
+                <h2 style="color:#036fab; margin-bottom:25px;">
+                    #{usuarioController.usuario.id == null ? 'Novo Usuário' : 'Editar Usuário'}
+                </h2>
+
+                <h:form id="formCadastro" prependId="false">
+                    <h:messages globalOnly="true" layout="table" styleClass="msg-error" style="margin-bottom:15px;" />
+
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:25px;">
+
+                        <div style="grid-column: span 2;">
+                            <strong>Nome completo *</strong><br/>
+                            <h:inputText id="nome" value="#{usuarioController.usuario.nome}" required="true"
+                                         style="width:100%; padding:12px; margin-top:8px; font-size:1em; border-radius:6px; border:1px solid #ccc;" />
+                        </div>
+
+                        <div>
+                            <strong>CPF *</strong><br/>
+                            <h:inputText id="cpf" value="#{usuarioController.usuario.cpf}" required="true"
+                                         style="width:100%; padding:12px; margin-top:8px; border-radius:6px; border:1px solid #ccc;" />
+                        </div>
+
+                        <div>
+                            <strong>E-mail *</strong><br/>
+                            <h:inputText id="email" value="#{usuarioController.usuario.email}" required="true"
+                                         style="width:100%; padding:12px; margin-top:8px; border-radius:6px; border:1px solid #ccc;" />
+                        </div>
+
+                        <div>
+                            <strong>Telefone</strong><br/>
+                            <h:inputText id="telefone" value="#{usuarioController.usuario.telefone}"
+                                         style="width:100%; padding:12px; margin-top:8px; border-radius:6px; border:1px solid #ccc;" />
+                        </div>
+
+                        <div>
+                            <strong>Matrícula *</strong><br/>
+                            <h:inputText id="matricula" value="#{usuarioController.usuario.matricula}" required="true"
+                                         style="width:100%; padding:12px; margin-top:8px; border-radius:6px; border:1px solid #ccc;" />
+                        </div>
+
+                        <div>
+                            <strong>Perfil *</strong><br/>
+                            <h:selectOneMenu id="role" value="#{usuarioController.usuario.role}"
+                                             style="width:100%; padding:12px; margin-top:8px; border-radius:6px; border:1px solid #ccc;">
+                                <f:selectItem itemValue="#{null}" itemLabel="Selecione..." noSelectionOption="true" />
+                                <f:selectItem itemValue="ROLE_ADMIN" itemLabel="Administrador" />
+                                <f:selectItem itemValue="ROLE_RECEPTIONIST" itemLabel="Recepcionista" />
+                                <f:selectItem itemValue="ROLE_ATTENDANT" itemLabel="Atendente" />
+                                <f:selectItem itemValue="ROLE_USER" itemLabel="Usuário Comum" />
+                                <f:ajax execute="@this" render="guichePanel" />
+                            </h:selectOneMenu>
+                        </div>
+
+                        <div style="align-self:end;">
+                            <h:selectBooleanCheckbox value="#{usuarioController.usuario.ativo}" />
+                            <strong style="margin-left:10px;">Usuário ativo</strong>
+                        </div>
+
+                        <!-- Guichê e Espaço (apenas para Atendente) -->
+                        <div id="guichePanel" style="grid-column: span 2;">
+                            <h:panelGroup rendered="#{usuarioController.usuario.role eq 'ROLE_ATTENDANT'}">
+                                <div style="margin-bottom:15px;">
+                                    <strong>Guichê *</strong><br/>
+                                    <h:selectOneMenu id="guiche" value="#{usuarioController.usuario.guiche}" required="true"
+                                                     style="width:100%; padding:12px; margin-top:8px; border-radius:6px; border:1px solid #ccc;">
+                                        <f:selectItem itemValue="#{null}" itemLabel="Selecione..." />
+                                        <f:selectItems value="#{usuarioController.guiches}" var="g" itemValue="#{g}" itemLabel="#{g.nome}" />
+                                    </h:selectOneMenu>
+                                </div>
+
+                                <strong>Espaço de Atendimento (opcional)</strong><br/>
+                                <h:selectOneMenu id="espaco" value="#{usuarioController.usuario.espacoAtendimento}"
+                                                 style="width:100%; padding:12px; margin-top:8px; border-radius:6px; border:1px solid #ccc;">
+                                    <f:selectItem itemValue="#{null}" itemLabel="Nenhum" />
+                                    <f:selectItems value="#{usuarioController.espacos}" var="e" itemValue="#{e}" itemLabel="#{e.nome}" />
+                                </h:selectOneMenu>
+                            </h:panelGroup>
+                        </div>
+
+                        <div style="grid-column: span 2; margin-top:15px;">
+                            <h:selectBooleanCheckbox id="gerarSenha" value="#{usuarioController.gerarSenhaTemporaria}" />
+                            <strong style="margin-left:10px;">Gerar e enviar nova senha temporária</strong>
+                        </div>
+
+                    </div>
+
+                    <div style="margin-top:35px; text-align:right;">
+                        <h:commandButton value="#{usuarioController.usuario.id == null ? 'Cadastrar Usuário' : 'Salvar Alterações'}"
+                                         action="#{usuarioController.salvar}"
+                                         style="padding:14px 40px; background:#036fab; color:white; border:none; border-radius:8px; font-weight:600; font-size:1.1em; cursor:pointer;">
+                            <f:ajax execute="@form" render="@form formLista" />
+                        </h:commandButton>
+
+                        <h:commandButton value="Limpar" immediate="true" action="#{usuarioController.resetarUsuario}"
+                                         style="margin-left:15px; padding:14px 30px; background:#6c757d; color:white; border:none; border-radius:8px; font-weight:600;">
+                            <f:ajax render="formCadastro" />
+                        </h:commandButton>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+
+        <!-- LISTA DE USUÁRIOS -->
+        <div class="card-wrapper" style="max-width:1200px; margin:0 auto;">
+            <div class="card" style="padding:30px; border-radius:12px; box-shadow:0 5px 18px rgba(0,0,0,0.08);">
+
+                <h2 style="color:#036fab; margin-bottom:25px;">Lista de Usuários</h2>
+
+                <h:form id="formLista" prependId="false">
+
+                    <h:dataTable value="#{usuarioController.lista}" var="u"
+                                 style="width:100%; border-collapse:separate; border-spacing:0 15px; font-size:0.95em;">
+
+                        <!-- Nome -->
+                        <h:column>
+                            <f:facet name="header"><strong>Nome</strong></f:facet>
+                            <h:outputText value="#{u.nome}" />
+                        </h:column>
+
+                        <!-- E-mail -->
+                        <h:column>
+                            <f:facet name="header"><strong>E-mail</strong></f:facet>
+                            <h:outputText value="#{u.email}" />
+                        </h:column>
+
+                        <!-- Perfil -->
+                        <h:column>
+                            <f:facet name="header"><strong>Perfil</strong></f:facet>
+                            <h:outputText value="#{u.role == 'ROLE_ADMIN' ? 'Administrador' : 
+                                                  u.role == 'ROLE_RECEPTIONIST' ? 'Recepcionista' : 
+                                                  u.role == 'ROLE_ATTENDANT' ? 'Atendente' : 'Usuário Comum'}" />
+                        </h:column>
+
+                        <!-- Guichê / Espaço -->
+                        <h:column>
+                            <f:facet name="header"><strong> Espaço </strong></f:facet>
+                            <h:outputText value="#{vinculoController.getEspacoDoAtendente(u)}" />
+                        </h:column>
+
+                        <!-- Status -->
+                        <h:column>
+                            <f:facet name="header"><strong>Status</strong></f:facet>
+                            <h:outputText value="#{u.ativo ? 'ATIVO' : 'INATIVO'}" style="color:#{u.ativo ? '#28a745' : '#dc3545'}; font-weight:bold;" />
+                        </h:column>
+
+                        <!-- Ações -->
+                        <h:column>
+                            <f:facet name="header"><strong>Ações</strong></f:facet>
+                            <h:panelGroup style="text-align:right; white-space:nowrap; font-size:0.95em;">
+                                <h:commandLink value="Editar" action="#{usuarioController.editar(u)}"
+                                               style="color:#007bff; font-weight:600; text-decoration:none; margin-right:8px;">
+                                    <f:ajax render="formCadastro" />
+                                </h:commandLink>
+
+                                <span style="margin:0 8px; color:#aaa; font-weight:bold;">•</span>
+
+                                <h:commandLink value="#{u.ativo ? 'Inativar' : 'Ativar'}"
+                                               action="#{usuarioController.alterarStatus(u.id)}"
+                                               rendered="#{u.id != usuarioController.usuarioLogado.id}"
+                                               style="color:#dc3545; font-weight:600; text-decoration:none; margin-right:8px;">
+                                    <f:ajax execute="@this" render="@form" />
+                                </h:commandLink>
+
+                                <span style="margin:0 8px; color:#aaa; font-weight:bold;">•</span>
+
+                                <h:commandLink value="Excluir"
+                                               action="#{usuarioController.excluir(u.id)}"
+                                               onclick="return confirm('Tem certeza que deseja excluir #{u.nome}?');"
+                                               rendered="#{u.id != usuarioController.usuarioLogado.id}"
+                                               style="color:#dc3545; font-weight:600; text-decoration:none;">
+                                    <f:ajax execute="@form" render="@form formLista" />
+                                </h:commandLink>
+                            </h:panelGroup>
+                        </h:column>
+
+                    </h:dataTable>
+
+                    <h:outputText value="Nenhum usuário cadastrado."
+                                  rendered="#{empty usuarioController.lista}"
+                                  style="text-align:center; display:block; padding:60px 0; color:#888; font-size:1.2em;" />
+
+                </h:form>
+            </div>
+        </div>
+
+    </ui:define>
 </ui:composition>
+</html>

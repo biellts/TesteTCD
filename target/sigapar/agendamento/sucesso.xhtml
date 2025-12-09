@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+<ui:composition template="/templates/layout.xhtml">
+
+<ui:define name="conteudo">
+
+    <!-- HEADER -->
+    <div style="text-align:center; padding:30px 20px 20px;">
+        <h1 style="font-size:2.6em; color:var(--primary); margin:0;">
+            Agendamento Confirmado!
+        </h1>
+        <p style="font-size:1.3em; color:#555; margin-top:12px;">
+            Seu atendimento foi registrado com sucesso no SIGAPAR
+        </p>
+    </div>
+
+    <!-- CARD CENTRAL -->
+    <div style="
+        max-width:600px;
+        margin:40px auto;
+        padding:30px;
+        background:white;
+        border-radius:15px;
+        box-shadow:0 6px 20px rgba(0,0,0,0.08);
+        text-align:center;
+    ">
+
+        <style>
+            .sucesso-protocolo {
+                font-size:2em;
+                color:#4CAF50;
+                font-weight:bold;
+                margin-bottom:20px;
+            }
+            .btn-voltar {
+                margin-top:30px;
+                display:inline-block;
+                background:#2196F3;
+                padding:12px 25px;
+                color:white;
+                border-radius:8px;
+                text-decoration:none;
+                font-size:1.1em;
+                transition:background .2s ease;
+            }
+            .btn-voltar:hover {
+                background:#1976D2;
+            }
+        </style>
+
+        <!-- PROTOCOLO -->
+        <div class="sucesso-protocolo">
+            ✔ Protocolo: 
+            <span style="color:#222;">
+                #{param.protocolo}
+            </span>
+        </div>
+
+        <p style="font-size:1.2em; color:#555;">
+            Guarde seu protocolo para acompanhar ou comprovar o agendamento.
+        </p>
+
+        <!-- BOTÃO VOLTAR -->
+        <h:link outcome="/usuarios/dashboard.xhtml" styleClass="btn-voltar">
+            ⬅ Voltar ao Início
+        </h:link>
+
+    </div>
+
+    <!-- RODAPÉ -->
+    <div style="text-align:center; margin-top:50px; color:#888; font-size:1em;">
+        <p>
+            SIGAPAR – Sistema de Gestão de Atendimento Presencial © 2025
+        </p>
+    </div>
+
+</ui:define>
+</ui:composition>
+
+</html>

@@ -1,46 +1,88 @@
-// Guiche.java
 package br.com.sigapar1.entity;
 
 import jakarta.persistence.*;
-import java.util.List;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "guiche")
-public class Guiche {
+public class Guiche implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String identificador;
+    // Número visível ao público (Guichê 01, 02, 03...)
+    @Column(nullable = false)
+    private Integer numero;
 
-    private String descricao;
+    // Nome opcional (Guichê Prioritário, Atendimento Geral...)
+    private String nome;
 
+    // Se o guichê está ativo ou não
+    @Column(nullable = false)
     private boolean ativo = true;
 
+    // Se quiser amarrar guichê a algum espaço
     @ManyToOne
     private EspacoAtendimento espaco;
 
-    @OneToMany(mappedBy = "guiche")
-    private List<Usuario> atendentes; // usuários com role ATTENDANT
-
     public Guiche() {}
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Guiche(Integer numero, String nome) {
+        this.numero = numero;
+        this.nome = nome;
+        this.ativo = true;
+    }
 
-    public String getIdentificador() { return identificador; }
-    public void setIdentificador(String identificador) { this.identificador = identificador; }
+    // ------------------ GETTERS E SETTERS ------------------
 
-    public String getDescricao() { return descricao; }
-    public void setDescricao(String descricao) { this.descricao = descricao; }
+    public Long getId() {
+        return id;
+    }
 
-    public boolean isAtivo() { return ativo; }
-    public void setAtivo(boolean ativo) { this.ativo = ativo; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public EspacoAtendimento getEspaco() { return espaco; }
-    public void setEspaco(EspacoAtendimento espaco) { this.espaco = espaco; }
+    public Integer getNumero() {
+        return numero;
+    }
 
-    public List<Usuario> getAtendentes() { return atendentes; }
-    public void setAtendentes(List<Usuario> atendentes) { this.atendentes = atendentes; }
+    public void setNumero(Integer numero) {
+        this.numero = numero;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public boolean isAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(boolean ativo) {
+        this.ativo = ativo;
+    }
+
+    public EspacoAtendimento getEspaco() {
+        return espaco;
+    }
+
+    public void setEspaco(EspacoAtendimento espaco) {
+        this.espaco = espaco;
+    }
+
+    @Override
+    public String toString() {
+        return "Guiche{" +
+                "id=" + id +
+                ", numero=" + numero +
+                ", nome='" + nome + '\'' +
+                ", ativo=" + ativo +
+                '}';
+    }
 }

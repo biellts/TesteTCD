@@ -5,61 +5,41 @@
              xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence
                                  https://jakarta.ee/xml/ns/persistence/persistence_3_1.xsd">
 
-    <!-- ============================================================= -->
-    <!--   1) PERSISTENCE UNIT DO WILDFLY (JTA)                         -->
-    <!-- ============================================================= -->
-    <persistence-unit name="sigaparPU" transaction-type="JTA">
+  <!-- ============================================================= -->
+  <!--  PERSISTENCE UNIT DO WILDFLY (JTA + DATASOURCE)              -->
+  <!-- ============================================================= -->
 
-        <jta-data-source>java:/SigaparDS</jta-data-source>
+  <persistence-unit name="sigaparPU" transaction-type="JTA">
 
-        <!-- LISTA COMPLETA DAS ENTIDADES -->
-        <class>br.com.sigapar1.entity.Usuario</class>
-        <class>br.com.sigapar1.entity.Horario</class>
-        <class>br.com.sigapar1.entity.Agendamento</class>
-        <class>br.com.sigapar1.entity.Guiche</class>
+    <!-- O datasource configurado no WildFly -->
+    <jta-data-source>java:/SigaparDS</jta-data-source>
 
-        <properties>
-            <property name="jakarta.persistence.schema-generation.database.action" value="update"/>
-            <property name="hibernate.show_sql" value="true"/>
-            <property name="hibernate.format_sql" value="true"/>
-            <property name="hibernate.use_sql_comments" value="true"/>
-        </properties>
+    <!-- ENTIDADES DO PROJETO -->
+    <class>br.com.sigapar1.entity.Horario</class>
+    <class>br.com.sigapar1.entity.Agendamento</class>
+    <class>br.com.sigapar1.entity.Guiche</class>
+    <class>br.com.sigapar1.entity.Servico</class>
+    <class>br.com.sigapar1.entity.EspacoAtendimento</class>
+    <class>br.com.sigapar1.entity.Feriado</class>
+    <class>br.com.sigapar1.entity.HorarioFuncionamento</class>
+    <class>br.com.sigapar1.entity.Usuario</class>
 
-    </persistence-unit>
+    <!-- CONFIGURAÇÕES DO HIBERNATE -->
+    <properties>
 
+      <!-- MIGRAÇÃO AUTOMÁTICA DO MODELO -->
+      <property name="jakarta.persistence.schema-generation.database.action" value="update"/>
 
-    <!-- ============================================================= -->
-    <!--   2) PERSISTENCE LOCAL (RESOURCE_LOCAL) PARA RODAR MAIN()      -->
-    <!-- ============================================================= -->
-    <persistence-unit name="sigaparLocalPU" transaction-type="RESOURCE_LOCAL">
+      <!-- LOG SQL -->
+      <property name="hibernate.show_sql" value="true"/>
+      <property name="hibernate.format_sql" value="true"/>
+      <property name="hibernate.use_sql_comments" value="true"/>
 
-        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+      <!-- Dialect pode ser omitido porque o datasource já sabe que é PostgreSQL -->
+      <!-- <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/> -->
 
-        <!-- LISTA COMPLETA DAS ENTIDADES -->
-        <class>br.com.sigapar1.entity.Usuario</class>
-        <class>br.com.sigapar1.entity.Horario</class>
-        <class>br.com.sigapar1.entity.Agendamento</class>
-        <class>br.com.sigapar1.entity.Guiche</class>
+    </properties>
 
-        <properties>
-
-            <!-- PostgreSQL -->
-            <property name="jakarta.persistence.jdbc.driver" value="org.postgresql.Driver"/>
-            <property name="jakarta.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/sigapar"/>
-            <property name="jakarta.persistence.jdbc.user" value="gabriel"/>
-            <property name="jakarta.persistence.jdbc.password" value="siqga"/>
-
-            <!-- Hibernate -->
-            <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
-            <property name="hibernate.hbm2ddl.auto" value="update"/>
-
-            <!-- logs SQL -->
-            <property name="hibernate.show_sql" value="true"/>
-            <property name="hibernate.format_sql" value="true"/>
-            <property name="hibernate.use_sql_comments" value="true"/>
-
-        </properties>
-
-    </persistence-unit>
+  </persistence-unit>
 
 </persistence>

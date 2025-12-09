@@ -1,29 +1,185 @@
+<!DOCTYPE html>
 <ui:composition template="/templates/layout.xhtml"
-    xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:h="jakarta.faces.html"
-    xmlns:ui="jakarta.faces.facelets">
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-<ui:define name="conteudo">
-  <h1>Serviços</h1>
+    <ui:define name="conteudo">
 
-  <h:form>
-    <h:panelGrid columns="2">
-      <h:outputLabel value="Nome"/>
-      <h:inputText value="#{servicoController.servico.nome}" required="true"/>
-      <h:outputLabel value="Descrição"/>
-      <h:inputTextarea value="#{servicoController.servico.descricao}"/>
-    </h:panelGrid>
-    <h:commandButton value="Salvar" action="#{servicoController.salvar}"/>
-  </h:form>
+        <!-- TÍTULO -->
+        <div style="text-align:center; padding:40px 20px;">
+            <h1 style="color:#036fab; font-size:2.5em;">Gerenciar Serviços</h1>
+            <p style="color:#555; font-size:1.2em;">Cadastro e gerenciamento dos serviços oferecidos</p>
+        </div>
 
-  <h2>Lista</h2>
-  <h:dataTable value="#{servicoController.lista}" var="s">
-    <h:column><f:facet name="header">ID</f:facet>#{s.id}</h:column>
-    <h:column><f:facet name="header">Nome</f:facet>#{s.nome}</h:column>
-    <h:column>
-      <h:commandLink value="Editar" action="#{servicoController.editar(s)}"/>
-      <h:commandLink value="Excluir" action="#{servicoController.excluir(s.id)}"/>
-    </h:column>
-  </h:dataTable>
-</ui:define>
+        <!-- FORMULÁRIO -->
+        <div class="card-wrapper" style="max-width:1000px; margin:0 auto 40px;">
+            <div class="card" style="padding:30px; border-radius:12px; box-shadow:0 8px 25px rgba(0,0,0,0.1);">
+
+                <h:form id="formServico">
+                    <h:messages globalOnly="true" styleClass="msg-erro" />
+
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:25px;">
+
+                        <!-- Nome -->
+                        <div style="grid-column: span 2;">
+                            <strong>Nome do Serviço *</strong><br/>
+                            <h:inputText value="#{servicoController.servico.nome}" required="true"
+                                         style="width:100%; padding:12px; margin-top:8px; font-size:1em;"/>
+                        </div>
+
+                        <!-- Tempo -->
+                        <div>
+                            <strong>Tempo Estimado (minutos) *</strong><br/>
+                            <h:inputText value="#{servicoController.servico.tempoEstimado}" required="true"
+                                         style="width:100%; padding:12px; margin-top:8px;"/>
+                        </div>
+
+                        <!-- Ativo -->
+                        <div style="align-self:end;">
+                            <h:selectBooleanCheckbox value="#{servicoController.servico.ativo}" />
+                            <strong style="margin-left:10px;">Serviço ativo</strong>
+                        </div>
+
+                        <!-- Descrição -->
+                        <div style="grid-column: span 2;">
+                            <strong>Descrição</strong><br/>
+                            <h:inputTextarea value="#{servicoController.servico.descricao}" rows="3"
+                                             style="width:100%; padding:12px; margin-top:8px;"/>
+                        </div>
+
+                        <!-- Documentos -->
+                        <div style="grid-column: span 2;">
+                            <strong>Documentos Necessários (separados por vírgula)</strong><br/>
+                            <h:inputTextarea value="#{servicoController.servico.documentosNecessarios}" rows="2"
+                                             style="width:100%; padding:12px; margin-top:8px;"/>
+                        </div>
+                    </div>
+
+                    <h:commandButton value="#{servicoController.servico.id == null ? 'Cadastrar Serviço' : 'Salvar Alterações'}"
+                                     action="#{servicoController.salvar}"
+                                     style="margin-top:30px; padding:14px 35px; background:#036fab; color:white; border:none; border-radius:8px; font-weight:600; font-size:1.1em;"/>
+                </h:form>
+            </div>
+        </div>
+
+        <!-- LISTA DE SERVIÇOS -->
+        <div class="card-wrapper" style="max-width:1200px; margin:0 auto;">
+            <div class="card" style="padding:30px; border-radius:12px; box-shadow:0 5px 18px rgba(0,0,0,0.08);">
+
+                <h2 style="color:#036fab; margin-bottom:25px;">Serviços Cadastrados</h2>
+
+                <h:form id="formTabela">
+
+                    <h:dataTable value="#{servicoController.lista}" var="s"
+                                 style="width:100%;" styleClass="tabela">
+
+                        <!-- Nome -->
+                        <h:column>
+                            <f:facet name="header">Nome</f:facet>
+                            <strong>#{s.nome}</strong>
+                        </h:column>
+
+                        <!-- Tempo -->
+                        <h:column>
+                            <f:facet name="header">Tempo</f:facet>
+                            #{s.tempoEstimado} min
+                        </h:column>
+
+                        <!-- Status -->
+                        <h:column>
+                            <f:facet name="header">Status</f:facet>
+
+                            <h:panelGroup rendered="#{s.ativo}">
+                                <span style="color:#28a745; font-weight:bold;">ATIVO</span>
+                            </h:panelGroup>
+
+                            <h:panelGroup rendered="#{!s.ativo}">
+                                <span style="color:#dc3545; font-weight:bold;">INATIVO</span>
+                            </h:panelGroup>
+                        </h:column>
+
+                        <!-- Ações -->
+                        <h:column>
+                            <f:facet name="header">Ações</f:facet>
+
+                            <!-- Editar -->
+                            <h:commandLink value="Editar"
+                                           action="#{servicoController.editar(s)}"
+                                           style="margin-right:15px; color:#007bff;" />
+
+                            <!-- Histórico -->
+                            <h:commandLink value="Histórico"
+                                           action="#{servicoController.selecionarServico(s)}"
+                                           style="margin-right:15px; color:#6f42c1; font-weight:600;">
+                                <f:ajax execute="@this"
+                                        render=":historicoPainel" />
+                            </h:commandLink>
+
+                            <!-- Ativar/Inativar -->
+                            <h:commandLink value="#{s.ativo ? 'Inativar' : 'Ativar'}"
+                                           action="#{servicoController.toggleStatus(s)}"
+                                           style="color:#dc3545; font-weight:600; margin-right:15px;">
+                                <f:ajax render="@form :formTabela" />
+                            </h:commandLink>
+
+                            <!-- Excluir -->
+                            <h:commandLink value="Excluir"
+                                           action="#{servicoController.excluir(s)}"
+                                           onclick="return confirm('Tem certeza que deseja excluir este serviço?');"
+                                           style="color:#ff0000; font-weight:bold;">
+                                <f:ajax render="@form :formTabela :historicoPainel"/>
+                            </h:commandLink>
+
+                        </h:column>
+
+                    </h:dataTable>
+                </h:form>
+            </div>
+        </div>
+
+        <!-- HISTÓRICO DO SERVIÇO -->
+        <h:panelGroup id="historicoPainel"
+                      layout="block"
+                      rendered="#{servicoController.servicoSelecionado != null}"
+                      style="max-width:1200px; margin:40px auto;">
+
+            <div class="card" style="padding:30px; border-radius:12px;
+                 box-shadow:0 5px 18px rgba(0,0,0,0.08);">
+
+                <h2 style="color:#6f42c1;">
+                    Histórico de Alterações — #{servicoController.servicoSelecionado.nome}
+                </h2>
+
+                <h:form id="formHistorico">
+                    <h:dataTable value="#{servicoController.historico}" var="h"
+                                 style="width:100%; margin-top:20px;" styleClass="tabela">
+
+                        <h:column>
+                            <f:facet name="header">Campo</f:facet>
+                            #{h.campo}
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">Anterior</f:facet>
+                            #{h.valorAnterior}
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">Novo</f:facet>
+                            #{h.valorNovo}
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">Data</f:facet>
+                            #{h.dataAlteracao}
+                        </h:column>
+
+                    </h:dataTable>
+                </h:form>
+            </div>
+        </h:panelGroup>
+
+    </ui:define>
 </ui:composition>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/templates/layout.xhtml">
+    <ui:define name="conteudo">
+        <div style="max-width:800px;margin:40px auto;padding:20px;">
+            <h1 style="color:var(--primary);text-align:center;margin-bottom:30px;font-size:2.2em;">Agendar Atendimento</h1>
+
+            <h:messages globalOnly="true" style="margin-bottom:20px;" />
+
+            <h:form id="formAgendamento">
+
+                <div class="card" style="padding:20px;border-radius:12px;margin-bottom:16px;border:1px solid #ddd;">
+                    <h3 style="margin-top:0;">1. Escolha o serviço *</h3>
+                    <p:selectOneMenu id="servico" value="#{agendamentoSimplificadoController.idServicoSelecionado}" style="width:100%;">
+                        <f:selectItem itemLabel="Selecione..." itemValue="#{null}" />
+                        <f:selectItems value="#{agendamentoSimplificadoController.servicos}" var="s" itemValue="#{s.id}" itemLabel="#{s.nome}" />
+                        <p:ajax event="change" listener="#{agendamentoSimplificadoController.aoSelecionarServico}" process="@this" update="@form" />
+                    </p:selectOneMenu>
+                </div>
+
+                <h:panelGroup id="diasDiv" layout="block">
+                    <div class="card" style="padding:20px;border-radius:12px;margin-bottom:16px;border:1px solid #ddd;">
+                        <h3 style="margin-top:0;">2. Escolha o dia *</h3>
+                        <h:panelGroup rendered="#{not empty agendamentoSimplificadoController.diasDisponiveis}">
+                            <p:selectOneMenu id="dia" value="#{agendamentoSimplificadoController.dataSelecionada}" converter="localDateConverter" style="width:100%;">
+                                <f:selectItem itemLabel="Selecione..." itemValue="#{null}" />
+                                <f:selectItems value="#{agendamentoSimplificadoController.diasDisponiveis}" var="d" itemValue="#{d}" itemLabel="#{agendamentoSimplificadoController.formatarData(d)}" />
+                                <p:ajax event="change" listener="#{agendamentoSimplificadoController.aoSelecionarData}" process="@this" update="@form" />
+                            </p:selectOneMenu>
+                        </h:panelGroup>
+                        <h:outputText value="Selecione um serviço primeiro para ver os dias disponíveis." rendered="#{empty agendamentoSimplificadoController.diasDisponiveis}" style="color:#d32f2f;font-weight:bold;display:block;" />
+                    </div>
+                </h:panelGroup>
+
+                <h:panelGroup id="horariosDiv" layout="block">
+                    <div class="card" style="padding:20px;border-radius:12px;margin-bottom:16px;border:1px solid #ddd;">
+                        <h3 style="margin-top:0;">3. Escolha o horário *</h3>
+                        <h:panelGroup rendered="#{not empty agendamentoSimplificadoController.horariosDisponiveis}">
+                            <p:selectOneMenu id="horario" value="#{agendamentoSimplificadoController.idHorarioSelecionado}" style="width:100%;">
+                                <f:selectItem itemLabel="Selecione..." itemValue="#{null}" />
+                                <f:selectItems value="#{agendamentoSimplificadoController.horariosDisponiveis}" var="h" itemValue="#{h.id}" itemLabel="#{agendamentoSimplificadoController.formatarHora(h)}" />
+                                <p:ajax event="change" listener="#{agendamentoSimplificadoController.aoSelecionarHorario}" process="@this" update="@form" />
+                            </p:selectOneMenu>
+                        </h:panelGroup>
+                        <h:outputText value="Selecione um dia primeiro para ver os horários disponíveis." rendered="#{empty agendamentoSimplificadoController.horariosDisponiveis}" style="color:#d32f2f;font-weight:bold;display:block;" />
+                    </div>
+                </h:panelGroup>
+
+                <div id="resumoDiv" class="card" style="padding:20px;border-radius:12px;margin-bottom:16px;border:1px solid #ddd;background:#f9f9f9;">
+                    <h3 style="margin-top:0;">Resumo do Agendamento</h3>
+                    <p><strong>Serviço:</strong> #{agendamentoSimplificadoController.nomeServicoSelecionado}</p>
+                    <p><strong>Data:</strong> #{agendamentoSimplificadoController.dataSelecionadaFormatada}</p>
+                    <p><strong>Horário:</strong> #{agendamentoSimplificadoController.horarioSelecionadoFormatado}</p>
+                </div>
+
+                <div class="card" style="padding:16px;border-radius:12px;border:1px solid #ddd;">
+                    <h:commandButton id="btnConfirmar" value="Confirmar Agendamento" action="#{agendamentoSimplificadoController.confirmar}"
+                                     style="width:100%;padding:14px;font-size:1.2em;background-color:#2196F3;color:white;border:none;border-radius:6px;cursor:pointer;"
+                                     rendered="#{agendamentoSimplificadoController.idServicoSelecionado != null and agendamentoSimplificadoController.dataSelecionada != null and agendamentoSimplificadoController.idHorarioSelecionado != null}"
+                                     onclick="return confirm('Deseja confirmar este agendamento?');" />
+                    <h:outputText value="Selecione serviço, data e horário para continuar." rendered="#{agendamentoSimplificadoController.idServicoSelecionado == null or agendamentoSimplificadoController.dataSelecionada == null or agendamentoSimplificadoController.idHorarioSelecionado == null}" style="display:block;text-align:center;color:#999;font-style:italic;padding:14px;" />
+                </div>
+
+            </h:form>
+        </div>
+    </ui:define>
+</ui:composition>
+</html>

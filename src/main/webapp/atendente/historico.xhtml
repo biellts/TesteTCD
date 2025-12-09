@@ -1,19 +1,20 @@
+<!-- /atendente/historico.xhtml -->
 <ui:composition template="/templates/layout.xhtml"
     xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:h="jakarta.faces.html"
-    xmlns:ui="jakarta.faces.facelets">
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
 <ui:define name="conteudo">
-    <h1>Histórico de Atendimentos</h1>
 
-    <h:dataTable value="#{atendimentoController.historico}" var="a">
-        <h:column><f:facet name="header">Cliente</f:facet>#{a.usuario.nome}</h:column>
-        <h:column><f:facet name="header">Serviço</f:facet>#{a.servico.nome}</h:column>
-        <h:column><f:facet name="header">Início</f:facet>#{a.inicio}</h:column>
-        <h:column><f:facet name="header">Fim</f:facet>#{a.fim}</h:column>
-        <h:column><f:facet name="header">Status</f:facet>#{a.status}</h:column>
-    </h:dataTable>
+  <h1>Histórico</h1>
+
+  <h:dataTable value="#{atendimentoController.historico}" var="a">
+    <h:column>#{a.usuario.nome}</h:column>
+    <h:column>#{a.servico.nome}</h:column>
+    <h:column>#{a.inicio}</h:column>
+    <h:column>#{a.fim}</h:column>
+    <h:column>#{a.status}</h:column>
+  </h:dataTable>
 
 </ui:define>
-
 </ui:composition>
