@@ -72,28 +72,7 @@ public class AtendimentoController implements Serializable {
                 return;
             }
 
-            if (atendente.getEspaco() == null) {
-                JsfUtil.addError("Você não está vinculado a um espaço de atendimento.");
-                return;
-            }
-
-            // IDs dos serviços que o atendente realiza
-            List<Long> servicosIds = atendente.getServicosAtendente()
-                    .stream()
-                    .map(s -> s.getId())
-                    .collect(Collectors.toList());
-
-            // Chama próximo agendamento compatível no espaço do atendente
-            atual = atendimentoService.chamarProximoPorEspaco(
-                    servicosIds,
-                    atendente.getEspaco().getId()
-            );
-
-            if (atual == null) {
-                JsfUtil.addWarn("Nenhum cliente na fila compatível.");
-                return;
-            }
-
+   
             // Marca atendente como ocupado
             atendente.setStatus("OCUPADO");
             usuarioController.atualizar(atendente);

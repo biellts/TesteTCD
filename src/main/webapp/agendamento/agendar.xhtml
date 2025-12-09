@@ -26,14 +26,19 @@
                 <h:panelGroup id="diasDiv" layout="block">
                     <div class="card" style="padding:20px;border-radius:12px;margin-bottom:16px;border:1px solid #ddd;">
                         <h3 style="margin-top:0;">2. Escolha o dia *</h3>
+
                         <h:panelGroup rendered="#{not empty agendamentoSimplificadoController.diasDisponiveis}">
-                            <p:selectOneMenu id="dia" value="#{agendamentoSimplificadoController.dataSelecionada}" converter="localDateConverter" style="width:100%;">
-                                <f:selectItem itemLabel="Selecione..." itemValue="#{null}" />
-                                <f:selectItems value="#{agendamentoSimplificadoController.diasDisponiveis}" var="d" itemValue="#{d}" itemLabel="#{agendamentoSimplificadoController.formatarData(d)}" />
-                                <p:ajax event="change" listener="#{agendamentoSimplificadoController.aoSelecionarData}" process="@this" update="@form" />
-                            </p:selectOneMenu>
+                            <p:calendar id="dia" value="#{agendamentoSimplificadoController.dataSelecionada}" pattern="dd/MM/yyyy"
+                                        mindate="#{agendamentoSimplificadoController.diasDisponiveis[0]}"
+                                        maxdate="#{agendamentoSimplificadoController.diasDisponiveis[agendamentoSimplificadoController.diasDisponiveis.size() - 1]}"
+                                        showButtonPanel="true" navigator="true" style="width:100%;">
+                                <p:ajax event="dateSelect" listener="#{agendamentoSimplificadoController.aoSelecionarData}" process="@this" update="@form" />
+                            </p:calendar>
                         </h:panelGroup>
-                        <h:outputText value="Selecione um serviço primeiro para ver os dias disponíveis." rendered="#{empty agendamentoSimplificadoController.diasDisponiveis}" style="color:#d32f2f;font-weight:bold;display:block;" />
+
+                        <h:outputText value="Selecione um serviço primeiro para ver os dias disponíveis." 
+                                      rendered="#{empty agendamentoSimplificadoController.diasDisponiveis}" 
+                                      style="color:#d32f2f;font-weight:bold;display:block;" />
                     </div>
                 </h:panelGroup>
 
@@ -47,7 +52,9 @@
                                 <p:ajax event="change" listener="#{agendamentoSimplificadoController.aoSelecionarHorario}" process="@this" update="@form" />
                             </p:selectOneMenu>
                         </h:panelGroup>
-                        <h:outputText value="Selecione um dia primeiro para ver os horários disponíveis." rendered="#{empty agendamentoSimplificadoController.horariosDisponiveis}" style="color:#d32f2f;font-weight:bold;display:block;" />
+                        <h:outputText value="Selecione um dia primeiro para ver os horários disponíveis." 
+                                      rendered="#{empty agendamentoSimplificadoController.horariosDisponiveis}" 
+                                      style="color:#d32f2f;font-weight:bold;display:block;" />
                     </div>
                 </h:panelGroup>
 
@@ -63,7 +70,9 @@
                                      style="width:100%;padding:14px;font-size:1.2em;background-color:#2196F3;color:white;border:none;border-radius:6px;cursor:pointer;"
                                      rendered="#{agendamentoSimplificadoController.idServicoSelecionado != null and agendamentoSimplificadoController.dataSelecionada != null and agendamentoSimplificadoController.idHorarioSelecionado != null}"
                                      onclick="return confirm('Deseja confirmar este agendamento?');" />
-                    <h:outputText value="Selecione serviço, data e horário para continuar." rendered="#{agendamentoSimplificadoController.idServicoSelecionado == null or agendamentoSimplificadoController.dataSelecionada == null or agendamentoSimplificadoController.idHorarioSelecionado == null}" style="display:block;text-align:center;color:#999;font-style:italic;padding:14px;" />
+                    <h:outputText value="Selecione serviço, data e horário para continuar." 
+                                  rendered="#{agendamentoSimplificadoController.idServicoSelecionado == null or agendamentoSimplificadoController.dataSelecionada == null or agendamentoSimplificadoController.idHorarioSelecionado == null}" 
+                                  style="display:block;text-align:center;color:#999;font-style:italic;padding:14px;" />
                 </div>
 
             </h:form>
