@@ -1,6 +1,7 @@
 package br.com.sigapar1.service;
 
 import br.com.sigapar1.dao.AtendenteServicoEspacoDAO;
+import br.com.sigapar1.entity.Agendamento;
 import br.com.sigapar1.entity.AtendenteServicoEspaco;
 import br.com.sigapar1.entity.EspacoAtendimento;
 import br.com.sigapar1.entity.Horario;
@@ -13,7 +14,6 @@ import java.util.List;
 
 @Stateless
 public class AtendenteServicoEspacoService {
-
     @Inject
     private AtendenteServicoEspacoDAO dao;
 
@@ -87,13 +87,13 @@ public class AtendenteServicoEspacoService {
     }
 
     /**
-     * FORMA MAIS IDIOTA, MAIS SIMPLES E 100% FUNCIONAL:
-     * Pega os horários direto da tabela de vínculos.
+     * FORMA MAIS IDIOTA, MAIS SIMPLES E 100% FUNCIONAL: Pega os horários direto
+     * da tabela de vínculos.
      */
     public List<Horario> buscarHorariosPorServico(Long idServico) {
 
-        List<AtendenteServicoEspaco> vinculos =
-                dao.listarTodosPorServico(idServico); // <-- use o DAO
+        List<AtendenteServicoEspaco> vinculos
+                = dao.listarTodosPorServico(idServico); // <-- use o DAO
 
         List<Horario> horarios = new ArrayList<>();
 
@@ -140,5 +140,6 @@ public class AtendenteServicoEspacoService {
                 .distinct()
                 .toList();
     }
+
 
 }

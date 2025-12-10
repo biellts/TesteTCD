@@ -465,6 +465,18 @@ public class AgendamentoService {
                 .setParameter("idServico", idServico)
                 .setParameter("dia", java.sql.Date.valueOf(dia))
                 .getResultList();
-    
-}
+
+    }
+
+    public Agendamento buscarProximoAgendamento() {
+        return dao.buscarProximoAgendamento();
+    }
+
+    public List<Agendamento> listarPorData(LocalDate data) {
+        return em.createQuery(
+                "SELECT a FROM Agendamento a WHERE a.data = :data ORDER BY a.horario.hora ASC",
+                Agendamento.class)
+                .setParameter("data", data)
+                .getResultList();
+    }
 }

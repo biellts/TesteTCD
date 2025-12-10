@@ -20,6 +20,7 @@ D:\Arquivos 20-05-2022\Documents\NetBeansProjects\sigapar1\sigapar1\src\main\jav
 D:\Arquivos 20-05-2022\Documents\NetBeansProjects\sigapar1\sigapar1\src\main\java\br\com\sigapar1\controller\FeriadoController.java
 D:\Arquivos 20-05-2022\Documents\NetBeansProjects\sigapar1\sigapar1\src\main\java\br\com\sigapar1\controller\FilaAdminController.java
 D:\Arquivos 20-05-2022\Documents\NetBeansProjects\sigapar1\sigapar1\src\main\java\br\com\sigapar1\controller\GuicheController.java
+D:\Arquivos 20-05-2022\Documents\NetBeansProjects\sigapar1\sigapar1\src\main\java\br\com\sigapar1\controller\HistoricoAtendenteController.java
 D:\Arquivos 20-05-2022\Documents\NetBeansProjects\sigapar1\sigapar1\src\main\java\br\com\sigapar1\controller\HorarioController.java
 D:\Arquivos 20-05-2022\Documents\NetBeansProjects\sigapar1\sigapar1\src\main\java\br\com\sigapar1\controller\LoginController.java
 D:\Arquivos 20-05-2022\Documents\NetBeansProjects\sigapar1\sigapar1\src\main\java\br\com\sigapar1\controller\PainelController.java
@@ -77,6 +78,7 @@ D:\Arquivos 20-05-2022\Documents\NetBeansProjects\sigapar1\sigapar1\src\main\jav
 D:\Arquivos 20-05-2022\Documents\NetBeansProjects\sigapar1\sigapar1\src\main\java\br\com\sigapar1\entity\StatusAtendimento.java
 D:\Arquivos 20-05-2022\Documents\NetBeansProjects\sigapar1\sigapar1\src\main\java\br\com\sigapar1\entity\TokenResetSenha.java
 D:\Arquivos 20-05-2022\Documents\NetBeansProjects\sigapar1\sigapar1\src\main\java\br\com\sigapar1\entity\Usuario.java
+D:\Arquivos 20-05-2022\Documents\NetBeansProjects\sigapar1\sigapar1\src\main\java\br\com\sigapar1\filter\SecurityFilter.java
 D:\Arquivos 20-05-2022\Documents\NetBeansProjects\sigapar1\sigapar1\src\main\java\br\com\sigapar1\service\AgendamentoService.java
 D:\Arquivos 20-05-2022\Documents\NetBeansProjects\sigapar1\sigapar1\src\main\java\br\com\sigapar1\service\AgendamentoSimplificadoService.java
 D:\Arquivos 20-05-2022\Documents\NetBeansProjects\sigapar1\sigapar1\src\main\java\br\com\sigapar1\service\AtendenteServicoEspacoService.java
@@ -105,6 +107,7 @@ D:\Arquivos 20-05-2022\Documents\NetBeansProjects\sigapar1\sigapar1\src\main\jav
 D:\Arquivos 20-05-2022\Documents\NetBeansProjects\sigapar1\sigapar1\src\main\java\br\com\sigapar1\service\WalkinService.java
 D:\Arquivos 20-05-2022\Documents\NetBeansProjects\sigapar1\sigapar1\src\main\java\br\com\sigapar1\util\BusinessException.java
 D:\Arquivos 20-05-2022\Documents\NetBeansProjects\sigapar1\sigapar1\src\main\java\br\com\sigapar1\util\DateUtil.java
+D:\Arquivos 20-05-2022\Documents\NetBeansProjects\sigapar1\sigapar1\src\main\java\br\com\sigapar1\util\DateUtilBean.java
 D:\Arquivos 20-05-2022\Documents\NetBeansProjects\sigapar1\sigapar1\src\main\java\br\com\sigapar1\util\DiaUtil.java
 D:\Arquivos 20-05-2022\Documents\NetBeansProjects\sigapar1\sigapar1\src\main\java\br\com\sigapar1\util\EmailUtil.java
 D:\Arquivos 20-05-2022\Documents\NetBeansProjects\sigapar1\sigapar1\src\main\java\br\com\sigapar1\util\HashUtil.java

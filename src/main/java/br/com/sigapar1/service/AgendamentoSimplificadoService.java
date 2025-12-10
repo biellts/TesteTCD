@@ -313,4 +313,72 @@ public class AgendamentoSimplificadoService {
         }
     }
 
+    public List<Agendamento> listarAgendamentosDoAtendente(Usuario atendente) {
+        try {
+            return em.createQuery(
+                    "SELECT a FROM Agendamento a "
+                    + "LEFT JOIN FETCH a.servico "
+                    + "LEFT JOIN FETCH a.horario "
+                    + "LEFT JOIN FETCH a.usuario "
+                    + "LEFT JOIN FETCH a.espaco "
+                    + "WHERE a.atendente = :atendente "
+                    + "ORDER BY a.data DESC, a.horario.hora DESC",
+                    Agendamento.class)
+                    .setParameter("atendente", atendente)
+                    .getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return List.of();
+        }
+    }
+    // ========== ADICIONE NO AgendamentoSimplificadoService ==========
+
+    public List<Agendamento> listarAgendamentosPorData(LocalDate data) {
+        if (data == null) {
+            return List.of();
+        }
+        try {
+            return em.createQuery("""
+            SELECT a FROM Agendamento a 
+            LEFT JOIN FETCH a.servico 
+            LEFT JOIN FETCH a.horario 
+            LEFT JOIN FETCH a.usuario 
+            LEFT JOIN FETCH a.espaco 
+            LEFT JOIN FETCH a.atendente 
+            WHERE a.data = :data 
+            AND a.ativo = true 
+            ORDER BY a.horario.hora ASC
+            """, Agendamento.class)
+                    .setParameter("data", data)
+                    .getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return List.of();
+        }
+    }
+
+// (opcional, mas recomendado) melhorar o buscarPorProtocolo para carregar tudo
+    public Agendamento buscarPorProtocoloComDetalhes(String protocolo) {
+        if (protocolo == null || protocolo.isBlank()) {
+            return null;
+        }
+        try {
+            List<Agendamento> list = em.createQuery("""
+            SELECT a FROM Agendamento a 
+            LEFT JOIN FETCH a.servico 
+            LEFT JOIN FETCH a.horario 
+            LEFT JOIN FETCH a.usuario 
+            LEFT JOIN FETCH a.espaco 
+            LEFT JOIN FETCH a.atendente 
+            WHERE a.protocolo = :protocolo
+            """, Agendamento.class)
+                    .setParameter("protocolo", protocolo)
+                    .getResultList();
+            return list.isEmpty() ? null : list.get(0);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 }

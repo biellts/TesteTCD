@@ -51,12 +51,6 @@ public class UsuarioController implements Serializable {
     public void salvar() {
         try {
             limparMascaras();
-
-            if (usuario.getRole() == Role.ROLE_ATTENDANT && usuario.getGuiche() == null) {
-                JsfUtil.addError("Atendentes precisam estar vinculados a um Guichê.");
-                return;
-            }
-
             boolean novo = (usuario.getId() == null);
 
             if (novo || gerarSenhaTemporaria) {

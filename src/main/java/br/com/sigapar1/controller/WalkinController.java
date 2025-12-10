@@ -4,11 +4,14 @@ import br.com.sigapar1.entity.Agendamento;
 import br.com.sigapar1.entity.Servico;
 import br.com.sigapar1.entity.StatusAgendamento;
 import br.com.sigapar1.entity.Usuario;
+
 import br.com.sigapar1.service.AgendamentoSimplificadoService;
 import br.com.sigapar1.service.ServicoService;
 import br.com.sigapar1.service.UsuarioService;
+
 import br.com.sigapar1.util.BusinessException;
 import br.com.sigapar1.util.JsfUtil;
+
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
@@ -34,71 +37,77 @@ public class WalkinController implements Serializable {
     @Inject
     private ServicoService servicoService;
 
-    // Campos da tela
+    // Campos do formulário
     private String nome;
     private String cpf;
     private String telefone;
-
     private Long servicoId;
+
     private List<Servico> servicos;
 
-    private Servico servicoSelecionado;
+    // Agendamento criado para exibir na tela
+    private Agendamento agendamentoCriado;
 
     @PostConstruct
     public void init() {
         servicos = servicoService.listarAtivos();
     }
 
-    public void carregarServicoSelecionado() {
-        if (servicoId != null) {
-            servicoSelecionado = servicoService.buscarPorId(servicoId);
-        }
-    }
-
     public void registrarWalkin() {
         try {
-            // Buscar ou criar usuário rápido
-            Usuario usuario = usuarioService.buscarOuCriarRAPIDO(nome, cpf, telefone);
-
-            carregarServicoSelecionado();
-            if (servicoSelecionado == null) {
-                throw new BusinessException("Serviço inválido.");
+            // Validações básicas
+            if (nome == null || nome.trim().isEmpty()) {
+                throw new BusinessException("Nome é obrigatório.");
+            }
+            if (cpf == null || cpf.replaceAll("\\D", "").length() != 11) {
+                throw new BusinessException("CPF inválido. Digite exatamente 11 números.");
+            }
+            if (servicoId == null) {
+                throw new BusinessException("Selecione um serviço.");
             }
 
-            // Criar agendamento tipo walk-in na fila
+            // Busca ou cria usuário rapidamente
+            Usuario usuario = usuarioService.buscarOuCriarRAPIDO(nome.trim(), cpf, telefone);
+
+            Servico servico = servicoService.buscarPorId(servicoId);
+            if (servico == null) {
+                throw new BusinessException("Serviço não encontrado.");
+            }
+
+            // Cria o agendamento walk-in
             Agendamento ag = new Agendamento();
             ag.setUsuario(usuario);
-            ag.setServico(servicoSelecionado);
-
-            // Walk-in = agora
+            ag.setServico(servico);
             ag.setData(LocalDate.now());
             ag.setDataHora(LocalDateTime.now());
 
-            // Flags padrão para fila
-            ag.setCheckin(true);          // já se apresentou
-            ag.setChamado(false);         // ainda não chamado
-            ag.setFinalizado(false);      // ainda não finalizado
-            ag.setEmAtendimento(false);   // não em atendimento ainda
+            // Flags walk-in
+            ag.setCheckin(true);
+            ag.setChamado(false);
+            ag.setEmAtendimento(false);
+            ag.setFinalizado(false);
             ag.setAtivo(true);
 
-            // STATUS = está na fila
+            // Status do enum
             ag.setStatus(StatusAgendamento.EM_FILA);
 
-            // Protocolo único
             ag.setProtocolo("WLK" + System.currentTimeMillis());
 
-            // Salvar
+            // Salva
             agendamentoService.salvar(ag);
 
+            // Carrega detalhes completos
+            this.agendamentoCriado = agendamentoService.buscarAgendamentoComDetalhes(ag.getId());
+
             JsfUtil.addSuccessMessage("Cliente adicionado à fila! Protocolo: " + ag.getProtocolo());
+
             limparFormulario();
 
         } catch (BusinessException e) {
             JsfUtil.addErrorMessage(e.getMessage());
-
         } catch (Exception e) {
             e.printStackTrace();
-            JsfUtil.addErrorMessage("Erro ao registrar atendimento walk-in.");
+            JsfUtil.addErrorMessage("Erro ao registrar walk-in.");
         }
     }
 
@@ -107,14 +116,12 @@ public class WalkinController implements Serializable {
         cpf = null;
         telefone = null;
         servicoId = null;
-        servicoSelecionado = null;
     }
 
-    // Getters & Setters
+    // Getters e Setters
     public String getNome() {
         return nome;
     }
-
     public void setNome(String nome) {
         this.nome = nome;
     }
@@ -122,7 +129,6 @@ public class WalkinController implements Serializable {
     public String getCpf() {
         return cpf;
     }
-
     public void setCpf(String cpf) {
         this.cpf = cpf;
     }
@@ -130,7 +136,6 @@ public class WalkinController implements Serializable {
     public String getTelefone() {
         return telefone;
     }
-
     public void setTelefone(String telefone) {
         this.telefone = telefone;
     }
@@ -138,7 +143,6 @@ public class WalkinController implements Serializable {
     public Long getServicoId() {
         return servicoId;
     }
-
     public void setServicoId(Long servicoId) {
         this.servicoId = servicoId;
     }
@@ -147,7 +151,19 @@ public class WalkinController implements Serializable {
         return servicos;
     }
 
-    public Servico getServicoSelecionado() {
-        return servicoSelecionado;
+    public Agendamento getAgendamentoCriado() {
+        return agendamentoCriado;
+    }
+
+    // Retorna o nome do serviço selecionado
+    public String getNomeServicoSelecionado() {
+        if (servicoId == null) {
+            return "Nenhum serviço selecionado";
+        }
+        return servicos.stream()
+                .filter(s -> s.getId().equals(servicoId))
+                .findFirst()
+                .map(Servico::getNome)
+                .orElse("Serviço não encontrado");
     }
 }

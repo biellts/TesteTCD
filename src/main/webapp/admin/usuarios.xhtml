@@ -70,7 +70,6 @@
                                 <f:selectItem itemValue="ROLE_RECEPTIONIST" itemLabel="Recepcionista" />
                                 <f:selectItem itemValue="ROLE_ATTENDANT" itemLabel="Atendente" />
                                 <f:selectItem itemValue="ROLE_USER" itemLabel="Usuário Comum" />
-                                <f:ajax execute="@this" render="guichePanel" />
                             </h:selectOneMenu>
                         </div>
 
@@ -79,26 +78,7 @@
                             <strong style="margin-left:10px;">Usuário ativo</strong>
                         </div>
 
-                        <!-- Guichê e Espaço (apenas para Atendente) -->
-                        <div id="guichePanel" style="grid-column: span 2;">
-                            <h:panelGroup rendered="#{usuarioController.usuario.role eq 'ROLE_ATTENDANT'}">
-                                <div style="margin-bottom:15px;">
-                                    <strong>Guichê *</strong><br/>
-                                    <h:selectOneMenu id="guiche" value="#{usuarioController.usuario.guiche}" required="true"
-                                                     style="width:100%; padding:12px; margin-top:8px; border-radius:6px; border:1px solid #ccc;">
-                                        <f:selectItem itemValue="#{null}" itemLabel="Selecione..." />
-                                        <f:selectItems value="#{usuarioController.guiches}" var="g" itemValue="#{g}" itemLabel="#{g.nome}" />
-                                    </h:selectOneMenu>
-                                </div>
-
-                                <strong>Espaço de Atendimento (opcional)</strong><br/>
-                                <h:selectOneMenu id="espaco" value="#{usuarioController.usuario.espacoAtendimento}"
-                                                 style="width:100%; padding:12px; margin-top:8px; border-radius:6px; border:1px solid #ccc;">
-                                    <f:selectItem itemValue="#{null}" itemLabel="Nenhum" />
-                                    <f:selectItems value="#{usuarioController.espacos}" var="e" itemValue="#{e}" itemLabel="#{e.nome}" />
-                                </h:selectOneMenu>
-                            </h:panelGroup>
-                        </div>
+                        <!-- ⚠️ Toda a seção de GUICHÊ/ESPAÇO FOI REMOVIDA AQUI -->
 
                         <div style="grid-column: span 2; margin-top:15px;">
                             <h:selectBooleanCheckbox id="gerarSenha" value="#{usuarioController.gerarSenhaTemporaria}" />
@@ -153,17 +133,11 @@
                                                   u.role == 'ROLE_RECEPTIONIST' ? 'Recepcionista' : 
                                                   u.role == 'ROLE_ATTENDANT' ? 'Atendente' : 'Usuário Comum'}" />
                         </h:column>
-
-                        <!-- Guichê / Espaço -->
-                        <h:column>
-                            <f:facet name="header"><strong> Espaço </strong></f:facet>
-                            <h:outputText value="#{vinculoController.getEspacoDoAtendente(u)}" />
-                        </h:column>
-
-                        <!-- Status -->
+                        
                         <h:column>
                             <f:facet name="header"><strong>Status</strong></f:facet>
-                            <h:outputText value="#{u.ativo ? 'ATIVO' : 'INATIVO'}" style="color:#{u.ativo ? '#28a745' : '#dc3545'}; font-weight:bold;" />
+                            <h:outputText value="#{u.ativo ? 'ATIVO' : 'INATIVO'}"
+                                          style="color:#{u.ativo ? '#28a745' : '#dc3545'}; font-weight:bold;" />
                         </h:column>
 
                         <!-- Ações -->

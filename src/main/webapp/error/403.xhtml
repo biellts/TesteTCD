@@ -1,0 +1,14 @@
+<ui:composition template="/templates/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <ui:define name="conteudo">
+        <div style="padding:50px;text-align:center">
+            <h1 style="color:#b30000;">403 - Acesso Negado</h1>
+            <h3>Você não tem permissão para acessar esta página.</h3>
+
+            <h:link value="Voltar ao início" outcome="/publico/escolher-acesso"/>
+        </div>
+    </ui:define>
+</ui:composition>

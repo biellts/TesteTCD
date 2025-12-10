@@ -307,13 +307,26 @@ public class AgendamentoDAO extends GenericDAO<Agendamento> {
 
         if (ehCpf) {
             return em.createQuery(
-                    "SELECT a FROM Agendamento a WHERE a.usuario.cpf = :cpf ORDER BY a.data DESC",
+                    "SELECT a FROM Agendamento a "
+                    + "LEFT JOIN FETCH a.usuario "
+                    + "LEFT JOIN FETCH a.servico "
+                    + "LEFT JOIN FETCH a.horario "
+                    + "LEFT JOIN FETCH a.atendente "
+                    + "LEFT JOIN FETCH a.espaco "
+                    + "WHERE a.usuario.cpf = :cpf "
+                    + "ORDER BY a.data DESC",
                     Agendamento.class)
                     .setParameter("cpf", valor)
                     .getResultList();
         } else {
             return em.createQuery(
-                    "SELECT a FROM Agendamento a WHERE a.protocolo = :p",
+                    "SELECT a FROM Agendamento a "
+                    + "LEFT JOIN FETCH a.usuario "
+                    + "LEFT JOIN FETCH a.servico "
+                    + "LEFT JOIN FETCH a.horario "
+                    + "LEFT JOIN FETCH a.atendente "
+                    + "LEFT JOIN FETCH a.espaco "
+                    + "WHERE a.protocolo = :p",
                     Agendamento.class)
                     .setParameter("p", valor)
                     .getResultList();
@@ -323,9 +336,11 @@ public class AgendamentoDAO extends GenericDAO<Agendamento> {
     public List<Agendamento> buscarPorData(LocalDate data) {
         return em.createQuery(
                 "SELECT a FROM Agendamento a "
-                + "JOIN FETCH a.usuario "
-                + "JOIN FETCH a.servico "
-                + "JOIN FETCH a.horario "
+                + "LEFT JOIN FETCH a.usuario "
+                + "LEFT JOIN FETCH a.servico "
+                + "LEFT JOIN FETCH a.horario "
+                + "LEFT JOIN FETCH a.atendente "
+                + "LEFT JOIN FETCH a.espaco "
                 + "WHERE a.data = :data "
                 + "ORDER BY a.horario.hora ASC",
                 Agendamento.class)
@@ -382,6 +397,27 @@ public class AgendamentoDAO extends GenericDAO<Agendamento> {
                 Agendamento.class)
                 .setParameter("status", StatusAgendamento.EM_FILA)
                 .getResultList();
+    }
+
+    public Agendamento buscarProximoAgendamento() {
+        try {
+            return em.createQuery(
+                    "SELECT a FROM Agendamento a "
+                    + "LEFT JOIN FETCH a.servico "
+                    + "LEFT JOIN FETCH a.horario "
+                    + "LEFT JOIN FETCH a.usuario "
+                    + "LEFT JOIN FETCH a.atendente "
+                    + "LEFT JOIN FETCH a.espaco "
+                    + "WHERE a.status = :status "
+                    + "ORDER BY a.horaCheckin ASC",
+                    Agendamento.class)
+                    .setParameter("status", StatusAgendamento.EM_FILA)
+                    .setMaxResults(1)
+                    .getSingleResult();
+
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 
 }

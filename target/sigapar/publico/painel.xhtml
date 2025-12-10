@@ -6,51 +6,118 @@
       xmlns:p="http://primefaces.org/ui">
 
 <ui:composition template="/templates/layout.xhtml">
-    <ui:define name="conteudo">
-        <div style="height:100vh; display:flex; flex-direction:column; background:#000; color:#fff; font-family:'Segoe UI', Arial, sans-serif;">
+<ui:define name="conteudo">
 
-            <!-- CHAMADA ATUAL -->
-            <h:form id="formPainel">
-                <div style="flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; background: linear-gradient(135deg, #d32f2f, #b71c1c); padding:40px; text-align:center; border-radius:16px; margin:20px;">
-                    <h1 style="font-size:5vw; margin:0 0 20px 0; text-shadow:3px 3px 10px rgba(0,0,0,0.7);">AGORA SENDO ATENDIDO</h1>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            background: #ffffff !important; /* FUNDO DA TELA BRANCO */
+        }
 
-                    <div class="nome-cliente" style="font-size:8vw; font-weight:bold; margin:20px 0; text-shadow:4px 4px 12px rgba(0,0,0,0.8);">
-                        <h:outputText value="#{not empty painelController.atendimentoAtual ? painelController.atendimentoAtual.usuario.nome : 'Aguardando...'}"/>
-                    </div>
+        .painel-container {
+            height: 100vh;
+            width: 100%;
+            display: flex;
+            justify-content: center;  
+            align-items: center;     
+            padding: 20px;
+            background: #ffffff;       
+        }
 
-                    <div class="local" style="font-size:6vw; background:#000; padding:15px 50px; border-radius:20px; margin:20px 0;">
-                        <h:outputText value="GUICHÊ #{not empty painelController.atendimentoAtual and not empty painelController.atendimentoAtual.atendente and not empty painelController.atendimentoAtual.atendente.guiche ? painelController.atendimentoAtual.atendente.guiche.identificador : '---'}"/>
-                    </div>
+        .painel-bloco {
+            width: 90%;
+            max-width: 900px;
+            padding: 50px 30px;
+            background: linear-gradient(135deg, #1e63d1, #3a7de0); /* AZUL LEVEMENTE MAIS CLARO */
+            border-radius: 20px;
+            text-align: center;
+            color: #fff;
+            box-shadow: 0 0 35px rgba(0,0,0,0.2);
+        }
+
+        .titulo-painel {
+            font-size: 3vw;
+            font-weight: bold;
+            margin-bottom: 25px;
+            text-shadow: 3px 3px 8px rgba(0,0,0,0.35);
+            letter-spacing: 2px;
+        }
+
+        .painel-nome {
+            font-size: 4.3vw;
+            font-weight: bold;
+            line-height: 1.1;
+            margin: 20px 0;
+            text-shadow: 4px 4px 10px rgba(0,0,0,0.4);
+        }
+
+        .painel-info {
+            font-size: 2.2vw;
+            margin-top: 22px;
+            font-weight: 500;
+            text-shadow: 2px 2px 6px rgba(0,0,0,0.4);
+        }
+
+        /* Ajuste para telas menores */
+        @media (max-width: 800px) {
+            .titulo-painel { font-size: 6vw; }
+            .painel-nome { font-size: 10vw; }
+            .painel-info { font-size: 5vw; }
+        }
+    </style>
+
+    <div class="painel-container">
+
+        <h:form id="formPainel">
+
+            <div class="painel-bloco">
+
+                <!-- Título -->
+                <div class="titulo-painel">
+                    PRÓXIMO AGENDAMENTO
                 </div>
 
-                <!-- HISTÓRICO -->
-                <div class="historico" style="background:#111; padding:20px; font-size:2.8vw; margin:20px; border-radius:12px;">
-                    <h2 style="text-align:center; margin:0 0 20px 0; font-size:3.5vw; color:#ffeb3b;">ÚLTIMAS CHAMADAS</h2>
-
-                    <ui:repeat value="#{painelController.ultimasChamadas}" var="a">
-                        <div class="chamada" style="padding:12px 0; border-bottom:1px solid #333;">
-                            <strong>#{a.usuario.nome}</strong> → 
-                            <h:outputText value="Guichê #{not empty a.atendente and not empty a.atendente.guiche ? a.atendente.guiche.identificador : '---'}"/>
-                            <small style="float:right; color:#aaa;">
-                                <h:outputText value="#{not empty a.horaChamado ? a.horaChamado.format(java.time.format.DateTimeFormatter.ofPattern('HH:mm')) : ''}"/>
-                            </small>
-                        </div>
-                    </ui:repeat>
-
-                    <h:panelGroup rendered="#{empty painelController.ultimasChamadas}">
-                        <div class="chamada" style="padding:12px 0;">Nenhuma chamada recente.</div>
-                    </h:panelGroup>
+                <!-- Nome -->
+                <div class="painel-nome">
+                    <h:outputText value="#{painelController.proximoAgendamento != null 
+                        ? painelController.proximoAgendamento.usuario.nome 
+                        : 'Aguardando...'}"/>
                 </div>
 
-                <!-- FILA INFO -->
-                <div class="fila-info" style="position:fixed; bottom:20px; right:20px; background:#ffeb3b; color:#000; padding:15px 40px; border-radius:50px; font-size:3vw; font-weight:bold; box-shadow:0 0 20px rgba(255,235,59,0.6);">
-                    <h:outputText value="Na fila: #{painelController.filaSize} pessoa(s)"/>
+                <!-- Horário -->
+                <div class="painel-info">
+                    <strong>Horário: </strong>
+                    <h:outputText value="#{painelController.horarioFormatado}"/>
                 </div>
 
-                <!-- ATUALIZAÇÃO AUTOMÁTICA -->
-                <p:poll interval="5" listener="#{painelController.atualizarPainel}" update="formPainel" async="true"/>
-            </h:form>
-        </div>
-    </ui:define>
+                <!-- Serviço -->
+                <div class="painel-info">
+                    <strong>Serviço: </strong>
+                    <h:outputText value="#{painelController.proximoAgendamento != null 
+                        ? painelController.proximoAgendamento.servico.nome 
+                        : ''}"/>
+                </div>
+
+                <!-- Espaço -->
+                <div class="painel-info">
+                    <strong>Espaço: </strong>
+                    <h:outputText value="#{painelController.proximoAgendamento != null 
+                        ? painelController.proximoAgendamento.espaco.descricao 
+                        : ''}"/>
+                </div>
+
+            </div>
+
+            <!-- Atualização automática -->
+            <p:poll interval="5"
+                    listener="#{painelController.atualizarPainel}"
+                    update="formPainel"
+                    async="true"/>
+
+        </h:form>
+    </div>
+
+</ui:define>
 </ui:composition>
 </html>

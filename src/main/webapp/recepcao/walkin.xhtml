@@ -1,141 +1,73 @@
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:f="http://xmlns.jcp.org/jsf/core"
-      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-      xmlns:p="http://primefaces.org/ui"
-      xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions">
+<ui:composition template="/templates/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core">
 
-<ui:composition template="/templates/layout.xhtml">
+    <ui:define name="conteudo">
 
-<ui:define name="conteudo">
+        <h1 style="text-align:center; margin-bottom:20px;">
+            Atendimento Walk-in
+        </h1>
 
-    <div style="max-width: 820px; margin: 50px auto; padding: 20px;">
+        <p style="text-align:center; color:#666; margin-top:-10px; margin-bottom:30px;">
+            Registro rápido de cliente presencial
+        </p>
 
-        <!-- Cabeçalho -->
-        <div style="text-align:center; margin-bottom: 45px;">
-            <h1 style="color:#1976d2; font-size:2.6em; font-weight:600; letter-spacing:0.5px; margin-bottom:12px;">
-                Atendimento Walk-in
-            </h1>
+        <div class="card" style="max-width:450px; margin:auto; padding:20px;">
+            
+            <h:form id="formWalkin" prependId="false">
 
-            <p style="color:#666; font-size:1.25em; margin-top:8px;">
-                Registro rápido de cliente presencial
-            </p>
+                <!-- MENSAGENS -->
+                <h:messages style="color:red; margin-bottom:15px;" globalOnly="true"/>
+
+                <!-- NOME -->
+                <label>Nome completo *</label>
+                <h:inputText value="#{walkinController.nome}"
+                             required="true"
+                             requiredMessage="Nome é obrigatório"
+                             maxlength="100"
+                             style="width:100%; margin-bottom:12px;"/>
+
+                <!-- CPF -->
+                <label>CPF <span style="font-size:12px; color:gray;">(Somente números)</span></label>
+                <h:inputText value="#{walkinController.cpf}"
+                             required="true"
+                             requiredMessage="CPF é obrigatório"
+                             maxlength="11"
+                             oninput="this.value=this.value.replace(/\\D/g,'').slice(0,11);"
+                             style="width:100%; margin-bottom:12px;"/>
+
+                <!-- TELEFONE -->
+                <label>Telefone</label>
+                <h:inputText value="#{walkinController.telefone}"
+                             maxlength="11"
+                             oninput="this.value=this.value.replace(/\\D/g,'').slice(0,11);"
+                             style="width:100%; margin-bottom:12px;"/>
+
+                <!-- SERVIÇO -->
+                <label>Serviço desejado *</label>
+                <h:selectOneMenu value="#{walkinController.servicoId}"
+                                 required="true"
+                                 requiredMessage="Selecione um serviço"
+                                 style="width:100%; margin-bottom:20px;">
+                    <f:selectItem itemLabel="Selecione..." itemValue="" />
+                    <f:selectItems value="#{walkinController.servicos}"
+                                   var="s"
+                                   itemValue="#{s.id}"
+                                   itemLabel="#{s.nome}" />
+                    <f:converter converterId="jakarta.faces.Long"/>
+                </h:selectOneMenu>
+
+                <!-- BOTÃO -->
+                <h:commandButton value="Registrar Walk-in"
+                                 action="#{walkinController.registrarWalkin}"
+                                 style="width:100%; padding:12px; font-size:16px;
+                                        background:#28a745; color:white; border:none;
+                                        border-radius:5px; cursor:pointer;"/>
+
+            </h:form>
         </div>
 
-        <!-- Mensagens -->
-        <h:messages id="mensagens"
-                    globalOnly="true"
-                    style="color:#d32f2f; font-size:1.1em; margin-bottom:20px;" />
-
-        <h:form id="formWalkin">
-
-            <div class="card shadow"
-                 style="padding:40px; border-radius:14px; box-shadow:0 3px 10px rgba(0,0,0,0.10);">
-
-                <div class="row g-4">
-
-                    <!-- Nome -->
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold" style="margin-bottom:6px;">
-                            Nome completo *
-                        </label>
-
-                        <p:inputText value="#{walkinController.nome}"
-                                     styleClass="form-control form-control-lg"
-                                     placeholder="Ex: João da Silva"
-                                     required="true"
-                                     requiredMessage="Nome é obrigatório" />
-                    </div>
-
-                    <!-- CPF -->
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold" style="margin-bottom:6px;">
-                            CPF *
-                        </label>
-
-                        <p:inputMask value="#{walkinController.cpf}"
-                                     mask="999.999.999-99"
-                                     styleClass="form-control form-control-lg"
-                                     placeholder="000.000.000-00"
-                                     required="true"
-                                     requiredMessage="CPF é obrigatório" />
-                    </div>
-
-                    <!-- Telefone -->
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold" style="margin-bottom:6px;">
-                            Telefone
-                        </label>
-
-                        <p:inputMask value="#{walkinController.telefone}"
-                                     mask="(99) 99999-9999"
-                                     styleClass="form-control form-control-lg"
-                                     placeholder="(00) 00000-0000" />
-                    </div>
-
-                    <!-- Serviço -->
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold" style="margin-bottom:6px;">
-                            Serviço desejado *
-                        </label>
-
-                        <p:selectOneMenu value="#{walkinController.servicoId}"
-                                         styleClass="form-select form-select-lg"
-                                         required="true"
-                                         requiredMessage="Selecione um serviço">
-
-                            <!-- IMPORTANTE: itemValue="" SENÃO DÁ ERRO DE CONVERSÃO -->
-                            <f:selectItem itemLabel="Selecione o serviço..." itemValue="" />
-
-                            <f:selectItems value="#{walkinController.servicos}"
-                                           var="s"
-                                           itemValue="#{s.id}"
-                                           itemLabel="#{s.nome}" />
-
-                            <f:converter converterId="jakarta.faces.Long" />
-
-                        </p:selectOneMenu>
-                    </div>
-
-                </div>
-
-                <!-- Botão de ação -->
-                <div style="text-align:center; margin-top:50px;">
-                    <p:commandButton value="Registrar e Colocar na Fila"
-                                     action="#{walkinController.registrarWalkin}"
-                                     update="formWalkin mensagens"
-                                     styleClass="btn btn-success btn-lg px-5 py-3"
-                                     icon="pi pi-user-plus"
-                                     style="font-size:1.15em;"
-                                     onclick="return montarConfirmacaoWalkin();" />
-                </div>
-
-            </div>
-
-        </h:form>
-    </div>
-
-    <!-- SCRIPT CONFIRMAÇÃO -->
-    <h:outputScript target="body">
-        function montarConfirmacaoWalkin() {
-
-            var nome = "#{fn:escapeXml(walkinController.nome)}";
-            var cpf = "#{fn:escapeXml(walkinController.cpf)}";
-            var servico = "#{walkinController.servicoSelecionado != null ?
-                              fn:escapeXml(walkinController.servicoSelecionado.nome) :
-                              'Nenhum serviço selecionado'}";
-
-            return confirm(
-                "Confirmar registro do cliente?\n\n" +
-                "Nome: " + nome + "\n" +
-                "CPF: " + cpf + "\n" +
-                "Serviço: " + servico
-            );
-        }
-    </h:outputScript>
-
-</ui:define>
-
+    </ui:define>
 </ui:composition>
-</html>

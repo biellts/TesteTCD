@@ -59,6 +59,7 @@ br\com\sigapar1\entity\Feriado.class
 br\com\sigapar1\service\RecepcaoService.class
 br\com\sigapar1\dao\ConfiguracaoSistemaDAO.class
 br\com\sigapar1\controller\AgendamentoController.class
+HistoricoAtendenteController.class
 br\com\sigapar1\controller\DisponibilidadeAtendenteController.class
 br\com\sigapar1\service\FilaAtendimentoService.class
 br\com\sigapar1\entity\Agendamento.class
@@ -114,3 +115,4 @@ br\com\sigapar1\entity\DisponibilidadeAtendente.class
 br\com\sigapar1\entity\TokenResetSenha.class
 br\com\sigapar1\dao\HistoricoAgendamentoDAO.class
 br\com\sigapar1\entity\Role.class
+br\com\sigapar1\util\DateUtilBean.class

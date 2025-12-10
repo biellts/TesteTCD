@@ -1,93 +1,155 @@
 package br.com.sigapar1.controller;
 
-import br.com.sigapar1.dao.AgendamentoDAO;
 import br.com.sigapar1.entity.Agendamento;
-import br.com.sigapar1.entity.Checkin;
-import br.com.sigapar1.entity.Usuario;
-import br.com.sigapar1.service.CheckinService;
-import br.com.sigapar1.util.BusinessException;
+import br.com.sigapar1.entity.Horario;
+import br.com.sigapar1.service.AgendamentoSimplificadoService;
+import br.com.sigapar1.util.JsfUtil;
 import jakarta.annotation.PostConstruct;
-import jakarta.faces.application.FacesMessage;
-import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
-
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
-@Named
+@Named("recepcaoController")
 @ViewScoped
 public class RecepcaoController implements Serializable {
 
-    @Inject
-    private UsuarioController usuarioController;
+    private static final long serialVersionUID = 1L;
 
     @Inject
-    private AgendamentoDAO agendamentoDAO;
+    private AgendamentoSimplificadoService service;
 
-    @Inject
-    private CheckinService checkinService;
+    // Filtros de busca
+    private String buscaCpf;
+    private String buscaProtocolo;
+    private LocalDate dataBusca = LocalDate.now(); // padrão: hoje
 
-    private String termoBusca;
-    private List<Agendamento> lista;
-    private Agendamento selecionado;
+    // Resultados
+    private List<Agendamento> agendamentosEncontrados = new ArrayList<>();
+    private Agendamento agendamentoSelecionado;
 
     @PostConstruct
     public void init() {
-        lista = agendamentoDAO.buscarPorData(LocalDate.now());
+        buscarAgendamentosDoDia();
     }
 
+    // ========================================
+    // BUSCAR AGENDAMENTOS DO DIA (padrão)
+    // ========================================
+    public void buscarAgendamentosDoDia() {
+        this.buscaCpf = null;
+        this.buscaProtocolo = null;
+        carregarAgendamentosPorData(dataBusca);
+    }
+
+    // ========================================
+    // BUSCA PRINCIPAL (CPF ou Protocolo)
+    // ========================================
     public void buscar() {
-        if (termoBusca == null || termoBusca.trim().isEmpty()) {
-            lista = agendamentoDAO.buscarPorData(LocalDate.now());
-        } else {
-            lista = agendamentoDAO.buscarPorTermo(termoBusca, LocalDate.now());
+        agendamentosEncontrados.clear();
+
+        boolean temCpf = buscaCpf != null && !buscaCpf.trim().isEmpty();
+        boolean temProtocolo = buscaProtocolo != null && !buscaProtocolo.trim().isEmpty();
+
+        if (!temCpf && !temProtocolo && dataBusca == null) {
+            JsfUtil.addErrorMessage("Informe pelo menos um filtro.");
+            return;
         }
 
-        if (lista.isEmpty()) {
-            FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage("Nenhum agendamento encontrado."));
-        }
-    }
-
-    public void confirmarCheckin() {
         try {
-            if (selecionado == null) {
-                FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_WARN,
-                            "Selecione um agendamento.", null));
-                return;
+            // 1. Busca por protocolo (prioridade maior)
+            if (temProtocolo) {
+                Agendamento ag = service.buscarPorProtocolo(buscaProtocolo.trim());
+                if (ag != null) {
+                    agendamentosEncontrados.add(ag);
+                } else {
+                    JsfUtil.addInfoMessage("Protocolo não encontrado.");
+                }
             }
 
-            Usuario recep = usuarioController.getUsuarioLogado();
+            // 2. Busca por CPF (só se não achou protocolo ou se ambos foram informados)
+            if (temCpf && (agendamentosEncontrados.isEmpty() || temCpf)) {
+                String cpfLimpo = buscaCpf.replaceAll("\\D", "");
+                if (cpfLimpo.length() == 11) {
+                    List<Agendamento> porCpf = service.listarAgendamentosPorCpf(cpfLimpo);
+                    if (!porCpf.isEmpty()) {
+                        // Se já tem resultado do protocolo, evita duplicar
+                        for (Agendamento ag : porCpf) {
+                            if (!agendamentosEncontrados.contains(ag)) {
+                                agendamentosEncontrados.add(ag);
+                            }
+                        }
+                    } else if (!temProtocolo) {
+                        JsfUtil.addInfoMessage("Nenhum agendamento encontrado para este CPF.");
+                    }
+                } else {
+                    JsfUtil.addErrorMessage("CPF inválido.");
+                }
+            }
 
-            checkinService.realizarCheckinRecepcao(selecionado, recep);
-
-            FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage("Check-in realizado com sucesso!"));
-
-            init(); // recarregar lista
-
-        } catch (BusinessException e) {
-            FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_WARN, e.getMessage(), null));
+            // 3. Se não informou nada além da data, busca por data
+            if (agendamentosEncontrados.isEmpty() && !temCpf && !temProtocolo) {
+                carregarAgendamentosPorData(dataBusca);
+            }
 
         } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                        "Erro inesperado ao realizar check-in.", null));
+            e.printStackTrace();
+            JsfUtil.addErrorMessage("Erro na busca.");
         }
     }
 
-    // Getters / Setters
+    private void carregarAgendamentosPorData(LocalDate data) {
+        if (data == null) return;
+        agendamentosEncontrados = service.listarAgendamentosPorData(data);
+        if (agendamentosEncontrados.isEmpty()) {
+            JsfUtil.addInfoMessage("Nenhum agendamento encontrado para " + formatarData(data) + ".");
+        }
+    }
 
-    public String getTermoBusca() { return termoBusca; }
-    public void setTermoBusca(String termoBusca) { this.termoBusca = termoBusca; }
+    // ========================================
+    // LIMPAR BUSCA
+    // ========================================
+    public void limpar() {
+        buscaCpf = null;
+        buscaProtocolo = null;
+        dataBusca = LocalDate.now();
+        buscarAgendamentosDoDia();
+    }
 
-    public List<Agendamento> getLista() { return lista; }
+    // ========================================
+    // FORMATADORES
+    // ========================================
+    public String formatarData(LocalDate data) {
+        if (data == null) return "";
+        return data.format(DateTimeFormatter.ofPattern("dd/MM/yyyy (EEEE)", new Locale("pt", "BR")));
+    }
 
-    public Agendamento getSelecionado() { return selecionado; }
-    public void setSelecionado(Agendamento selecionado) { this.selecionado = selecionado; }
+    public String formatarHora(Horario h) {
+        if (h == null || h.getHora() == null) return "-";
+        return h.getHora().format(DateTimeFormatter.ofPattern("HH:mm"));
+    }
+
+    // ========================================
+    // GETTERS & SETTERS
+    // ========================================
+    public String getBuscaCpf() { return buscaCpf; }
+    public void setBuscaCpf(String buscaCpf) { this.buscaCpf = buscaCpf; }
+
+    public String getBuscaProtocolo() { return buscaProtocolo; }
+    public void setBuscaProtocolo(String buscaProtocolo) { this.buscaProtocolo = buscaProtocolo; }
+
+    public LocalDate getDataBusca() { return dataBusca; }
+    public void setDataBusca(LocalDate dataBusca) { this.dataBusca = dataBusca; }
+
+    public List<Agendamento> getAgendamentosEncontrados() { return agendamentosEncontrados; }
+
+    public Agendamento getAgendamentoSelecionado() { return agendamentoSelecionado; }
+    public void setAgendamentoSelecionado(Agendamento agendamentoSelecionado) {
+        this.agendamentoSelecionado = agendamentoSelecionado;
+    }
 }

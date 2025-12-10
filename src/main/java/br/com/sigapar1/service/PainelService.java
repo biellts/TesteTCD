@@ -20,4 +20,9 @@ public class PainelService {
     public Agendamento ultimoChamado() {
         return dao.buscarUltimoChamado();
     }
+
+    public Agendamento buscarProximoAgendamento() {
+        return dao.buscarProximoAgendamento();
+    }
+
 }

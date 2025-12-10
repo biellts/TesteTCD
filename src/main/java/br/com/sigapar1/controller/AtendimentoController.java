@@ -16,6 +16,7 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -72,7 +73,6 @@ public class AtendimentoController implements Serializable {
                 return;
             }
 
-   
             // Marca atendente como ocupado
             atendente.setStatus("OCUPADO");
             usuarioController.atualizar(atendente);
@@ -144,16 +144,16 @@ public class AtendimentoController implements Serializable {
             // Atualiza STATUS do agendamento usando enum
             switch (statusConclusao) {
                 case "CONCLUIDO" ->
-                        atual.setStatus(StatusAgendamento.CONCLUIDO);
+                    atual.setStatus(StatusAgendamento.CONCLUIDO);
 
                 case "REENCAMINHADO" ->
-                        atual.setStatus(StatusAgendamento.REMARCADO);
+                    atual.setStatus(StatusAgendamento.REMARCADO);
 
                 case "CANCELADO_USUARIO", "NAO_COMPARECEU" ->
-                        atual.setStatus(StatusAgendamento.CANCELADO);
+                    atual.setStatus(StatusAgendamento.CANCELADO);
 
                 default ->
-                        throw new IllegalArgumentException("Status inválido: " + statusConclusao);
+                    throw new IllegalArgumentException("Status inválido: " + statusConclusao);
             }
 
             agendamentoService.atualizar(atual);
@@ -184,19 +184,68 @@ public class AtendimentoController implements Serializable {
     }
 
     // GETTERS / SETTERS
-    public Agendamento getAtual() { return atual; }
+    public Agendamento getAtual() {
+        return atual;
+    }
 
-    public String getAcoesRealizadas() { return acoesRealizadas; }
-    public void setAcoesRealizadas(String acoesRealizadas) { this.acoesRealizadas = acoesRealizadas; }
+    public String getAcoesRealizadas() {
+        return acoesRealizadas;
+    }
 
-    public String getObservacoes() { return observacoes; }
-    public void setObservacoes(String observacoes) { this.observacoes = observacoes; }
+    public void setAcoesRealizadas(String acoesRealizadas) {
+        this.acoesRealizadas = acoesRealizadas;
+    }
 
-    public String getStatusConclusao() { return statusConclusao; }
-    public void setStatusConclusao(String statusConclusao) { this.statusConclusao = statusConclusao; }
+    public String getObservacoes() {
+        return observacoes;
+    }
 
-    public Long getIdServicoReencaminhar() { return idServicoReencaminhar; }
-    public void setIdServicoReencaminhar(Long idServicoReencaminhar) { this.idServicoReencaminhar = idServicoReencaminhar; }
+    public void setObservacoes(String observacoes) {
+        this.observacoes = observacoes;
+    }
 
-    public List<Servico> getServicos() { return servicos; }
+    public String getStatusConclusao() {
+        return statusConclusao;
+    }
+
+    public void setStatusConclusao(String statusConclusao) {
+        this.statusConclusao = statusConclusao;
+    }
+
+    public Long getIdServicoReencaminhar() {
+        return idServicoReencaminhar;
+    }
+
+    public void setIdServicoReencaminhar(Long idServicoReencaminhar) {
+        this.idServicoReencaminhar = idServicoReencaminhar;
+    }
+
+    public List<Servico> getServicos() {
+        return servicos;
+    }
+
+    private List<Agendamento> agendamentosDoDia;
+
+// No @PostConstruct ou em um método chamado na página
+    public void carregarAgendamentosDoDia() {
+        LocalDate hoje = LocalDate.now();
+        this.agendamentosDoDia = agendamentoService.listarPorData(hoje); // Você precisa ter esse método no service
+    }
+
+// Método chamado ao clicar no botão "Finalizar Atendimento"
+    public void selecionarParaFinalizar(Agendamento ag) {
+        this.atual = ag;
+        // Limpa campos anteriores
+        this.acoesRealizadas = null;
+        this.observacoes = null;
+        this.statusConclusao = null;
+        this.idServicoReencaminhar = null;
+    }
+
+    public List<Agendamento> getAgendamentosDoDia() {
+        if (agendamentosDoDia == null) {
+            carregarAgendamentosDoDia();
+        }
+        return agendamentosDoDia;
+    }
 }

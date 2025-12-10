@@ -6,6 +6,7 @@ import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import java.io.Serializable;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 
@@ -13,31 +14,57 @@ import java.util.List;
 @ViewScoped
 public class PainelController implements Serializable {
 
-    @Inject private AgendamentoService agendamentoService;
+    @Inject
+    private AgendamentoService agendamentoService;
 
     private Agendamento atendimentoAtual;
     private List<Agendamento> ultimasChamadas;
     private int filaSize;
 
-    public void atualizarPainel() {
-        atendimentoAtual = agendamentoService.buscarUltimoChamado();     // em atendimento agora
-        ultimasChamadas = agendamentoService.listarUltimasChamadas(8);   // últimas 8
-        filaSize = agendamentoService.contarFila();                      // pessoas na fila
-    }
-
     // Getters
     public Agendamento getAtendimentoAtual() {
-        if (atendimentoAtual == null) atualizarPainel();
+        if (atendimentoAtual == null) {
+            atualizarPainel();
+        }
         return atendimentoAtual;
     }
 
     public List<Agendamento> getUltimasChamadas() {
-        if (ultimasChamadas == null) atualizarPainel();
+        if (ultimasChamadas == null) {
+            atualizarPainel();
+        }
         return ultimasChamadas != null ? ultimasChamadas : Collections.emptyList();
     }
 
     public int getFilaSize() {
-        if (filaSize == 0) atualizarPainel();
+        if (filaSize == 0) {
+            atualizarPainel();
+        }
         return filaSize;
     }
+    private Agendamento proximoAgendamento;
+
+    public void atualizarPainel() {
+        proximoAgendamento = agendamentoService.buscarProximoAgendamento();
+    }
+
+    public Agendamento getProximoAgendamento() {
+        if (proximoAgendamento == null) {
+            atualizarPainel();
+        }
+        return proximoAgendamento;
+    }
+    public String getHorarioFormatado() {
+    if (proximoAgendamento == null || proximoAgendamento.getDataHora() == null) {
+        return "";
+    }
+    return proximoAgendamento.getDataHora()
+            .toLocalTime()
+            .format(DateTimeFormatter.ofPattern("HH:mm"));
 }
+
+}
+    
+    
+    
+

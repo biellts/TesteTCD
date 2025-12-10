@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<ui:composition template="/templates/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:define name="conteudo">
+
+        <div style="max-width: 1000px; margin: 0 auto; padding: 30px 20px;">
+
+            <!-- TÍTULO -->
+            <div style="text-align:center; margin-bottom: 40px;">
+                <h1 style="color:#036fab; font-size:2.5em; margin:0; font-weight:700;">
+                    🏥 Recepção – Consulta de Agendamentos
+                </h1>
+                <p style="color:#555; font-size:1.1em; margin-top:12px;">
+                    Busque agendamentos por data, CPF ou protocolo.
+                </p>
+            </div>
+
+            <!-- FORMULÁRIO DE BUSCA -->
+            <h:form id="formBusca">
+
+                <div style="background:white; padding:25px; border-radius:14px;
+                            box-shadow:0 8px 25px rgba(0,0,0,0.08); margin-bottom:35px;">
+
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+
+                        <!-- Data -->
+                        <div>
+                            <label style="font-weight:600; color:#333;">Data</label>
+                            <p:calendar value="#{recepcaoController.dataBusca}"
+                                        locale="pt_BR" pattern="dd/MM/yyyy"
+                                        style="width:100%;"/>
+                        </div>
+
+                        <!-- CPF -->
+                        <div>
+                            <label style="font-weight:600; color:#333;">CPF</label>
+                            <p:inputMask value="#{recepcaoController.buscaCpf}"
+                                         mask="999.999.999-99"
+                                         style="width:100%;" />
+                        </div>
+
+                        <!-- Protocolo -->
+                        <div>
+                            <label style="font-weight:600; color:#333;">Protocolo</label>
+                            <p:inputText value="#{recepcaoController.buscaProtocolo}"
+                                         placeholder="AGD..."
+                                         style="width:100%;" />
+                        </div>
+
+                        <!-- BOTÕES -->
+                        <div style="display:flex; align-items:center; gap:10px; margin-top:15px;">
+
+                            <p:commandButton value="Buscar"
+                                             icon="pi pi-search"
+                                             action="#{recepcaoController.buscar}"
+                                             update=":formTabela:tabela"
+                                             style="background:#036fab; color:white;"/>
+
+                            <p:commandButton value="Hoje"
+                                             icon="pi pi-calendar"
+                                             action="#{recepcaoController.buscarAgendamentosDoDia}"
+                                             update=":formTabela:tabela"
+                                             style="background:#28a745; color:white;"/>
+
+                            <p:commandButton value="Limpar"
+                                             icon="pi pi-trash"
+                                             action="#{recepcaoController.limpar}"
+                                             update=":formTabela:tabela"
+                                             style="background:#dc3545; color:white;"/>
+                        </div>
+
+                    </div>
+                </div>
+
+            </h:form>
+
+            <!-- TABELA -->
+            <h:form id="formTabela">
+
+                <p:dataTable id="tabela"
+                             value="#{recepcaoController.agendamentosEncontrados}"
+                             var="ag"
+                             emptyMessage="Nenhum agendamento encontrado"
+                             style="background:white; border-radius:12px;
+                             box-shadow:0 8px 25px rgba(0,0,0,0.08);"
+                             paginator="true" rows="15">
+
+                    <p:column headerText="Protocolo">
+                        <strong style="color:#036fab;">#{ag.protocolo}</strong>
+                    </p:column>
+
+                    <p:column headerText="Cliente">
+                        #{ag.usuario.nome}
+                    </p:column>
+
+                    <p:column headerText="CPF">
+                        #{ag.usuario.cpf}
+                    </p:column>
+
+                    <p:column headerText="Serviço">
+                        #{ag.servico.nome}
+                    </p:column>
+
+                    <p:column headerText="Horário">
+                        #{recepcaoController.formatarHora(ag.horario)}
+                    </p:column>
+
+                    <p:column headerText="Espaço">
+                        #{ag.espaco != null ? ag.espaco.descricao : '-'}
+                    </p:column>
+
+                    <p:column headerText="Detalhes" width="80">
+                        <p:commandButton icon="pi pi-eye"
+                                         style="background:#036fab; color:white; border-radius:6px;"
+                                         update=":dlgForm"
+                                         oncomplete="PF('dlgDetalhes').show()">
+
+                            <!-- CORRETO: listener dentro do botão -->
+                            <f:setPropertyActionListener value="#{ag}"
+                                                         target="#{recepcaoController.agendamentoSelecionado}" />
+
+                        </p:commandButton>
+                    </p:column>
+
+                </p:dataTable>
+
+            </h:form>
+
+            <!-- DIALOG DETALHES -->
+            <p:dialog header="Detalhes do Agendamento"
+                      widgetVar="dlgDetalhes" modal="true" width="600">
+
+                <h:form id="dlgForm">
+
+                    <h:panelGrid columns="2" cellpadding="8">
+
+                        <h:outputLabel value="Protocolo:" style="font-weight:bold"/>
+                        <h:outputText value="#{recepcaoController.agendamentoSelecionado.protocolo}"/>
+
+                        <h:outputLabel value="Cliente:"/>
+                        <h:outputText value="#{recepcaoController.agendamentoSelecionado.usuario.nome}"/>
+
+                        <h:outputLabel value="CPF:"/>
+                        <h:outputText value="#{recepcaoController.agendamentoSelecionado.usuario.cpf}"/>
+
+                        <h:outputLabel value="Telefone:"/>
+                        <h:outputText value="#{recepcaoController.agendamentoSelecionado.usuario.telefone}"/>
+
+                        <h:outputLabel value="Serviço:"/>
+                        <h:outputText value="#{recepcaoController.agendamentoSelecionado.servico.nome}"/>
+
+                        <h:outputLabel value="Data:"/>
+                        <h:outputText value="#{recepcaoController.formatarData(recepcaoController.agendamentoSelecionado.data)}"/>
+
+                        <h:outputLabel value="Horário:"/>
+                        <h:outputText value="#{recepcaoController.formatarHora(recepcaoController.agendamentoSelecionado.horario)}"/>
+
+                        <h:outputLabel value="Espaço:"/>
+                        <h:outputText value="#{recepcaoController.agendamentoSelecionado.espaco.descricao}"/>
+
+                        <h:outputLabel value="Atendente:"/>
+                        <h:outputText value="#{recepcaoController.agendamentoSelecionado.atendente != null ?
+                                              recepcaoController.agendamentoSelecionado.atendente.nome : '-'}"/>
+
+                    </h:panelGrid>
+
+                </h:form>
+
+            </p:dialog>
+
+        </div>
+
+    </ui:define>
+
+</ui:composition>

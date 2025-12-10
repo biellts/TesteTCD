@@ -2,124 +2,72 @@
 <ui:composition template="/templates/layout.xhtml"
                 xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
-                xmlns:f="http://xmlns.jcp.org/jsf/core"
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
     <ui:define name="conteudo">
-        <div style="max-width: 900px; margin: 0 auto; padding: 30px 20px;">
-            <!-- TÍTULO -->
-            <div style="text-align:center; margin-bottom: 30px;">
-                <h1 style="color:#036fab; font-size:2.4em; margin:0; font-weight:700;">🔍 Consultar Agendamento</h1>
-                <p style="color:#555; font-size:1.2em; margin-top:10px;">Informe CPF ou número de protocolo</p>
-            </div>
 
-            <h:messages globalOnly="true" style="font-size:1.1em; margin-bottom:20px;" />
+        <h:form id="formBusca" style="max-width:900px; margin:0 auto;">
 
-            <h:form id="formConsulta">
-                <!-- CAMPO DE PESQUISA -->
-                <div style="background:white; padding:25px; border-radius:12px; box-shadow:0 8px 25px rgba(0,0,0,0.08); margin-bottom:30px;">
-                    <h:panelGroup style="display:block; margin-bottom:20px;">
-                        <label style="font-size:1.1em; font-weight:600;">CPF ou Protocolo:</label>
-                        <h:inputText value="#{agendamentoSimplificadoController.cpfOuProtocolo}"
+            <div style="background:white; padding:25px; border-radius:12px; box-shadow:0 2px 10px rgba(0,0,0,0.1); margin-top:35px;">
+
+                <h2 style="text-align:center; margin-bottom:25px; color:#333;">Buscar Agendamentos</h2>
+
+                <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:20px;">
+
+                    <!-- PROTOCOLO -->
+                    <div>
+                        <label style="font-weight:600;">Protocolo</label>
+                        <h:inputText value="#{buscaAgendamentoRecepcionistaController.filtroProtocolo}"
                                      style="width:100%; padding:12px; border-radius:6px; border:1px solid #ccc; font-size:1.05em; margin-top:8px;">
-                            <f:passThroughAttribute name="placeholder" value="Digite CPF ou protocolo" />
+                            <f:passThroughAttribute name="placeholder" value="Ex: 20251234" />
                         </h:inputText>
-                    </h:panelGroup>
+                    </div>
 
-                    <h:commandButton value="Consultar"
-                                     action="#{agendamentoSimplificadoController.consultarAgendamento}"
-                                     style="padding:12px 22px; background:#036fab; color:white; border:none; border-radius:8px; width:100%; font-size:1.1em;">
-                        <f:ajax execute="@form" render="@form"/>
-                    </h:commandButton>
+                    <!-- CPF -->
+                    <div>
+                        <label style="font-weight:600;">CPF</label>
+                        <h:inputText value="#{buscaAgendamentoRecepcionistaController.filtroCpf}"
+                                     style="width:100%; padding:12px; border-radius:6px; border:1px solid #ccc; font-size:1.05em; margin-top:8px;">
+                            <f:passThroughAttribute name="placeholder" value="Somente números" />
+                        </h:inputText>
+                    </div>
+
+                    <!-- NOME -->
+                    <div>
+                        <label style="font-weight:600;">Nome</label>
+                        <h:inputText value="#{buscaAgendamentoRecepcionistaController.filtroNome}"
+                                     style="width:100%; padding:12px; border-radius:6px; border:1px solid #ccc; font-size:1.05em; margin-top:8px;">
+                            <f:passThroughAttribute name="placeholder" value="Nome completo ou parcial" />
+                        </h:inputText>
+                    </div>
+
+                    <!-- DATA -->
+                    <div>
+                        <label style="font-weight:600;">Data</label>
+                        <h:inputText value="#{buscaAgendamentoRecepcionistaController.filtroData}"
+                                     style="width:100%; padding:12px; border-radius:6px; border:1px solid #ccc; font-size:1.05em; margin-top:8px;">
+                            <f:passThroughAttribute name="placeholder" value="dd/MM/yyyy" />
+                            <f:convertDateTime pattern="dd/MM/yyyy" />
+                        </h:inputText>
+                    </div>
+
                 </div>
 
-                <!-- LISTA DE RESULTADOS -->
-                <ui:fragment rendered="#{not empty agendamentoSimplificadoController.agendamentosEncontrados}">
-                    <h3 style="margin-bottom:15px; color:#036fab; font-size:1.6em;">📋 Resultados Encontrados</h3>
-                    <table style="width:100%; border-collapse:collapse; font-size:1.05em; box-shadow:0 8px 25px rgba(0,0,0,0.08); border-radius:12px; overflow:hidden;">
-                        <thead style="background:#036fab; color:white;">
-                            <tr>
-                                <th style="padding:12px; text-align:center;">Protocolo</th>
-                                <th style="padding:12px; text-align:center;">Data</th>
-                                <th style="padding:12px; text-align:center;">Horário</th>
-                                <th style="padding:12px; text-align:left;">Serviço</th>
-                                <th style="padding:12px; text-align:left;">Espaço</th>
-                                <th style="padding:12px; text-align:center;">Ação</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <ui:repeat value="#{agendamentoSimplificadoController.agendamentosEncontrados}" var="a">
-                                <tr style="border-bottom:1px solid #eee;">
-                                    <td style="padding:12px; text-align:center;">#{a.protocolo}</td>
-                                    <td style="padding:12px; text-align:center;">#{agendamentoSimplificadoController.formatarData(a.data)}</td>
-                                    <td style="padding:12px; text-align:center;">
-                                        #{a.horario != null ? agendamentoSimplificadoController.formatarHora(a.horario) : '-'}
-                                    </td>
-                                    <td style="padding:12px; text-align:left;">#{a.servico.nome}</td>
-                                    <td style="padding:12px; text-align:left;">#{agendamentoSimplificadoController.getNomeEspaco(a)}</td>
-                                    <td style="padding:12px; text-align:center;">
-                                        <h:commandButton value="🔎 Ver detalhes"
-                                                         style="background:#17a2b8; color:white; padding:8px 16px; border:none; border-radius:6px;">
-                                            <f:ajax execute="@this" render="@form"/>
-                                            <f:setPropertyActionListener target="#{agendamentoSimplificadoController.agendamentoSelecionado}"
-                                                                         value="#{a}" />
-                                        </h:commandButton>
-                                    </td>
-                                </tr>
-                            </ui:repeat>
-                        </tbody>
-                    </table>
-                </ui:fragment>
+                <!-- BOTÃO DE BUSCA -->
+                <div style="text-align:center; margin-top:30px;">
+                    <h:commandButton value="Buscar"
+                                     action="#{buscaAgendamentoRecepcionistaController.buscar}"
+                                     style="background:#007bff; color:white; padding:12px 26px; border:none; border-radius:6px; font-size:1.1em; cursor:pointer;" />
+                </div>
 
-                <!-- DETALHES DO AGENDAMENTO -->
-                <ui:fragment rendered="#{agendamentoSimplificadoController.agendamentoSelecionado != null}">
-                    <div style="margin-top:40px;">
-                        <h3 style="color:#036fab; font-size:1.6em;">📄 Detalhes do Agendamento</h3>
-                        <div style="background:white; padding:25px; border-radius:12px; box-shadow:0 8px 25px rgba(0,0,0,0.1); font-size:1.15em;">
-                            <p><strong>Protocolo:</strong> #{agendamentoSimplificadoController.agendamentoSelecionado.protocolo}</p>
-                            <p><strong>Serviço:</strong> #{agendamentoSimplificadoController.agendamentoSelecionado.servico.nome}</p>
-                            <p><strong>Documentos Necessários:</strong>
-                                <ui:fragment rendered="#{not empty agendamentoSimplificadoController.agendamentoSelecionado.servico.documentosNecessarios}">
-                                    <ul style="margin:5px 0 10px 20px;">
-                                        <ui:repeat value="#{agendamentoSimplificadoController.agendamentoSelecionado.servico.documentosNecessarios.split(',')}" var="doc">
-                                            <li>#{doc}</li>
-                                        </ui:repeat>
-                                    </ul>
-                                </ui:fragment>
-                                <ui:fragment rendered="#{empty agendamentoSimplificadoController.agendamentoSelecionado.servico.documentosNecessarios}">
-                                    -
-                                </ui:fragment>
-                            </p>
-                            <p><strong>Data:</strong> #{agendamentoSimplificadoController.formatarData(agendamentoSimplificadoController.agendamentoSelecionado.data)}</p>
-                            <p><strong>Horário:</strong> #{agendamentoSimplificadoController.agendamentoSelecionado.horario != null ? agendamentoSimplificadoController.formatarHora(agendamentoSimplificadoController.agendamentoSelecionado.horario) : '-'}</p>
-                            <p><strong>Status:</strong> #{agendamentoSimplificadoController.agendamentoSelecionado.status}</p>
-                            <p><strong>Espaço:</strong> #{agendamentoSimplificadoController.getNomeEspaco(agendamentoSimplificadoController.agendamentoSelecionado)}</p>
-                        </div>
+            </div>
 
-                        <div style="margin-top:25px; text-align:center;">
-                            <!-- CANCELAR -->
-                            <h:commandButton value="❌ Cancelar"
-                                             action="#{agendamentoSimplificadoController.cancelarAgendamento(agendamentoSimplificadoController.agendamentoSelecionado)}"
-                                             style="background:#dc3545; color:white; padding:10px 20px; border:none; border-radius:6px; margin:6px; font-size:1.1em;">
-                                <f:ajax execute="@this" render="@form"/>
-                            </h:commandButton>
+        </h:form>
 
-                            <!-- REAGENDAR -->
-                            <h:commandButton value="🔄 Reagendar"
-                                             action="#{agendamentoSimplificadoController.reagendarAgendamento(agendamentoSimplificadoController.agendamentoSelecionado)}"
-                                             style="background:#17a2b8; color:white; padding:10px 20px; border:none; border-radius:6px; margin:6px; font-size:1.1em;">
-                                <f:ajax execute="@this" render="@form"/>
-                            </h:commandButton>
+        <!-- LISTA DE RESULTADOS -->
+        <ui:include src="lista-agendamentos.xhtml" />
 
-                            <!-- VOLTAR -->
-                            <h:commandButton value="⬅ Voltar"
-                                             action="#{agendamentoSimplificadoController.limparSelecao}"
-                                             style="margin-top:20px; font-size:1.1em; color:#036fab; background:none; border:none; cursor:pointer;">
-                                <f:ajax execute="@this" render="@form"/>
-                            </h:commandButton>
-                        </div>
-                    </div>
-                </ui:fragment>
-            </h:form>
-        </div>
     </ui:define>
+
 </ui:composition>

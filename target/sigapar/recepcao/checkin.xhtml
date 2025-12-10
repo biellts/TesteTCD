@@ -1,87 +1,126 @@
+<!DOCTYPE html>
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 template="/templates/layout.xhtml">
 
 <ui:define name="conteudo">
 
-<h1>Recepção - Check-in</h1>
+    <!-- CABEÇALHO -->
+    <div style="text-align:center; padding:40px 20px;">
+        <h1 style="color:#036fab; font-size:2.4em; margin:0;">
+            🏥 Recepção – Check-in
+        </h1>
+        <p style="color:#555; font-size:1.15em; margin-top:10px;">
+            Busque o agendamento e confirme a chegada do paciente.
+        </p>
+    </div>
 
-<h:form id="form">
+    <h:form id="form">
 
-    <!-- CAMPO DE BUSCA -->
-    <h:panelGroup style="margin-bottom:20px;">
-        <h:inputText value="#{checkinController.termoBusca}" 
-                     placeholder="Buscar por CPF, nome ou protocolo" 
-                     style="width:300px; padding:6px;" />
-        <h:commandButton value="Buscar"
-                         action="#{checkinController.buscar}"
-                         update="form:tabela form:painelDados form:msgs"
-                         style="margin-left:10px;" />
-    </h:panelGroup>
+        <!-- CARD DE BUSCA -->
+        <div class="card-wrapper" style="max-width:700px; margin:0 auto 35px;">
+            <div class="card"
+                 style="padding:30px; border-radius:12px; box-shadow:0 8px 25px rgba(0,0,0,0.08);">
 
-    <!-- LISTA DE AGENDAMENTOS DO DIA -->
-    <h:dataTable value="#{checkinController.lista}"
-                 var="ag"
-                 id="tabela"
-                 border="1"
-                 rows="10"
-                 style="width:100%;">
+                <h2 style="color:#036fab; margin-bottom:20px;">Buscar Agendamento</h2>
 
-        <h:column>
-            <f:facet name="header">Nome</f:facet>
-            #{ag.usuario.nome}
-        </h:column>
+                <div style="display:flex; gap:15px;">
 
-        <h:column>
-            <f:facet name="header">Serviço</f:facet>
-            #{ag.servico.nome}
-        </h:column>
+                    <h:inputText value="#{checkinController.termoBusca}"
+                                 placeholder="CPF, nome ou protocolo"
+                                 style="flex:1; padding:12px; border-radius:8px; border:1px solid #ccc;" />
 
-        <h:column>
-            <f:facet name="header">Horário</f:facet>
-            #{ag.horario.hora}
-        </h:column>
+                    <h:commandButton value="Buscar"
+                                     action="#{checkinController.buscar}"
+                                     update="form:tabela form:painelDados form:msgs"
+                                     style="padding:12px 25px; background:#036fab; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:600;" />
+                </div>
 
-        <h:column>
-            <f:facet name="header">Status</f:facet>
-            #{ag.status}
-        </h:column>
+                <h:messages id="msgs"
+                            style="margin-top:15px; color:#d9534f; font-size:1em;" />
 
-        <h:column>
-            <f:facet name="header">Ações</f:facet>
+            </div>
+        </div>
 
-            <h:commandButton value="Selecionar"
-                             action="#{checkinController.selecionar(ag)}"
-                             update="form:painelDados form:msgs" />
-        </h:column>
+        <!-- LISTA DE AGENDAMENTOS -->
+        <div class="card-wrapper" style="max-width:1100px; margin:0 auto 40px;">
+            <div class="card"
+                 style="padding:30px; border-radius:12px; box-shadow:0 8px 25px rgba(0,0,0,0.08);">
 
-    </h:dataTable>
+                <h2 style="color:#036fab; margin-bottom:25px;">Agendamentos Encontrados</h2>
 
-    <!-- PAINEL DO AGENDAMENTO SELECIONADO -->
-    <h:panelGroup id="painelDados"
-                  rendered="#{checkinController.selecionado != null}"
-                  style="margin-top:30px; padding:20px; border:1px solid #ccc;">
+                <h:dataTable id="tabela"
+                             value="#{checkinController.lista}"
+                             var="ag"
+                             style="width:100%; border-collapse:separate; border-spacing:0 12px;">
 
-        <h2>Dados do Agendamento</h2>
+                    <h:column>
+                        <f:facet name="header"><strong>Nome</strong></f:facet>
+                        #{ag.usuario.nome}
+                    </h:column>
 
-        <p><b>Nome:</b> #{checkinController.selecionado.usuario.nome}</p>
-        <p><b>Serviço:</b> #{checkinController.selecionado.servico.nome}</p>
-        <p><b>Horário:</b> #{checkinController.selecionado.horario.hora}</p>
-        <p><b>Protocolo:</b> #{checkinController.selecionado.protocolo}</p>
+                    <h:column>
+                        <f:facet name="header"><strong>Serviço</strong></f:facet>
+                        #{ag.servico.nome}
+                    </h:column>
 
-        <h:commandButton value="Confirmar Check-in"
-                         action="#{checkinController.confirmarCheckin}"
-                         update="form form:tabela form:msgs"
-                         style="margin-top:10px; padding:10px 30px;" />
-    </h:panelGroup>
+                    <h:column>
+                        <f:facet name="header"><strong>Horário</strong></f:facet>
+                        #{ag.horario.hora}
+                    </h:column>
 
-    <!-- MENSAGENS DO SISTEMA -->
-    <h:messages id="msgs"
-                style="margin-top:20px; color:red;" />
+                    <h:column>
+                        <f:facet name="header"><strong>Status</strong></f:facet>
+                        #{ag.status}
+                    </h:column>
 
-</h:form>
+                    <h:column>
+                        <f:facet name="header"><strong>Ação</strong></f:facet>
+
+                        <h:commandButton value="Selecionar"
+                                         action="#{checkinController.selecionar(ag)}"
+                                         update="form:painelDados form:msgs"
+                                         style="padding:8px 18px; background:#036fab; color:white;
+                                                border:none; border-radius:6px; cursor:pointer; font-weight:600;" />
+                    </h:column>
+
+                </h:dataTable>
+
+                <h:outputText value="Nenhum agendamento encontrado."
+                              rendered="#{empty checkinController.lista}"
+                              style="text-align:center; display:block; padding:40px 0; color:#888; font-size:1.2em;" />
+            </div>
+        </div>
+
+        <!-- PAINEL DE DADOS DO AGENDAMENTO -->
+        <h:panelGroup id="painelDados"
+                      rendered="#{checkinController.selecionado != null}"
+                      style="max-width:800px; margin:0 auto 50px;">
+
+            <div class="card"
+                 style="padding:30px; border-radius:12px; box-shadow:0 8px 25px rgba(0,0,0,0.08);">
+
+                <h2 style="color:#036fab; margin-bottom:20px;">Dados do Agendamento</h2>
+
+                <p><strong>Nome:</strong> #{checkinController.selecionado.usuario.nome}</p>
+                <p><strong>Serviço:</strong> #{checkinController.selecionado.servico.nome}</p>
+                <p><strong>Horário:</strong> #{checkinController.selecionado.horario.hora}</p>
+                <p><strong>Protocolo:</strong> #{checkinController.selecionado.protocolo}</p>
+
+                <h:commandButton value="Confirmar Check-in"
+                                 action="#{checkinController.confirmarCheckin}"
+                                 update="form form:tabela form:msgs"
+                                 style="margin-top:20px; padding:14px 40px;
+                                        background:#28a745; color:white; border:none;
+                                        border-radius:8px; font-weight:600; font-size:1.1em; cursor:pointer;" />
+
+            </div>
+
+        </h:panelGroup>
+
+    </h:form>
 
 </ui:define>
 </ui:composition>

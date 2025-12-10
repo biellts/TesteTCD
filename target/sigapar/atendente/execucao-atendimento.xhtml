@@ -1,103 +1,150 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:f="http://xmlns.jcp.org/jsf/core"
-      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-      xmlns:p="http://primefaces.org/ui">
-
-<ui:composition template="/templates/layout.xhtml">
+<ui:composition template="/templates/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
 
     <ui:define name="conteudo">
+        <div style="max-width: 1100px; margin: 0 auto; padding: 30px 20px;">
 
-        <h:form id="formAtendimento">
+            <!-- CABEÇALHO -->
+            <div style="text-align:center; margin-bottom: 40px;">
+                <h1 style="color:#036fab; font-size:2.5em; margin:0; font-weight:700;">
+                    Finalizar Atendimentos do Dia
+                </h1>
+                <p style="color:#555; font-size:1.1em; margin-top:12px;">
+                    Lista de agendamentos de hoje. Clique em "Finalizar Atendimento" para registrar o resultado.
+                </p>
+            </div>
 
-            <h2 style="text-align:center;">Atendimento</h2>
-            <br/>
+            <h:messages globalOnly="true" style="margin-bottom:20px; font-size:1.1em;" />
 
-            <!-- BOTÃO CHAMAR PRÓXIMO -->
-            <p:commandButton value="Chamar Próximo"
-                             icon="pi pi-bell"
-                             actionListener="#{atendimentoController.chamar}"
-                             update="formAtendimento"
-                             styleClass="ui-button-success"/>
+            <h:form id="formLista">
 
-            <br/><br/>
+                <!-- TABELA -->
+                <p:dataTable value="#{atendimentoController.agendamentosDoDia}" var="a"
+                             emptyMessage="Nenhum agendamento encontrado para hoje."
+                             style="width:100%; margin-top:20px;"
+                             rowKey="#{a.id}">
 
-            <!-- PAINEL DO ATENDIMENTO ATUAL -->
-            <p:panel header="Atendimento Atual" rendered="#{not empty atendimentoController.atual}">
+                    <p:column headerText="Protocolo" style="text-align:center; width:120px;">
+                        <strong style="font-family:monospace; color:#036fab;">#{a.protocolo}</strong>
+                    </p:column>
 
-                <h:panelGrid columns="2" cellpadding="5">
+                    <p:column headerText="Cliente" style="width:200px;">
+                        #{a.usuario.nome}
+                    </p:column>
 
-                    <h:outputLabel value="Cliente:"/>
-                    <h:outputText value="#{atendimentoController.atual.usuario.nome}" />
+                    <p:column headerText="CPF" style="width:130px;">
+                        #{a.usuario.cpf}
+                    </p:column>
 
-                    <h:outputLabel value="Serviço:"/>
-                    <h:outputText value="#{atendimentoController.atual.servico.nome}" />
+                    <p:column headerText="Serviço">
+                        #{a.servico.nome}
+                    </p:column>
 
-                    <h:outputLabel value="Horário:"/>
-                    <h:outputText value="#{atendimentoController.atual.dataAgendamento}">
-                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
-                    </h:outputText>
+                    <p:column headerText="Horário" style="text-align:center; width:100px;">
+                        #{atendimentoController.formatarHora(a.horario)}
+                    </p:column>
 
-                </h:panelGrid>
+                    <p:column headerText="Status" style="text-align:center; width:130px;">
+                        <span style="padding:6px 12px; border-radius:18px; font-weight:600; font-size:0.9em;
+                            #{a.status == 'AGENDADO' ? 'background:#d4edda; color:#155724;' :
+                              a.status == 'EM_FILA' ? 'background:#fff3cd; color:#856404;' :
+                              a.status == 'EM_ATENDIMENTO' ? 'background:#d1ecf1; color:#0c5460;' :
+                              a.status == 'CONCLUIDO' ? 'background:#e2e3e5; color:#383d41;' :
+                              'background:#f8d7da; color:#721c24;'}">
+                            #{a.status}
+                        </span>
+                    </p:column>
 
-            </p:panel>
+                    <p:column headerText="Ações" style="text-align:center; width:180px;">
+                        <p:commandButton value="Finalizar Atendimento"
+                                         action="#{atendimentoController.selecionarParaFinalizar(a)}"
+                                         update=":formFinalizar"
+                                         oncomplete="PF('finalizarDialog').show()"
+                                         disabled="#{a.status == 'CONCLUIDO' or a.status == 'CANCELADO'}"
+                                         style="padding:8px 16px; font-size:0.95em;" />
+                    </p:column>
 
-            <br/>
+                </p:dataTable>
 
-            <!-- CAMPOS DE FINALIZAÇÃO (UC12) -->
-            <p:panel header="Finalização do Atendimento" rendered="#{not empty atendimentoController.atual}">
+            </h:form>
 
-                <h:panelGrid columns="2" cellpadding="5">
+            <!-- MODAL -->
+            <h:form id="formFinalizar">
+                <p:dialog header="Finalizar Atendimento" widgetVar="finalizarDialog" modal="true"
+                          resizable="false" width="700">
 
-                    <h:outputLabel value="Resultado:"/>
-                    <p:selectOneMenu value="#{atendimentoController.statusConclusao}">
-                        <f:selectItem itemLabel="Selecione" itemValue="" />
-                        <f:selectItem itemLabel="Concluído" itemValue="CONCLUIDO"/>
-                        <f:selectItem itemLabel="Reencaminhado" itemValue="REENCAMINHADO"/>
-                        <f:selectItem itemLabel="Cancelado pelo Usuário" itemValue="CANCELADO_USUARIO"/>
-                        <f:selectItem itemLabel="Não Compareceu" itemValue="NAO_COMPARECEU"/>
-                    </p:selectOneMenu>
+                    <h:panelGrid columns="2" cellpadding="8" style="width:100%;">
 
-                    <!-- DESCRIÇÃO -->
-                    <h:outputLabel value="Ações realizadas:"/>
-                    <p:inputTextarea value="#{atendimentoController.acoesRealizadas}"
-                                     rows="3" cols="30"
-                                     autoResize="true"/>
+                        <h:outputText value="Protocolo:" style="font-weight:bold;" />
+                        <h:outputText value="#{empty atendimentoController.atual ? '' : atendimentoController.atual.protocolo}"
+                                      style="font-family:monospace; color:#036fab;" />
 
-                    <h:outputLabel value="Observações:"/>
-                    <p:inputTextarea value="#{atendimentoController.observacoes}"
-                                     rows="3" cols="30"
-                                     autoResize="true"/>
+                        <h:outputText value="Cliente:" style="font-weight:bold;" />
+                        <h:outputText value="#{empty atendimentoController.atual ? '' : atendimentoController.atual.usuario.nome}" />
 
-                    <!-- REENCAMINHAMENTO -->
-                    <h:outputLabel value="Reencaminhar para:" 
-                                   rendered="#{atendimentoController.statusConclusao eq 'REENCAMINHADO'}"/>
-                    <p:selectOneMenu value="#{atendimentoController.idServicoReencaminhar}"
-                                     rendered="#{atendimentoController.statusConclusao eq 'REENCAMINHADO'}">
-                        <f:selectItem itemLabel="Selecione" itemValue="" />
-                        <f:selectItems value="#{atendimentoController.servicos}"
-                                       var="s"
-                                       itemLabel="#{s.nome}"
-                                       itemValue="#{s.id}" />
-                    </p:selectOneMenu>
+                        <h:outputText value="Serviço:" style="font-weight:bold;" />
+                        <h:outputText value="#{empty atendimentoController.atual ? '' : atendimentoController.atual.servico.nome}" />
 
-                </h:panelGrid>
+                        <!-- RESULTADO -->
+                        <h:outputText value="Resultado do Atendimento:" style="font-weight:bold;" />
+                        <p:selectOneMenu value="#{atendimentoController.statusConclusao}" required="true">
+                            <f:selectItem itemLabel="Selecione..." itemValue="" />
+                            <f:selectItem itemLabel="Concluído" itemValue="CONCLUIDO" />
+                            <f:selectItem itemLabel="Reencaminhado" itemValue="REENCAMINHADO" />
+                            <f:selectItem itemLabel="Não Compareceu" itemValue="NAO_COMPARECEU" />
+                            <f:selectItem itemLabel="Cancelado pelo Usuário" itemValue="CANCELADO_USUARIO" />
+                        </p:selectOneMenu>
 
-                <br/>
+                        <!-- REENCAMINHAMENTO -->
+                        <h:outputText value="Serviço de Destino:"
+                                      style="font-weight:bold;"
+                                      rendered="#{atendimentoController.statusConclusao eq 'REENCAMINHADO'}" />
 
-                <p:commandButton value="Finalizar Atendimento"
-                                 icon="pi pi-check"
-                                 actionListener="#{atendimentoController.finalizarComDetalhes}"
-                                 update="formAtendimento"
-                                 styleClass="ui-button-success"/>
+                        <p:selectOneMenu value="#{atendimentoController.idServicoReencaminhar}"
+                                         required="true"
+                                         rendered="#{atendimentoController.statusConclusao eq 'REENCAMINHADO'}">
+                            <f:selectItem itemLabel="Selecione o serviço" itemValue="" />
+                            <f:selectItems value="#{atendimentoController.servicos}" var="s"
+                                           itemLabel="#{s.nome}" itemValue="#{s.id}" />
+                        </p:selectOneMenu>
 
-            </p:panel>
+                        <!-- AÇÕES REALIZADAS -->
+                        <h:outputText value="Ações Realizadas (mín. 20 caracteres):"
+                                      style="font-weight:bold;"
+                                      rendered="#{atendimentoController.statusConclusao ne 'NAO_COMPARECEU' 
+                                                  and not empty atendimentoController.statusConclusao}" />
 
-        </h:form>
+                        <p:inputTextarea value="#{atendimentoController.acoesRealizadas}" rows="5"
+                                         style="width:100%;"
+                                         rendered="#{atendimentoController.statusConclusao ne 'NAO_COMPARECEU'
+                                                     and not empty atendimentoController.statusConclusao}" />
 
+                        <!-- OBSERVAÇÕES -->
+                        <h:outputText value="Observações (opcional):" style="font-weight:bold;" />
+                        <p:inputTextarea value="#{atendimentoController.observacoes}"
+                                         rows="3" style="width:100%;" />
+
+                    </h:panelGrid>
+
+                    <f:facet name="footer">
+                        <p:commandButton value="Confirmar Finalização"
+                                         action="#{atendimentoController.finalizarComDetalhes}"
+                                         update=":formLista :formFinalizar"
+                                         oncomplete="PF('finalizarDialog').hide()"
+                                         style="background:#036fab; color:white; padding:10px 20px;" />
+
+                        <p:commandButton value="Cancelar" onclick="PF('finalizarDialog').hide()" type="button"
+                                         style="margin-left:10px; background:#999; color:white;" />
+                    </f:facet>
+
+                </p:dialog>
+            </h:form>
+
+        </div>
     </ui:define>
-
 </ui:composition>
-
-</html>

@@ -448,4 +448,5 @@ public class AgendamentoSimplificadoController implements Serializable {
     public String reagendar(Agendamento a) {
         return "reagendar.xhtml?faces-redirect=true&amp;id=" + a.getId();
     }
+    
 }
