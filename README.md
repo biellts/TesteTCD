@@ -1,7 +1,5 @@
 # TesteTCD
 
-# TesteTCD
-
 Este projeto é a aplicação web usada no teste TCD.
 
 Requisitos
