@@ -106,9 +106,9 @@ public class UsuarioController implements Serializable {
             // ✅ USUÁRIO NASCE ATIVO POR PADRÃO NA ENTIDADE
             // NÃO precisa setAtivo(true)
             // ================================================
-            usuario.setEmailConfirmationToken(null);
-            usuario.setEmailConfirmationExpires(null);
-            usuario.setEmailConfirmed(true); // já salvo como confirmado
+            // Ativa e confirma o usuário imediatamente e envia email de boas-vindas
+            usuario.setAtivo(true);
+            usuario.setEmailConfirmed(true);
 
             // criptografar senha AQUI
             usuario.setSenha(service.criptografarSenha(usuario.getSenha()));
@@ -116,11 +116,13 @@ public class UsuarioController implements Serializable {
             // salva no banco SEM fazer hash novamente (já foi criptografado)
             service.salvarSemHashar(usuario);
 
-            resetarUsuario();
+            // enviar email de boas-vindas com link direto para login
+            String link = "http://localhost:8080/sigapar/usuarios/login_usuario.xhtml";
+            emailService.enviarEmailConfirmacao(usuario.getEmail(), usuario.getNome(), link);
 
-            // ================================================
-            // 🔵 REDIRECIONA PARA CONFIRMAR-EMAIL.XHTML
-            // ================================================
+            JsfUtil.addSuccess("Cadastro realizado com sucesso! Você já pode efetuar o login.");
+
+            resetarUsuario();
             return "/publico/confirmar-email.xhtml?faces-redirect=true";
 
         } catch (Exception e) {

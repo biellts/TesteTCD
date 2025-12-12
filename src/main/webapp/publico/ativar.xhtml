@@ -1,0 +1,20 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                template="/templates/layout.xhtml">
+
+    <ui:define name="conteudo">
+
+        <f:metadata>
+            <f:viewParam name="token" value="#{confirmarEmailController.token}" />
+            <f:viewAction action="#{confirmarEmailController.processarConfirmacao}" />
+        </f:metadata>
+
+        <div style="text-align:center; padding:40px;">
+            <h2>Processando confirmação...</h2>
+            <p>Se você não for redirecionado automaticamente, aguarde ou verifique seu e-mail.</p>
+        </div>
+
+    </ui:define>
+</ui:composition>

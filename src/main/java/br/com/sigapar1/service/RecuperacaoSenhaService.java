@@ -20,6 +20,9 @@ public class RecuperacaoSenhaService {
     @Inject
     private EmailService emailService;
 
+    @Inject
+    private UsuarioService usuarioService;
+
     // ✔ Agora transacional (por ser @Stateless) — remove antigo e cria novo SEM erro!
     public boolean solicitarRecuperacao(String email) {
 
@@ -41,7 +44,25 @@ public class RecuperacaoSenhaService {
         // ✔ Novo link com pasta correta
         String link = "http://localhost:8080/sigapar/publico/resetar-senha.xhtml?token=" + novo.getToken();
 
+        // Envia link de recuperação
         emailService.enviarEmailRecuperacao(u.getEmail(), u.getNome(), link);
+
+        // Além disso, gere e envie uma senha temporária como faz o admin ao criar usuário
+        try {
+            String senhaTemp = usuarioService.gerarSenhaTemporaria();
+            // atualiza a senha do usuário (UsuarioService.atualizar aplicará hash)
+            u.setSenha(senhaTemp);
+            usuarioService.atualizar(u);
+
+            // envia email com senha temporária
+            emailService.enviarSenhaTemporaria(u.getEmail(), u.getNome(), senhaTemp);
+        } catch (Exception e) {
+            // não interrompe o fluxo principal se envio da senha temporária falhar
+            e.printStackTrace();
+        }
+
+        // Para facilitar testes em ambientes sem SMTP, também logamos o link no console.
+        System.out.println("RECOVERY LINK: " + link);
 
         return true;
     }
@@ -62,9 +83,9 @@ public class RecuperacaoSenhaService {
             return false;
 
         Usuario u = t.getUsuario();
-        u.setSenha(novaSenha); // ideal: aplicar hash
+        u.setSenha(novaSenha); // será hasheada em usuarioService.atualizar
 
-        usuarioDAO.atualizar(u);
+        usuarioService.atualizar(u);
 
         // ✔ remover token após uso
         tokenDAO.excluir(t);

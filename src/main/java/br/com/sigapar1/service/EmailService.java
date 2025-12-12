@@ -74,10 +74,11 @@ public class EmailService {
     // ============================================================
     // 2) EMAIL DE CONFIRMAÇÃO DE CADASTRO (AGORA LEVA DIRETO AO LOGIN)
     // ============================================================
-    public void enviarEmailConfirmacao(String emailDestino, String nome, String linkIgnorado) {
+    public void enviarEmailConfirmacao(String emailDestino, String nome, String link) {
         try {
-            // O link agora sempre vai para o login
-            String link = "http://localhost:8080/sigapar/usuarios/login_usuario.xhtml";
+            if (link == null || link.isBlank()) {
+                link = "http://localhost:8080/sigapar/usuarios/login_usuario.xhtml";
+            }
 
             MimeMessage mensagem = new MimeMessage(mailSession);
             mensagem.setRecipients(RecipientType.TO, InternetAddress.parse(emailDestino));
@@ -102,13 +103,13 @@ public class EmailService {
             <html><body style='background:#f4f4f4; font-family:Arial;'>
                 <div style='width:600px; margin:auto; background:white; border-radius:8px;'>
                     <div style='background:#004AAD; padding:20px; text-align:center; color:white;'>
-                        <h2>Confirmação de Cadastro - SIGAPAR</h2>
+                        <h2>Boas-vindas ao SIGAPAR</h2>
                     </div>
 
                     <div style='padding:30px; color:#333; font-size:16px;'>
                         <p>Olá, <b>%s</b>,</p>
-                        <p>Obrigado por se cadastrar no sistema SIGAPAR.</p>
-                        <p>Clique no botão abaixo para acessar o login:</p>
+                        <p>Boas-vindas! Obrigado por se cadastrar no sistema SIGAPAR.</p>
+                        <p>Para acessar sua conta, clique no botão abaixo:</p>
 
                         <p style='text-align:center; margin:30px 0;'>
                             <a href='%s'
