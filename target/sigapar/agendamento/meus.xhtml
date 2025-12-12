@@ -66,12 +66,11 @@
                                             </td>
                                             <td style="padding:15px; text-align:center;">
                                                 <!-- Detalhes -->
-                                                <h:commandButton value="🔍 Detalhes"
+                                                <p:commandButton value="🔍 Detalhes"
                                                                  action="#{agendamentoSimplificadoController.verDetalhes(a)}"
-                                                                 onclick="PF('detalhesDialog').show(); return false;"
-                                                                 style="padding:6px 12px; background:#17a2b8; color:white; border-radius:5px; margin:2px; font-weight:600;">
-                                                    <f:ajax render=":formDetalhes"/>
-                                                </h:commandButton>
+                                                                 update=":formDetalhes"
+                                                                 oncomplete="PF('detalhesDialog').show()"
+                                                                 style="padding:6px 12px; background:#17a2b8; color:white; border-radius:5px; margin:2px; font-weight:600;"/>
 
                                                 <!-- Cancelar -->
                                                 <h:commandButton value="❌ Cancelar"
@@ -80,6 +79,11 @@
                                                                  style="padding:6px 12px; background:#dc3545; color:white; border-radius:5px; margin:2px; font-weight:600;">
                                                     <f:ajax render="@form" />
                                                 </h:commandButton>
+
+                                                <!-- Reagendar -->
+                                                <h:commandButton value="🔁 Reagendar"
+                                                                 action="#{agendamentoSimplificadoController.reagendar(a)}"
+                                                                 style="padding:6px 12px; background:#ffc107; color:#212529; border-radius:5px; margin:2px; font-weight:600;" />
                                             </td>
                                         </tr>
                                     </ui:fragment>

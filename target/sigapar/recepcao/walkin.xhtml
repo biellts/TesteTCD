@@ -1,8 +1,8 @@
 <ui:composition template="/templates/layout.xhtml"
                 xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:ui="jakarta.faces.facelets"
-                xmlns:h="jakarta.faces.html"
-                xmlns:f="jakarta.faces.core">
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
     <ui:define name="conteudo">
 
@@ -56,6 +56,30 @@
                                    var="s"
                                    itemValue="#{s.id}"
                                    itemLabel="#{s.nome}" />
+                    <f:converter converterId="jakarta.faces.Long"/>
+                </h:selectOneMenu>
+
+                <!-- ATENDENTE -->
+                <label>Atendente (opcional)</label>
+                <h:selectOneMenu value="#{walkinController.atendenteId}"
+                                 style="width:100%; margin-bottom:20px;">
+                    <f:selectItem itemLabel="Automático" itemValue="" />
+                    <f:selectItems value="#{walkinController.atendentes}"
+                                   var="a"
+                                   itemValue="#{a.id}"
+                                   itemLabel="#{a.nome} (#{a.cpf})" />
+                    <f:converter converterId="jakarta.faces.Long"/>
+                </h:selectOneMenu>
+
+                <!-- LOCAL / GUICHÊ -->
+                <label>Local / Guichê (opcional)</label>
+                <h:selectOneMenu value="#{walkinController.espacoId}"
+                                 style="width:100%; margin-bottom:20px;">
+                    <f:selectItem itemLabel="Automático" itemValue="" />
+                    <f:selectItems value="#{walkinController.espacos}"
+                                   var="e"
+                                   itemValue="#{e.id}"
+                                   itemLabel="#{e.codigo} - #{e.descricao}" />
                     <f:converter converterId="jakarta.faces.Long"/>
                 </h:selectOneMenu>
 

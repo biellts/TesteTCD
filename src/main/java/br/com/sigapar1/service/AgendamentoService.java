@@ -60,6 +60,11 @@ public class AgendamentoService {
             return List.of();
         }
 
+        // Bloqueia dias que são feriados
+        if (feriadoDao != null && feriadoDao.isFeriado(data)) {
+            return List.of();
+        }
+
         List<AtendenteServicoEspaco> vinculos = em.createQuery(
                 "SELECT v FROM AtendenteServicoEspaco v JOIN FETCH v.horario h "
                 + "WHERE v.servico.id = :idServico", AtendenteServicoEspaco.class)
@@ -143,6 +148,11 @@ public class AgendamentoService {
     public void salvar(Agendamento a) throws BusinessException {
         if (a == null) {
             throw new BusinessException("Agendamento inválido.");
+        }
+
+        // Não permite agendar em feriado
+        if (a.getData() != null && feriadoDao != null && feriadoDao.isFeriado(a.getData())) {
+            throw new BusinessException("Não é possível agendar em feriado.");
         }
 
         Horario h = horarioDao.buscarPorId(a.getHorario().getId());

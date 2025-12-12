@@ -7,6 +7,7 @@ import br.com.sigapar1.entity.Usuario;
 
 import br.com.sigapar1.service.AgendamentoSimplificadoService;
 import br.com.sigapar1.service.ServicoService;
+import br.com.sigapar1.service.EspacoAtendimentoService;
 import br.com.sigapar1.service.UsuarioService;
 
 import br.com.sigapar1.util.BusinessException;
@@ -37,13 +38,20 @@ public class WalkinController implements Serializable {
     @Inject
     private ServicoService servicoService;
 
+    @Inject
+    private EspacoAtendimentoService espacoService;
+
     // Campos do formulário
     private String nome;
     private String cpf;
     private String telefone;
     private Long servicoId;
+    private Long atendenteId;
+    private Long espacoId;
 
     private List<Servico> servicos;
+    private List<br.com.sigapar1.entity.Usuario> atendentes;
+    private List<br.com.sigapar1.entity.EspacoAtendimento> espacos;
 
     // Agendamento criado para exibir na tela
     private Agendamento agendamentoCriado;
@@ -51,6 +59,8 @@ public class WalkinController implements Serializable {
     @PostConstruct
     public void init() {
         servicos = servicoService.listarAtivos();
+        atendentes = usuarioService.listarTodosPorRole(br.com.sigapar1.entity.Role.ROLE_ATTENDANT);
+        espacos = espacoService.listarTodos();
     }
 
     public void registrarWalkin() {
@@ -78,6 +88,15 @@ public class WalkinController implements Serializable {
             Agendamento ag = new Agendamento();
             ag.setUsuario(usuario);
             ag.setServico(servico);
+            // associe atendente e espaco escolhidos, se houver
+            if (atendenteId != null) {
+                var at = usuarioService.buscarPorId(atendenteId);
+                ag.setAtendente(at);
+            }
+            if (espacoId != null) {
+                var e = espacoService.buscarPorId(espacoId);
+                ag.setEspaco(e);
+            }
             ag.setData(LocalDate.now());
             ag.setDataHora(LocalDateTime.now());
 
@@ -116,6 +135,8 @@ public class WalkinController implements Serializable {
         cpf = null;
         telefone = null;
         servicoId = null;
+        atendenteId = null;
+        espacoId = null;
     }
 
     // Getters e Setters
@@ -147,8 +168,30 @@ public class WalkinController implements Serializable {
         this.servicoId = servicoId;
     }
 
+    public Long getAtendenteId() {
+        return atendenteId;
+    }
+    public void setAtendenteId(Long atendenteId) {
+        this.atendenteId = atendenteId;
+    }
+
+    public Long getEspacoId() {
+        return espacoId;
+    }
+    public void setEspacoId(Long espacoId) {
+        this.espacoId = espacoId;
+    }
+
     public List<Servico> getServicos() {
         return servicos;
+    }
+
+    public List<br.com.sigapar1.entity.Usuario> getAtendentes() {
+        return atendentes;
+    }
+
+    public List<br.com.sigapar1.entity.EspacoAtendimento> getEspacos() {
+        return espacos;
     }
 
     public Agendamento getAgendamentoCriado() {

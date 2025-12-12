@@ -78,11 +78,12 @@
                     PRÓXIMO AGENDAMENTO
                 </div>
 
-                <!-- Nome -->
+                <!-- Nome e Protocolo -->
                 <div class="painel-nome">
-                    <h:outputText value="#{painelController.proximoAgendamento != null 
-                        ? painelController.proximoAgendamento.usuario.nome 
-                        : 'Aguardando...'}"/>
+                    <h:outputText rendered="#{not empty painelController.proximoAgendamento}" value="#{painelController.proximoAgendamento.usuario.nome}" />
+                    <h:outputText rendered="#{not empty painelController.proximoAgendamento}" value=" — " />
+                    <h:outputText rendered="#{not empty painelController.proximoAgendamento}" value="#{painelController.proximoAgendamento.protocolo}" />
+                    <h:outputText rendered="#{empty painelController.proximoAgendamento}" value="Aguardando..." />
                 </div>
 
                 <!-- Horário -->
@@ -99,20 +100,34 @@
                         : ''}"/>
                 </div>
 
-                <!-- Espaço -->
+                <!-- Local -->
                 <div class="painel-info">
-                    <strong>Espaço: </strong>
+                    <strong>Local: </strong>
+                    <h:outputText rendered="#{not empty painelController.proximoAgendamento and not empty painelController.proximoAgendamento.espaco}" value="#{painelController.proximoAgendamento.espaco.codigo}" />
+                    <h:outputText rendered="#{not empty painelController.proximoAgendamento and not empty painelController.proximoAgendamento.espaco}" value=" - " />
+                    <h:outputText rendered="#{not empty painelController.proximoAgendamento and not empty painelController.proximoAgendamento.espaco}" value="#{painelController.proximoAgendamento.espaco.descricao}" />
+                </div>
+
+                <!-- Atendente -->
+                <div class="painel-info">
+                    <strong>Atendente: </strong>
                     <h:outputText value="#{painelController.proximoAgendamento != null 
-                        ? painelController.proximoAgendamento.espaco.descricao 
-                        : ''}"/>
+                        ? painelController.proximoAgendamento.atendente.nome : ''}"/>
+                </div>
+
+                <!-- Status -->
+                <div class="painel-info">
+                    <strong>Status: </strong>
+                    <h:outputText value="#{painelController.proximoAgendamento != null 
+                        ? painelController.proximoAgendamento.status : ''}"/>
                 </div>
 
             </div>
 
             <!-- Atualização automática -->
-            <p:poll interval="5"
+                <p:poll interval="5"
                     listener="#{painelController.atualizarPainel}"
-                    update="formPainel"
+                    update="@form"
                     async="true"/>
 
         </h:form>
