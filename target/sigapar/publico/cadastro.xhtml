@@ -40,11 +40,18 @@
                 <h:inputText value="#{usuarioController.usuario.telefone}"
                              required="true"
                              requiredMessage="Telefone é obrigatório"
-                             style="width:100%; margin-bottom:12px;"/>
+                             maxlength="11"
+                             style="width:100%; margin-bottom:12px;">
+                    <f:validateLength maximum="11"/>
+                    <f:validateRegex pattern="\d{0,11}"/>
+                </h:inputText>
 
                 <!-- DATA NASCIMENTO -->
                 <label>Data de Nascimento</label>
                 <h:inputText value="#{usuarioController.usuario.dataNascimento}"
+                             maxlength="10"
+                             placeholder="dd/mm/aaaa"
+                             oninput="this.value=this.value.replace(/\D/g,'').slice(0,8).replace(/(\d{2})(\d{2})(\d{0,4})/,'$1/$2/$3');"
                              style="width:100%; margin-bottom:12px;">
                     <f:convertDateTime pattern="dd/MM/yyyy"/>
                 </h:inputText>

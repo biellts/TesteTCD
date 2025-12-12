@@ -25,24 +25,37 @@ public class ConfirmarEmailController {
                 .get("token");
     }
 
-    public void processarConfirmacao() {
+    public String processarConfirmacao() {
         if (token == null || token.isBlank()) {
             addMsg("Token inválido ou não informado.");
-            return;
+            return "/publico/confirmar-email.xhtml?faces-redirect=true";
         }
 
         try {
+            // buscar usuário associado ao token
+            br.com.sigapar1.entity.Usuario u = usuarioService.buscarPorTokenConfirmacao(token);
+            if (u == null) {
+                addMsg("Token inválido ou já utilizado.");
+                return "/publico/confirmar-email.xhtml?faces-redirect=true";
+            }
+
             boolean confirmado = usuarioService.confirmarEmail(token);
 
             if (confirmado) {
-                addMsg("Email confirmado com sucesso! Sua conta está ativa.");
+                // recarrega usuário atualizado e coloca na sessão como logado
+                br.com.sigapar1.entity.Usuario atualizado = usuarioService.buscarPorEmail(u.getEmail());
+                FacesContext fc = FacesContext.getCurrentInstance();
+                fc.getExternalContext().getSessionMap().put("usuarioLogado", atualizado);
+                return "/usuarios/dashboard?faces-redirect=true";
             } else {
                 addMsg("Token inválido ou já utilizado.");
+                return "/publico/confirmar-email.xhtml?faces-redirect=true";
             }
 
         } catch (Exception e) {
             addMsg("Ocorreu um erro ao confirmar o e-mail.");
             e.printStackTrace();
+            return "/publico/confirmar-email.xhtml?faces-redirect=true";
         }
     }
 
