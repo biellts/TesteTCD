@@ -57,9 +57,13 @@ public class UsuarioController implements Serializable {
                 String senhaTemp = service.gerarSenhaTemporaria();
                 usuario.setSenha(senhaTemp);
                 emailService.enviarSenhaTemporaria(usuario.getEmail(), usuario.getNome(), senhaTemp);
+                
+                // Criptografa a senha temporária ANTES de salvar
+                usuario.setSenha(service.criptografarSenha(senhaTemp));
+                service.salvarSemHashar(usuario);
+            } else {
+                service.salvar(usuario);
             }
-
-            service.salvar(usuario);
 
             JsfUtil.addSuccess("Usuário salvo com sucesso!");
             resetarUsuario();
@@ -106,11 +110,11 @@ public class UsuarioController implements Serializable {
             usuario.setEmailConfirmationExpires(null);
             usuario.setEmailConfirmed(true); // já salvo como confirmado
 
-            // criptografar senha
+            // criptografar senha AQUI
             usuario.setSenha(service.criptografarSenha(usuario.getSenha()));
 
-            // salva no banco
-            service.salvar(usuario);
+            // salva no banco SEM fazer hash novamente (já foi criptografado)
+            service.salvarSemHashar(usuario);
 
             resetarUsuario();
 

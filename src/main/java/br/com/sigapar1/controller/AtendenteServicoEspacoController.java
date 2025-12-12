@@ -104,7 +104,9 @@ public class AtendenteServicoEspacoController implements Serializable {
     }
 
     public List<Usuario> getAtendentes() {
-        return usuarioService.listarPorRole(Role.ROLE_ATTENDANT);
+        // Busca TODOS os atendentes, mesmo que inativos
+        // (assim atendentes novos aparecem na lista mesmo antes de serem ativados)
+        return usuarioService.listarTodosPorRole(Role.ROLE_ATTENDANT);
     }
 
     public List<Servico> getServicosAtivos() {

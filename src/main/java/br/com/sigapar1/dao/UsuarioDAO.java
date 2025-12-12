@@ -97,6 +97,17 @@ public class UsuarioDAO extends GenericDAO<Usuario> {
                 .getResultList();
     }
 
+    public List<Usuario> listarTodosPorRole(Role role) {
+        return getEntityManager()
+                .createQuery(
+                        "SELECT u FROM Usuario u "
+                        + "WHERE u.role = :role "
+                        + "ORDER BY u.nome ASC",
+                        Usuario.class)
+                .setParameter("role", role)
+                .getResultList();
+    }
+
     public List<Usuario> listarAtendentes() {
         return listarPorRole(Role.ROLE_ATTENDANT);
     }

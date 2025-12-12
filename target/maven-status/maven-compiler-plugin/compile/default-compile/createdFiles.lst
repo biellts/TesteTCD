@@ -78,6 +78,7 @@ br\com\sigapar1\entity\ServicoHistorico.class
 br\com\sigapar1\controller\FeriadoController.class
 br\com\sigapar1\controller\SucessoController.class
 br\com\sigapar1\controller\AtendimentoController.class
+br\com\sigapar1\filter\SecurityFilter.class
 br\com\sigapar1\controller\EspacoAtendimentoController.class
 br\com\sigapar1\dao\IntervaloBloqueadoDAO.class
 br\com\sigapar1\dao\LogAcessoDAO.class

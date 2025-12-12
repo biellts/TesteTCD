@@ -30,8 +30,14 @@ public class UsuarioService {
     public Usuario autenticar(String email, String senhaDigitada) {
         Usuario usuario = dao.buscarPorEmail(email);
 
-        //if (usuario == null) return null;
-        // if (!usuario.isAtivo()) return null;
+        if (usuario == null) {
+            return null;
+        }
+
+        if (!usuario.isAtivo()) {
+            return null;
+        }
+
         boolean senhaCorreta = HashUtil.verificar(senhaDigitada, usuario.getSenha());
         return senhaCorreta ? usuario : null;
     }
@@ -79,6 +85,10 @@ public class UsuarioService {
 
     public List<Usuario> listarPorRole(Role role) {
         return dao.listarPorRole(role);
+    }
+
+    public List<Usuario> listarTodosPorRole(Role role) {
+        return dao.listarTodosPorRole(role);
     }
 
     public Usuario buscarPorEmail(String email) {
@@ -192,6 +202,18 @@ public class UsuarioService {
         dao.salvar(novo);
 
         return novo;
+    }
+
+    // ============================================================
+    // MÉTODO AUXILIAR: Salva sem fazer hash (já foi criptografado)
+    // ============================================================
+    public void salvarSemHashar(Usuario u) {
+        validar(u);
+        if (u.getId() == null) {
+            dao.salvar(u);
+        } else {
+            dao.atualizar(u);
+        }
     }
 
 }

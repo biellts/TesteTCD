@@ -1,73 +1,73 @@
-<!DOCTYPE html>
-<ui:composition template="/templates/layout.xhtml"
-                xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:h="http://xmlns.jcp.org/jsf/html"
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <!DOCTYPE html>
+    <ui:composition template="/templates/layout.xhtml"
+                    xmlns="http://www.w3.org/1999/xhtml"
+                    xmlns:h="http://xmlns.jcp.org/jsf/html"
+                    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                    xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <ui:define name="conteudo">
+        <ui:define name="conteudo">
 
-        <h:form id="formBusca" style="max-width:900px; margin:0 auto;">
+            <h:form id="formBusca" style="max-width:900px; margin:0 auto;">
 
-            <div style="background:white; padding:25px; border-radius:12px; box-shadow:0 2px 10px rgba(0,0,0,0.1); margin-top:35px;">
+                <div style="background:white; padding:25px; border-radius:12px; box-shadow:0 2px 10px rgba(0,0,0,0.1); margin-top:35px;">
 
-                <h2 style="text-align:center; margin-bottom:25px; color:#333;">Buscar Agendamentos</h2>
+                    <h2 style="text-align:center; margin-bottom:25px; color:#333;">Buscar Agendamentos</h2>
 
-                <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:20px;">
+                    <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:20px;">
 
-                    <!-- PROTOCOLO -->
-                    <div>
-                        <label style="font-weight:600;">Protocolo</label>
-                        <h:inputText value="#{buscaAgendamentoRecepcionistaController.filtroProtocolo}"
-                                     style="width:100%; padding:12px; border-radius:6px; border:1px solid #ccc; font-size:1.05em; margin-top:8px;">
-                            <f:passThroughAttribute name="placeholder" value="Ex: 20251234" />
-                        </h:inputText>
+                        <!-- PROTOCOLO -->
+                        <div>
+                            <label style="font-weight:600;">Protocolo</label>
+                            <h:inputText value="#{buscaAgendamentoRecepcionistaController.filtroProtocolo}"
+                                         style="width:100%; padding:12px; border-radius:6px; border:1px solid #ccc; font-size:1.05em; margin-top:8px;">
+                                <f:passThroughAttribute name="placeholder" value="Ex: 20251234" />
+                            </h:inputText>
+                        </div>
+
+                        <!-- CPF -->
+                        <div>
+                            <label style="font-weight:600;">CPF</label>
+                            <h:inputText value="#{buscaAgendamentoRecepcionistaController.filtroCpf}"
+                                         style="width:100%; padding:12px; border-radius:6px; border:1px solid #ccc; font-size:1.05em; margin-top:8px;">
+                                <f:passThroughAttribute name="placeholder" value="Somente números" />
+                            </h:inputText>
+                        </div>
+
+                        <!-- NOME -->
+                        <div>
+                            <label style="font-weight:600;">Nome</label>
+                            <h:inputText value="#{buscaAgendamentoRecepcionistaController.filtroNome}"
+                                         style="width:100%; padding:12px; border-radius:6px; border:1px solid #ccc; font-size:1.05em; margin-top:8px;">
+                                <f:passThroughAttribute name="placeholder" value="Nome completo ou parcial" />
+                            </h:inputText>
+                        </div>
+
+                        <!-- DATA -->
+                        <div>
+                            <label style="font-weight:600;">Data</label>
+                            <h:inputText value="#{buscaAgendamentoRecepcionistaController.filtroData}"
+                                         style="width:100%; padding:12px; border-radius:6px; border:1px solid #ccc; font-size:1.05em; margin-top:8px;">
+                                <f:passThroughAttribute name="placeholder" value="dd/MM/yyyy" />
+                                <f:convertDateTime pattern="dd/MM/yyyy" />
+                            </h:inputText>
+                        </div>
+
                     </div>
 
-                    <!-- CPF -->
-                    <div>
-                        <label style="font-weight:600;">CPF</label>
-                        <h:inputText value="#{buscaAgendamentoRecepcionistaController.filtroCpf}"
-                                     style="width:100%; padding:12px; border-radius:6px; border:1px solid #ccc; font-size:1.05em; margin-top:8px;">
-                            <f:passThroughAttribute name="placeholder" value="Somente números" />
-                        </h:inputText>
-                    </div>
-
-                    <!-- NOME -->
-                    <div>
-                        <label style="font-weight:600;">Nome</label>
-                        <h:inputText value="#{buscaAgendamentoRecepcionistaController.filtroNome}"
-                                     style="width:100%; padding:12px; border-radius:6px; border:1px solid #ccc; font-size:1.05em; margin-top:8px;">
-                            <f:passThroughAttribute name="placeholder" value="Nome completo ou parcial" />
-                        </h:inputText>
-                    </div>
-
-                    <!-- DATA -->
-                    <div>
-                        <label style="font-weight:600;">Data</label>
-                        <h:inputText value="#{buscaAgendamentoRecepcionistaController.filtroData}"
-                                     style="width:100%; padding:12px; border-radius:6px; border:1px solid #ccc; font-size:1.05em; margin-top:8px;">
-                            <f:passThroughAttribute name="placeholder" value="dd/MM/yyyy" />
-                            <f:convertDateTime pattern="dd/MM/yyyy" />
-                        </h:inputText>
+                    <!-- BOTÃO DE BUSCA -->
+                    <div style="text-align:center; margin-top:30px;">
+                        <h:commandButton value="Buscar"
+                                         action="#{buscaAgendamentoRecepcionistaController.buscar}"
+                                         style="background:#007bff; color:white; padding:12px 26px; border:none; border-radius:6px; font-size:1.1em; cursor:pointer;" />
                     </div>
 
                 </div>
 
-                <!-- BOTÃO DE BUSCA -->
-                <div style="text-align:center; margin-top:30px;">
-                    <h:commandButton value="Buscar"
-                                     action="#{buscaAgendamentoRecepcionistaController.buscar}"
-                                     style="background:#007bff; color:white; padding:12px 26px; border:none; border-radius:6px; font-size:1.1em; cursor:pointer;" />
-                </div>
+            </h:form>
 
-            </div>
+            <!-- LISTA DE RESULTADOS -->
+            <ui:include src="lista-agendamentos.xhtml" />
 
-        </h:form>
+        </ui:define>
 
-        <!-- LISTA DE RESULTADOS -->
-        <ui:include src="lista-agendamentos.xhtml" />
-
-    </ui:define>
-
-</ui:composition>
+    </ui:composition>
