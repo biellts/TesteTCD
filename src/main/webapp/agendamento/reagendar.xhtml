@@ -34,7 +34,7 @@
                 <div class="card" style="padding:20px; border-radius:12px; margin-bottom:16px; border:1px solid #ddd;">
                     <h3 style="margin-top:0;">1. Escolha a nova data *</h3>
                     <h:panelGroup rendered="#{not empty agendamentoSimplificadoController.diasDisponiveis}">
-                        <p:selectOneMenu id="novaData" value="#{agendamentoSimplificadoController.novaData}" style="width:100%;">
+                        <p:selectOneMenu id="novaData" value="#{agendamentoSimplificadoController.novaData}" converter="localDateConverter" style="width:100%;">
                             <f:selectItem itemLabel="Selecione..." itemValue="#{null}" />
                             <f:selectItems value="#{agendamentoSimplificadoController.diasDisponiveis}" var="d"
                                            itemLabel="#{agendamentoSimplificadoController.formatarData(d)}" itemValue="#{d}" />
@@ -65,12 +65,12 @@
                 </div>
 
                 <!-- 3. Resumo do reagendamento -->
-                <div id="resumoReagendamento" class="card" style="padding:20px; border-radius:12px; margin-bottom:16px; border:1px solid #ddd; background:#f9f9f9;">
+                <h:panelGroup id="resumoReagendamento" layout="block" style="padding:20px; border-radius:12px; margin-bottom:16px; border:1px solid #ddd; background:#f9f9f9;">
                     <h3 style="margin-top:0;">Resumo do Reagendamento</h3>
                     <p><strong>Serviço:</strong> #{agendamentoSimplificadoController.nomeServicoSelecionado}</p>
                     <p><strong>Data:</strong> #{agendamentoSimplificadoController.novaData != null ? agendamentoSimplificadoController.formatarData(agendamentoSimplificadoController.novaData) : '-'}</p>
                     <p><strong>Horário:</strong> #{agendamentoSimplificadoController.getHorarioSelecionadoParaReagendamento()}</p>
-                </div>
+                </h:panelGroup>
 
                 <!-- 4. Botão Confirmar Reagendamento -->
                 <div class="card" style="padding:16px; border-radius:12px; border:1px solid #ddd;">

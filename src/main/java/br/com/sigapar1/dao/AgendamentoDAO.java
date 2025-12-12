@@ -401,19 +401,43 @@ public class AgendamentoDAO extends GenericDAO<Agendamento> {
 
     public Agendamento buscarProximoAgendamento() {
         try {
-            return em.createQuery(
-                    "SELECT a FROM Agendamento a "
+            // Primeiro tenta achar quem está em fila (EM_FILA)
+            List<Agendamento> fila = em.createQuery(
+                "SELECT a FROM Agendamento a "
+                + "LEFT JOIN FETCH a.servico "
+                + "LEFT JOIN FETCH a.horario "
+                + "LEFT JOIN FETCH a.usuario "
+                + "LEFT JOIN FETCH a.atendente "
+                + "LEFT JOIN FETCH a.espaco "
+                + "WHERE a.status = :status "
+                + "ORDER BY a.horaCheckin ASC",
+                Agendamento.class)
+                .setParameter("status", StatusAgendamento.EM_FILA)
+                .setMaxResults(1)
+                .getResultList();
+
+            if (!fila.isEmpty()) {
+            return fila.get(0);
+            }
+
+            // Se não houver ninguém em fila, retorna o próximo agendamento AGENDADO por dataHora
+            java.time.LocalDateTime agora = java.time.LocalDateTime.now();
+            List<Agendamento> proximos = em.createQuery(
+                "SELECT a FROM Agendamento a "
                     + "LEFT JOIN FETCH a.servico "
                     + "LEFT JOIN FETCH a.horario "
                     + "LEFT JOIN FETCH a.usuario "
                     + "LEFT JOIN FETCH a.atendente "
                     + "LEFT JOIN FETCH a.espaco "
-                    + "WHERE a.status = :status "
-                    + "ORDER BY a.horaCheckin ASC",
-                    Agendamento.class)
-                    .setParameter("status", StatusAgendamento.EM_FILA)
-                    .setMaxResults(1)
-                    .getSingleResult();
+                    + "WHERE a.status = :status AND a.dataHora >= :now "
+                    + "ORDER BY a.dataHora ASC",
+                Agendamento.class)
+                .setParameter("status", StatusAgendamento.AGENDADO)
+                .setParameter("now", agora)
+                .setMaxResults(1)
+                .getResultList();
+
+            return proximos.isEmpty() ? null : proximos.get(0);
 
         } catch (NoResultException e) {
             return null;

@@ -197,6 +197,11 @@ public class AgendamentoSimplificadoService {
         }
     }
 
+    // Expondo método para uso externo (reagendamento)
+    public AtendenteServicoEspaco obterAtendenteServicoEspaco(Long idServico, Long idHorario) {
+        return buscarAtendenteServicoEspaco(idServico, idHorario);
+    }
+
     private String gerarProtocolo() {
         return "AGD" + System.currentTimeMillis();
     }
@@ -282,12 +287,13 @@ public class AgendamentoSimplificadoService {
         try {
             if (ag.getId() == null) {
                 em.persist(ag);
+                em.flush();
+                return ag;
             } else {
-                em.merge(ag);
+                Agendamento merged = em.merge(ag);
+                em.flush();
+                return merged;
             }
-
-            em.flush();
-            return ag;
         } catch (Exception e) {
             throw new RuntimeException("Erro ao salvar agendamento", e);
         }
@@ -307,6 +313,17 @@ public class AgendamentoSimplificadoService {
             // Retorna o primeiro ou null se não existir
             return resultado.isEmpty() ? null : resultado.get(0);
 
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    // Busca um Horario pelo id (útil para garantir entidade gerenciada antes de atribuir)
+    public Horario buscarHorarioPorId(Long id) {
+        if (id == null) return null;
+        try {
+            return em.find(Horario.class, id);
         } catch (Exception e) {
             e.printStackTrace();
             return null;

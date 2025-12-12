@@ -55,12 +55,13 @@ public class PainelController implements Serializable {
         return proximoAgendamento;
     }
     public String getHorarioFormatado() {
-    if (proximoAgendamento == null || proximoAgendamento.getDataHora() == null) {
-        return "";
-    }
-    return proximoAgendamento.getDataHora()
-            .toLocalTime()
-            .format(DateTimeFormatter.ofPattern("HH:mm"));
+        Agendamento p = getProximoAgendamento();
+        if (p == null || p.getDataHora() == null) {
+            return "";
+        }
+        return p.getDataHora()
+                .toLocalTime()
+                .format(DateTimeFormatter.ofPattern("HH:mm"));
 }
 
 }

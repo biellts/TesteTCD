@@ -3,6 +3,7 @@ package br.com.sigapar1.controller;
 import br.com.sigapar1.entity.Agendamento;
 import br.com.sigapar1.entity.Horario;
 import br.com.sigapar1.entity.Servico;
+import br.com.sigapar1.entity.AtendenteServicoEspaco;
 import br.com.sigapar1.entity.StatusAgendamento;
 import br.com.sigapar1.entity.Usuario;
 import br.com.sigapar1.service.AgendamentoSimplificadoService;
@@ -169,6 +170,15 @@ public class AgendamentoSimplificadoController implements Serializable {
         }
     }
 
+    // Abre detalhes carregando o agendamento completo
+    public void verDetalhes(Agendamento ag) {
+        if (ag == null || ag.getId() == null) {
+            this.agendamentoSelecionado = null;
+            return;
+        }
+        this.agendamentoSelecionado = service.buscarAgendamentoComDetalhes(ag.getId());
+    }
+
     // ==========================
     // LIMPAR FORM
     // ==========================
@@ -285,7 +295,14 @@ public class AgendamentoSimplificadoController implements Serializable {
                 .filter(h -> novoHorarioId.equals(h.getId()))
                 .findFirst().orElse(null);
 
-        if (horarioEscolhido == null || !horarioEscolhido.isDisponivel()) {
+        if (horarioEscolhido == null) {
+            JsfUtil.addErrorMessage("Horário selecionado não está mais disponível.");
+            return;
+        }
+
+        // Recarrega Horario no contexto gerenciado para garantir consistência
+        Horario horarioGerenciado = service.buscarHorarioPorId(horarioEscolhido.getId());
+        if (horarioGerenciado == null || !horarioGerenciado.isDisponivel()) {
             JsfUtil.addErrorMessage("Horário selecionado não está mais disponível.");
             return;
         }
@@ -293,18 +310,28 @@ public class AgendamentoSimplificadoController implements Serializable {
         try {
             // Atualiza os dados do agendamento
             ag.setData(novaData);
-            ag.setHorario(horarioEscolhido);
-            ag.setDataHora(novaData.atTime(horarioEscolhido.getHora()));
+            ag.setHorario(horarioGerenciado);
+            ag.setDataHora(novaData.atTime(horarioGerenciado.getHora()));
             ag.setStatus(StatusAgendamento.REMARCADO);
 
-            // Salva no banco
-            service.salvar(ag);
+            // Antes de salvar, atualiza atendente/espaco conforme novo horário
+            AtendenteServicoEspaco ase = service.obterAtendenteServicoEspaco(idServicoSelecionado, horarioGerenciado.getId());
+            if (ase != null) {
+                ag.setEspaco(ase.getEspaco());
+                ag.setAtendente(ase.getAtendente());
+            } else {
+                ag.setEspaco(null);
+                ag.setAtendente(null);
+            }
+
+            // Salva no banco e obtém instância gerenciada
+            Agendamento saved = service.salvar(ag);
 
             // Atualiza a lista de agendamentos do usuário
             carregarMeusAgendamentos();
 
             // Atualiza o objeto selecionado para refletir a nova data
-            this.agendamentoSelecionado = service.buscarAgendamentoComDetalhes(ag.getId());
+            this.agendamentoSelecionado = service.buscarAgendamentoComDetalhes(saved.getId());
 
             JsfUtil.addSuccessMessage("Reagendamento realizado com sucesso!");
         } catch (Exception e) {

@@ -79,7 +79,7 @@
                                      style="margin-top:30px; padding:14px 40px; background:#036fab; 
                                             color:white; border:none; border-radius:8px; 
                                             font-weight:600; font-size:1.1em;">
-                        <f:ajax execute="@form" render="listaVinculos" />
+                        <f:ajax execute="@form" render=":formLista:listaVinculos :formVinculo" />
                     </h:commandButton>
 
                 </h:form>
@@ -132,7 +132,7 @@
                                                action="#{vinculoController.excluir(v.id)}"
                                                onclick="return confirm('Excluir este vínculo?');"
                                                style="color:#dc3545; font-weight:600;">
-                                    <f:ajax execute="@this" render="listaVinculos" />
+                                    <f:ajax execute="@this" render=":formLista:listaVinculos" />
                                 </h:commandLink>
 
                             </h:column>
